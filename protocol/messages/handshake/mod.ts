@@ -3,6 +3,8 @@ import { NodeContext } from "../../../node/mod.ts";
 import { InitialNetworkMessage, MessageCode } from "../message.ts";
 import { PeerSpec } from "./peer_spec.ts";
 
+export * from "./peer_spec.ts";
+
 export const MAX_HANDSHAKE_SIZE = 8096;
 
 export class Handshake extends InitialNetworkMessage {
@@ -25,7 +27,8 @@ export class Handshake extends InitialNetworkMessage {
   }
 
   encode(writer: CursorWriter): void {
-    throw new Error("Method not implemented.");
+    writer.putUint64(this.unixTimestamp);
+    this.peerSpec.encode(writer);
   }
 
   static decode(reader: CursorReader): Handshake {
