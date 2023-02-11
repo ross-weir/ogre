@@ -146,6 +146,10 @@ export class ScorexReader implements CursorReader {
     return this.getUint8() === 1 ? getter(this) : undefined;
   }
 
+  newReader(buf: Uint8Array): CursorReader {
+    return new ScorexReader(new WasmScorexReader(buf));
+  }
+
   get buffer(): Uint8Array {
     return this.#b.buffer;
   }

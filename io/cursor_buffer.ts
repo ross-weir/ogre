@@ -47,4 +47,6 @@ export interface CursorReader {
   getOption<T>(getter: GetOptionFn<T>): T | undefined;
 
   get buffer(): Uint8Array;
+
+  newReader(buf: Uint8Array): CursorReader;
 }
