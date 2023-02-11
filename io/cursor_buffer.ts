@@ -1,3 +1,6 @@
+export type PutOptionFn<T> = (w: CursorWriter, value: T) => void;
+export type GetOptionFn<T> = (r: CursorReader) => T;
+
 export interface CursorWriter {
   putInt8(value: number): void;
 
@@ -16,6 +19,8 @@ export interface CursorWriter {
   putUint64(value: bigint): void;
 
   putString(value: string): void;
+
+  putOption<T>(value: T | undefined, fn: PutOptionFn<T>): void;
 
   get buffer(): Uint8Array;
 }
@@ -38,6 +43,8 @@ export interface CursorReader {
   getUint64(): bigint;
 
   getString(): string;
+
+  getOption<T>(getter: GetOptionFn<T>): T | undefined;
 
   get buffer(): Uint8Array;
 }

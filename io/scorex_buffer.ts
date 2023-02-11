@@ -2,7 +2,12 @@ import initWasm, {
   ScorexReader as WasmScorexReader,
   ScorexWriter as WasmScorexWriter,
 } from "https://www.unpkg.com/@ergoplatform/scorex-buffer@1.0.0/dist/browser/scorex_buffer.js";
-import { CursorReader, CursorWriter } from "./cursor_buffer.ts";
+import {
+  CursorReader,
+  CursorWriter,
+  GetOptionFn,
+  PutOptionFn,
+} from "./cursor_buffer.ts";
 
 let _wasm = false;
 
@@ -67,6 +72,18 @@ export class ScorexWriter implements CursorWriter {
     this.#b.putString(value);
   }
 
+  putOption<T>(
+    value: T | undefined,
+    fn: PutOptionFn<T>,
+  ): void {
+    if (!value) {
+      this.putUint8(0);
+    } else {
+      this.putUint8(1);
+      fn(this, value);
+    }
+  }
+
   get buffer(): Uint8Array {
     return this.#b.buffer;
   }
@@ -123,6 +140,10 @@ export class ScorexReader implements CursorReader {
 
   getString(): string {
     return this.#b.getString();
+  }
+
+  getOption<T>(getter: GetOptionFn<T>): T | undefined {
+    return this.getUint8() === 1 ? getter(this) : undefined;
   }
 
   get buffer(): Uint8Array {
