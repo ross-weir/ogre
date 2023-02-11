@@ -84,8 +84,16 @@ export class ScorexWriter implements CursorWriter {
     }
   }
 
+  putBytes(bytes: Uint8Array): void {
+    bytes.forEach((b) => this.putInt8(b));
+  }
+
   get buffer(): Uint8Array {
     return this.#b.buffer;
+  }
+
+  newWriter(): CursorWriter {
+    return new ScorexWriter(new WasmScorexWriter());
   }
 }
 
@@ -144,6 +152,16 @@ export class ScorexReader implements CursorReader {
 
   getOption<T>(getter: GetOptionFn<T>): T | undefined {
     return this.getUint8() === 1 ? getter(this) : undefined;
+  }
+
+  getBytes(bytesSize: number): Uint8Array {
+    const result = new Uint8Array(bytesSize);
+
+    for (let i = 0; i < bytesSize; i += 1) {
+      result[i] = this.getUint8();
+    }
+
+    return result;
   }
 
   newReader(buf: Uint8Array): CursorReader {

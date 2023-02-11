@@ -22,7 +22,11 @@ export interface CursorWriter {
 
   putOption<T>(value: T | undefined, fn: PutOptionFn<T>): void;
 
+  putBytes(bytes: Uint8Array): void;
+
   get buffer(): Uint8Array;
+
+  newWriter(): CursorWriter;
 }
 
 export interface CursorReader {
@@ -45,6 +49,8 @@ export interface CursorReader {
   getString(): string;
 
   getOption<T>(getter: GetOptionFn<T>): T | undefined;
+
+  getBytes(bytesSize: number): Uint8Array;
 
   get buffer(): Uint8Array;
 
