@@ -2,6 +2,7 @@ import initWasm, {
   ScorexReader as WasmScorexReader,
   ScorexWriter as WasmScorexWriter,
 } from "https://www.unpkg.com/@ergoplatform/scorex-buffer@1.0.0/dist/browser/scorex_buffer.js";
+import { CursorReader, CursorWriter } from "./cursor_buffer.ts";
 
 let _wasm = false;
 
@@ -17,7 +18,7 @@ async function instantiateWasm(): Promise<void> {
  * Write data to the underlying buffer in a format used on the Ergo network.
  * Ergo uses zig zag/VLQ encoding.
  */
-export class ScorexWriter {
+export class ScorexWriter implements CursorWriter {
   #b: WasmScorexWriter;
 
   private constructor(writer: WasmScorexWriter) {
@@ -75,7 +76,7 @@ export class ScorexWriter {
  * Read data from the underlying buffer in a format used on the Ergo network.
  * Ergo uses zig zag/VLQ encoding.
  */
-export class ScorexReader {
+export class ScorexReader implements CursorReader {
   #b: WasmScorexReader;
 
   private constructor(reader: WasmScorexReader) {
