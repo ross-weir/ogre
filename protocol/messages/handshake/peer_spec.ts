@@ -1,6 +1,11 @@
 import { Multiaddr, multiaddr } from "../../../deps.ts";
 import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
-import { NetworkEncodable } from "../../encoding.ts";
+import { decodeMany, NetworkEncodable } from "../../encoding.ts";
+import {
+  decodePeerFeature,
+  encodePeerFeature,
+} from "../../peer_features/encoding.ts";
+import { PeerFeature } from "../../peer_features/feature.ts";
 import { Version } from "../../version.ts";
 
 export interface PeerSpecOpts {
@@ -8,7 +13,7 @@ export interface PeerSpecOpts {
   protocolVersion: Version;
   nodeName: string;
   declaredAddress?: Multiaddr;
-  features: unknown[];
+  features: PeerFeature[];
 }
 
 export class PeerSpec implements NetworkEncodable {
@@ -16,7 +21,7 @@ export class PeerSpec implements NetworkEncodable {
   readonly protocolVersion: Version;
   readonly nodeName: string;
   readonly declaredAddress?: Multiaddr;
-  readonly features: unknown[];
+  readonly features: PeerFeature[];
 
   constructor(
     { agentName, protocolVersion, nodeName, declaredAddress, features }:
@@ -31,12 +36,13 @@ export class PeerSpec implements NetworkEncodable {
 
   encode(writer: CursorWriter): void {
     writer.putString(this.agentName);
-    // writer.putBytes
+    this.protocolVersion.encode(writer);
     writer.putString(this.nodeName);
     writer.putOption(this.declaredAddress, (w, addr) => {
       throw new Error("encode declaredAddress with value not implemented");
     });
-    // encode many features
+    writer.putUint8(this.features.length);
+    this.features.forEach((f) => encodePeerFeature(writer, f));
   }
 
   static decode(reader: CursorReader): PeerSpec {
@@ -47,7 +53,7 @@ export class PeerSpec implements NetworkEncodable {
       multiaddr;
       throw new Error("declaredAddress with value PeerSpec not implemented");
     });
-    const features: unknown[] = [];
+    const features = decodeMany(reader, decodePeerFeature);
 
     return new PeerSpec({
       agentName,

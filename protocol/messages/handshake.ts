@@ -1,1 +1,1 @@
-export { Handshake, MAX_HANDSHAKE_SIZE } from "./handshake/mod.ts";
+export { Handshake, MAX_HANDSHAKE_SIZE, PeerSpec } from "./handshake/mod.ts";
