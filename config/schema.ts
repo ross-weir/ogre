@@ -40,7 +40,10 @@ export const ergodeConfigSchema = z.object({
   }),
   logging: loggingConfigSchema,
 });
-const partialErgodeConfigSchema = ergodeConfigSchema.deepPartial();
-
 export type ErgodeConfig = z.infer<typeof ergodeConfigSchema>;
+
+const partialErgodeConfigSchema = ergodeConfigSchema.deepPartial();
 export type PartialErgodeConfig = z.infer<typeof partialErgodeConfigSchema>;
+
+export const networkTypeSchema = z.enum(["mainnet", "testnet", "devnet"]);
+export type NetworkType = z.infer<typeof networkTypeSchema>;
