@@ -7,3 +7,7 @@ export {
   decode as base64Decode,
   encode as base64Encode,
 } from "https://deno.land/std@0.176.0/encoding/base64.ts";
+
+export { z } from "https://deno.land/x/zod@v3.20.5/mod.ts";
+
+export * as log from "https://deno.land/std@0.176.0/log/mod.ts";

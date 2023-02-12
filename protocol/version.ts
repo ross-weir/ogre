@@ -23,4 +23,5 @@ export class Version implements NetworkEncodable {
   }
 }
 
-export const initialProtocolVersion = new Version(0, 0, 1);
+// Node application version
+export const initialNodeVersion = new Version(0, 0, 1);

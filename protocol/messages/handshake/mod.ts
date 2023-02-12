@@ -43,6 +43,6 @@ export class Handshake extends InitialNetworkMessage {
   }
 
   static fromCtx(ctx: NodeContext): Handshake {
-    throw new Error("");
+    return new Handshake(BigInt(Date.now()), ctx.peerSpec);
   }
 }
