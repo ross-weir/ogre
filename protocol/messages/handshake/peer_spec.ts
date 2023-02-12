@@ -1,4 +1,4 @@
-import { ErgodeConfig } from "../../../config/schema.ts";
+import { ErgodeConfig } from "../../../config/mod.ts";
 import { Multiaddr, multiaddr } from "../../../deps.ts";
 import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
 import { decodeMany, NetworkEncodable } from "../../encoding.ts";
