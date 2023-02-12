@@ -1,4 +1,5 @@
-import { PartialErgodeConfig } from "./schema.ts";
+import { lodashMerge } from "../deps.ts";
+import { NetworkType, PartialErgodeConfig } from "./schema.ts";
 
 const defaultBaseConfig: PartialErgodeConfig = {
   node: {
@@ -16,6 +17,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
     agentName: "ergode",
   },
   peers: {
+    knownAddrs: [],
     handshakeTimeoutMs: 30000,
     maxConnections: 30,
   },
@@ -26,22 +28,37 @@ const defaultBaseConfig: PartialErgodeConfig = {
   },
 };
 
-export const testnetDefaultConfig: PartialErgodeConfig = {
-  ...defaultBaseConfig,
-  chain: {
-    addressPrefix: 16,
+export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+  defaultBaseConfig,
+  {
+    chain: {
+      addressPrefix: 16,
+    },
+    network: {
+      magicBytes: [2, 0, 0, 1],
+    },
   },
-  network: {
-    magicBytes: [2, 0, 0, 1],
-  },
-};
+);
 
-export const mainnetDefaultConfig: PartialErgodeConfig = {
-  ...defaultBaseConfig,
-  chain: {
-    addressPrefix: 0,
+export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+  defaultBaseConfig,
+  {
+    chain: {
+      addressPrefix: 0,
+    },
+    network: {
+      magicBytes: [1, 0, 2, 4],
+    },
   },
-  network: {
-    magicBytes: [1, 0, 2, 4],
-  },
-};
+);
+
+export function defaultsForNetwork(networkType: NetworkType) {
+  switch (networkType) {
+    case "mainnet":
+      return mainnetDefaultConfig;
+    case "testnet":
+      return testnetDefaultConfig;
+    default:
+      throw new Error(`Invalid network type ${networkType}`);
+  }
+}

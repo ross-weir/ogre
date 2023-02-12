@@ -11,3 +11,7 @@ export {
 export { z } from "https://deno.land/x/zod@v3.20.5/mod.ts";
 
 export * as log from "https://deno.land/std@0.176.0/log/mod.ts";
+
+export {
+  default as lodashMerge,
+} from "https://cdn.skypack.dev/lodash.merge@4.6.2";
