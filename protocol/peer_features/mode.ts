@@ -7,24 +7,24 @@ export const MAX_MODE_FEATURE_SIZE = 512;
 export interface ModeOpts {
   stateType: number;
   isVerifyingTransactions: boolean;
-  popowSuffix?: number | undefined;
+  poPowSuffix?: number | undefined;
   blocksToKeep: number;
 }
 
 export class ModePeerFeature extends PeerFeature {
   readonly stateType: number;
   readonly isVerifyingTransactions: boolean;
-  readonly popowSuffix: number | undefined;
+  readonly poPowSuffix: number | undefined;
   readonly blocksToKeep: number;
 
   constructor(
-    { stateType, isVerifyingTransactions, popowSuffix, blocksToKeep }: ModeOpts,
+    { stateType, isVerifyingTransactions, poPowSuffix, blocksToKeep }: ModeOpts,
   ) {
     super();
 
     this.stateType = stateType;
     this.isVerifyingTransactions = isVerifyingTransactions;
-    this.popowSuffix = popowSuffix;
+    this.poPowSuffix = poPowSuffix;
     this.blocksToKeep = blocksToKeep;
   }
 
@@ -39,7 +39,7 @@ export class ModePeerFeature extends PeerFeature {
   encode(writer: CursorWriter): void {
     writer.putInt8(this.stateType);
     writer.putInt8(this.isVerifyingTransactions ? 1 : 0);
-    writer.putOption(this.popowSuffix, (w, v) => w.putInt32(v));
+    writer.putOption(this.poPowSuffix, (w, v) => w.putInt32(v));
     writer.putInt32(this.blocksToKeep);
   }
 
@@ -50,13 +50,13 @@ export class ModePeerFeature extends PeerFeature {
 
     const stateType = reader.getInt8();
     const isVerifyingTransactions = reader.getInt8() === 1 ? true : false;
-    const popowSuffix = reader.getOption<number>((r) => r.getInt32());
+    const poPowSuffix = reader.getOption<number>((r) => r.getInt32());
     const blocksToKeep = reader.getInt32();
 
     return new ModePeerFeature({
       stateType,
       isVerifyingTransactions,
-      popowSuffix,
+      poPowSuffix,
       blocksToKeep,
     });
   }

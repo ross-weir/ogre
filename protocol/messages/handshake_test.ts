@@ -65,7 +65,7 @@ Deno.test("[protocol/messages/handshake] Decoding", async () => {
 
   assertEquals(modeFeature.stateType, 0);
   assert(modeFeature.isVerifyingTransactions);
-  assertEquals(modeFeature.popowSuffix, undefined);
+  assertEquals(modeFeature.poPowSuffix, undefined);
   assertEquals(modeFeature.blocksToKeep, -1);
 
   assertEquals(features[1].id, PeerFeatureId.LocalAddress);

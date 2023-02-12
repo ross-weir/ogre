@@ -1,6 +1,6 @@
 import { CursorWriter } from "../../io/cursor_buffer.ts";
 import { NetworkEncodable } from "../encoding.ts";
-import { initialProtocolVersion, Version } from "../version.ts";
+import { initialNodeVersion, Version } from "../version.ts";
 
 export enum MessageCode {
   Handshake = 75,
@@ -22,6 +22,6 @@ export abstract class NetworkMessage
 
 export abstract class InitialNetworkMessage extends NetworkMessage {
   get protocolVersion(): Version {
-    return initialProtocolVersion;
+    return initialNodeVersion;
   }
 }

@@ -1,3 +1,4 @@
+import { ErgodeConfig } from "../../../config/mod.ts";
 import { Multiaddr, multiaddr } from "../../../deps.ts";
 import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
 import { decodeMany, NetworkEncodable } from "../../encoding.ts";
@@ -62,5 +63,9 @@ export class PeerSpec implements NetworkEncodable {
       declaredAddress,
       features,
     });
+  }
+
+  static fromConfig({ p2p }: ErgodeConfig): PeerSpec {
+    throw new Error("not implemented");
   }
 }
