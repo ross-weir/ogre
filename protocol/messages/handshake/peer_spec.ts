@@ -3,15 +3,16 @@ import { Multiaddr, multiaddr } from "../../../deps.ts";
 import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
 import { decodeMany, NetworkEncodable } from "../../encoding.ts";
 import {
+  createFeaturesFromConfig,
   decodePeerFeature,
   encodePeerFeature,
-} from "../../peer_features/encoding.ts";
-import { PeerFeature } from "../../peer_features/feature.ts";
+  PeerFeature,
+} from "../../peer_features/mod.ts";
 import { Version } from "../../version.ts";
 
 export interface PeerSpecOpts {
   agentName: string;
-  protocolVersion: Version;
+  refNodeVersion: Version;
   nodeName: string;
   declaredAddress?: Multiaddr;
   features: PeerFeature[];
@@ -19,17 +20,17 @@ export interface PeerSpecOpts {
 
 export class PeerSpec implements NetworkEncodable {
   readonly agentName: string;
-  readonly protocolVersion: Version;
+  readonly refNodeVersion: Version;
   readonly nodeName: string;
   readonly declaredAddress?: Multiaddr;
   readonly features: PeerFeature[];
 
   constructor(
-    { agentName, protocolVersion, nodeName, declaredAddress, features }:
+    { agentName, refNodeVersion, nodeName, declaredAddress, features }:
       PeerSpecOpts,
   ) {
     this.agentName = agentName;
-    this.protocolVersion = protocolVersion;
+    this.refNodeVersion = refNodeVersion;
     this.nodeName = nodeName;
     this.declaredAddress = declaredAddress;
     this.features = features;
@@ -37,7 +38,7 @@ export class PeerSpec implements NetworkEncodable {
 
   encode(writer: CursorWriter): void {
     writer.putString(this.agentName);
-    this.protocolVersion.encode(writer);
+    this.refNodeVersion.encode(writer);
     writer.putString(this.nodeName);
     writer.putOption(this.declaredAddress, (w, addr) => {
       throw new Error("encode declaredAddress with value not implemented");
@@ -48,7 +49,7 @@ export class PeerSpec implements NetworkEncodable {
 
   static decode(reader: CursorReader): PeerSpec {
     const agentName = reader.getString();
-    const protocolVersion = Version.decode(reader);
+    const refNodeVersion = Version.decode(reader);
     const nodeName = reader.getString();
     const declaredAddress = reader.getOption<Multiaddr>((r) => {
       multiaddr;
@@ -58,14 +59,21 @@ export class PeerSpec implements NetworkEncodable {
 
     return new PeerSpec({
       agentName,
-      protocolVersion,
+      refNodeVersion,
       nodeName,
       declaredAddress,
       features,
     });
   }
 
-  static fromConfig({ p2p }: ErgodeConfig): PeerSpec {
-    throw new Error("not implemented");
+  static fromConfig(cfg: ErgodeConfig): PeerSpec {
+    const { p2p } = cfg;
+
+    return new PeerSpec({
+      agentName: p2p.agentName,
+      refNodeVersion: Version.fromString(p2p.refNodeVersion),
+      nodeName: p2p.nodeName,
+      features: createFeaturesFromConfig(cfg),
+    });
   }
 }

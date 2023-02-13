@@ -1,4 +1,5 @@
 import { z } from "../deps.ts";
+import { isSemVer } from "../_utils/isSemVer.ts";
 
 const logLevels = z.enum(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]);
 
@@ -28,6 +29,11 @@ export const ergodeConfigSchema = z.object({
   }),
   p2p: z.object({
     nodeName: z.string(),
+    // this is used in the reference client to determine certain things and certain feature support
+    // this is not the version of ergode
+    refNodeVersion: z.string().refine(isSemVer, {
+      message: "must be semantic versioning format",
+    }),
     agentName: z.string(),
   }),
   network: z.object({

@@ -12,3 +12,12 @@ Deno.test("[protocol/version] Version encoding roundtrip", async () => {
   assertEquals(decoded.minor, 2);
   assertEquals(decoded.patch, 5);
 });
+
+Deno.test("[protocol/version] Creates version from string", () => {
+  const verStr = "5.0.4";
+  const ver = Version.fromString(verStr);
+
+  assertEquals(ver.major, 5);
+  assertEquals(ver.minor, 0);
+  assertEquals(ver.patch, 4);
+});

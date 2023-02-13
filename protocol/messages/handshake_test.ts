@@ -51,9 +51,9 @@ Deno.test("[protocol/messages/handshake] Decoding", async () => {
 
   assertEquals(peerSpec.agentName, "ergoref");
   assertEquals(peerSpec.nodeName, "ergo-mainnet-3.3.6");
-  assertEquals(peerSpec.protocolVersion.major, 3);
-  assertEquals(peerSpec.protocolVersion.minor, 3);
-  assertEquals(peerSpec.protocolVersion.patch, 6);
+  assertEquals(peerSpec.refNodeVersion.major, 3);
+  assertEquals(peerSpec.refNodeVersion.minor, 3);
+  assertEquals(peerSpec.refNodeVersion.patch, 6);
   assertEquals(peerSpec.declaredAddress, undefined);
 
   const { features } = peerSpec;
@@ -89,7 +89,7 @@ Deno.test("[protocol/messages/handshake] Encoding", async () => {
   const peerSpec = new PeerSpec({
     agentName: "ergoref",
     nodeName: "ergo-mainnet-3.3.6",
-    protocolVersion: new Version(3, 3, 6),
+    refNodeVersion: new Version(3, 3, 6),
     features,
   });
   const hs = new Handshake(1610134874428n, peerSpec);
