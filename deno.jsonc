@@ -1,4 +1,9 @@
 {
+  "lint": {
+    "files": {
+      "exclude": ["events/mod.ts"]
+    }
+  },
   "tasks": {
     "test": "deno test --unstable --allow-all"
   }
