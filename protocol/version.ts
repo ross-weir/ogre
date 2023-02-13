@@ -28,9 +28,9 @@ export class Version implements NetworkEncodable {
       throw new Error(`must be semantic version formatting, received: ${s}`);
     }
 
-    const [major, minor, patch] = s.split(".");
+    const [major, minor, patch] = s.split(".").map(Number);
 
-    return new Version(parseInt(major), parseInt(minor), parseInt(patch));
+    return new Version(major, minor, patch);
   }
 }
 
