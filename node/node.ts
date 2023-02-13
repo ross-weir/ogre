@@ -6,8 +6,8 @@ import {
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
-import { ConnectionManager } from "../net/connection_manager.ts";
-import { PeerAddressBook } from "../peers/mod.ts";
+import { ConnectionManager } from "../net/mod.ts";
+import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
 import { Transport } from "../transports/mod.ts";
 
 export interface NodeOpts {
@@ -47,14 +47,13 @@ export class Ergode implements Component {
     //  - subscribe to connection manager connect / disconnect and create/handshake or remove peers
     //  - creates peers or does it just manage peers? i.e subscribes to some other service that estbashlishes peers first?
     //  - evict peers after n time
-
-    // message handler - subscribers to "new peer" events and subscribes to peers "message" events, etc, will need access to database/peerManager/connectionManager/etc
+    const peerManager = new PeerManager({
+      logger: this.#logger,
+      connectionManager,
+    });
+    components.push(peerManager);
 
     // metric gatherer? subscribe to events from previous components
-
-    // create context
-
-    // create all components from context
   }
 
   async start(): Promise<void> {
