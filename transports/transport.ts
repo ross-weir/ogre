@@ -1,4 +1,4 @@
-import { Connection } from "../network/mod.ts";
+import { Connection } from "../net/mod.ts";
 import { Listener } from "./listener.ts";
 import { Multiaddr } from "../deps.ts";
 

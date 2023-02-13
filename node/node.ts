@@ -3,32 +3,68 @@ import {
   NetworkType,
   PartialErgodeConfig,
 } from "../config/mod.ts";
+import { Component } from "../core/component.ts";
+import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
-import { Protocol } from "../protocol/mod.ts";
+import { ConnectionManager } from "../net/mod.ts";
+import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
 import { Transport } from "../transports/mod.ts";
 
 export interface NodeOpts {
   networkType: NetworkType;
   config: PartialErgodeConfig;
   transport: Transport;
-  protocols: Protocol[];
+  gatherMetrics?: boolean;
 }
 
-export class Ergode {
-  constructor() {
-  }
+export class Ergode implements Component {
+  readonly #logger: log.Logger;
+  readonly #components: Component[] = [];
 
-  async runForever() {
-  }
-
-  static create(opts: NodeOpts): Ergode {
+  constructor(opts: NodeOpts) {
     const config = mergeUserConfigAndValidate(opts.networkType, opts.config);
 
     setupLogging(config.logging);
-    // create context
 
-    // create all components from context
+    this.#logger = log.getLogger();
+    const components: Component[] = [];
 
-    return new Ergode();
+    const peerAddressBook = new PeerAddressBook({
+      logger: this.#logger,
+      configAddrs: config.peers.knownAddrs,
+    });
+    components.push(peerAddressBook);
+
+    const connectionManager = new ConnectionManager({
+      logger: this.#logger,
+      peerAddressBook,
+      transport: opts.transport,
+      maxConnections: config.peers.maxConnections,
+    });
+    components.push(connectionManager);
+
+    // peerManager - accepts database, subscribes to connection manager events oe does it need to?
+    //  - subscribe to connection manager connect / disconnect and create/handshake or remove peers
+    //  - creates peers or does it just manage peers? i.e subscribes to some other service that estbashlishes peers first?
+    //  - evict peers after n time
+    const peerManager = new PeerManager({
+      logger: this.#logger,
+      connectionManager,
+    });
+    components.push(peerManager);
+
+    // metric gatherer? subscribe to events from previous components
+  }
+
+  async start(): Promise<void> {
+    this.#logger.info("starting..");
+
+    await Promise.all(this.#components.map((c) => c.start()));
+  }
+
+  async stop(): Promise<void> {
+    this.#logger.info("shutting down");
+
+    await Promise.all(this.#components.map((c) => c.stop()));
   }
 }
