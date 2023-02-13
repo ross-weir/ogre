@@ -30,13 +30,11 @@ export class PeerAddressBook implements Component {
     return Array.from(this.#peerAddrs);
   }
 
-  start(): Promise<void> {
+  async start(): Promise<void> {
     // TODO load more peers from database
-    throw new Error("Method not implemented.");
   }
 
-  stop(): Promise<void> {
+  async stop(): Promise<void> {
     // TODO save peers to database
-    throw new Error("Method not implemented.");
   }
 }

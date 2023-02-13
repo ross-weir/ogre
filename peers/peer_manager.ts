@@ -10,6 +10,7 @@ export interface PeerManagerOpts {
 export class PeerManager implements Component {
   readonly #logger: log.Logger;
   readonly #connectionManager: ConnectionManager;
+  // #peers: Peer[];
 
   constructor({ logger, connectionManager }: PeerManagerOpts) {
     this.#logger = logger;
