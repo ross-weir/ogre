@@ -63,6 +63,8 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
   }
 
   async start(): Promise<void> {
+    this.#logger.debug("connection manager starting");
+
     this.#autoDialHandle = setInterval(
       () => this.autoDialPeer(),
       AUTO_DIAL_INTERVAL_MS,
@@ -79,6 +81,8 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
 
   private async autoDialPeer(): Promise<void> {
     if (this.#connections.length >= this.#maxConnections) {
+      this.#logger.debug("already at max connections");
+
       return;
     }
 
@@ -90,7 +94,8 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     );
 
     if (!potentialPeers.length) {
-      this.#logger.info("auto dialer didn't find any peers to connect to");
+      this.#logger.debug("auto dialer didn't find any peers to connect to");
+
       return;
     }
 

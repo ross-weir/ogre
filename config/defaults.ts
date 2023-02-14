@@ -30,7 +30,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
 };
 
 export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  defaultBaseConfig,
+  { ...defaultBaseConfig },
   {
     chain: {
       addressPrefix: 32,
@@ -42,7 +42,7 @@ export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  defaultBaseConfig,
+  { ...defaultBaseConfig },
   {
     chain: {
       addressPrefix: 16,
@@ -54,7 +54,7 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  defaultBaseConfig,
+  { ...defaultBaseConfig },
   {
     chain: {
       addressPrefix: 0,
