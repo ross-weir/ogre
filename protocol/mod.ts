@@ -1,3 +1,1 @@
-export interface Protocol {
-  handleMessage(): Promise<void>;
-}
+export { PeerSpec } from "./messages/handshake.ts";

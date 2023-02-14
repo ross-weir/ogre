@@ -1,3 +1,4 @@
+import { ErgodeConfig } from "../../config/schema.ts";
 import { CursorWriter } from "../../io/cursor_buffer.ts";
 import { NetworkEncodable } from "../encoding.ts";
 
@@ -12,4 +13,8 @@ export abstract class PeerFeature implements NetworkEncodable {
   abstract get id(): PeerFeatureId;
 
   abstract encode(writer: CursorWriter): void;
+}
+
+export function createFeaturesFromConfig(cfg: ErgodeConfig): PeerFeature[] {
+  return [];
 }

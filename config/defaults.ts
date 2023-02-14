@@ -14,6 +14,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
   },
   p2p: {
     nodeName: "ergode",
+    refNodeVersion: "5.0.6",
     agentName: "ergode",
   },
   peers: {

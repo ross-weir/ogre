@@ -8,6 +8,7 @@ import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
 import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
+import { PeerSpec } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 
 export interface NodeOpts {
@@ -43,13 +44,11 @@ export class Ergode implements Component {
     });
     components.push(connectionManager);
 
-    // peerManager - accepts database, subscribes to connection manager events oe does it need to?
-    //  - subscribe to connection manager connect / disconnect and create/handshake or remove peers
-    //  - creates peers or does it just manage peers? i.e subscribes to some other service that estbashlishes peers first?
-    //  - evict peers after n time
+    const spec = PeerSpec.fromConfig(config);
     const peerManager = new PeerManager({
       logger: this.#logger,
       connectionManager,
+      spec,
     });
     components.push(peerManager);
 

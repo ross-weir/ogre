@@ -1,4 +1,5 @@
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
+import { isSemVer } from "../_utils/isSemVer.ts";
 import { NetworkEncodable } from "./encoding.ts";
 
 export class Version implements NetworkEncodable {
@@ -20,6 +21,16 @@ export class Version implements NetworkEncodable {
 
   static decode(reader: CursorReader): Version {
     return new Version(reader.getInt8(), reader.getInt8(), reader.getInt8());
+  }
+
+  static fromString(s: string): Version {
+    if (!isSemVer(s)) {
+      throw new Error(`must be semantic version formatting, received: ${s}`);
+    }
+
+    const [major, minor, patch] = s.split(".").map(Number);
+
+    return new Version(major, minor, patch);
   }
 }
 
