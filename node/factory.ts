@@ -1,4 +1,5 @@
 import {
+  tcp,
   WebSocketBridgeOpts,
   websocketBridgeTransport,
 } from "../transports/mod.ts";
@@ -13,6 +14,12 @@ export function createWebNode(
   // only console logging
   // setup web compatible db
   // setup web only stuff
+
+  return new Ergode({ ...opts, transport });
+}
+
+export function createNativeNode(opts: Omit<NodeOpts, "transport">) {
+  const transport = tcp();
 
   return new Ergode({ ...opts, transport });
 }

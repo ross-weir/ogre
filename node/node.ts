@@ -28,13 +28,12 @@ export class Ergode implements Component {
     setupLogging(config.logging);
 
     this.#logger = log.getLogger();
-    const components: Component[] = [];
 
     const peerAddressBook = new PeerAddressBook({
       logger: this.#logger,
       configAddrs: config.peers.knownAddrs,
     });
-    components.push(peerAddressBook);
+    this.#components.push(peerAddressBook);
 
     const connectionManager = new ConnectionManager({
       logger: this.#logger,
@@ -42,7 +41,7 @@ export class Ergode implements Component {
       transport: opts.transport,
       maxConnections: config.peers.maxConnections,
     });
-    components.push(connectionManager);
+    this.#components.push(connectionManager);
 
     const spec = PeerSpec.fromConfig(config);
     const peerManager = new PeerManager({
@@ -50,13 +49,13 @@ export class Ergode implements Component {
       connectionManager,
       spec,
     });
-    components.push(peerManager);
+    this.#components.push(peerManager);
 
     // metric gatherer? subscribe to events from previous components
   }
 
   async start(): Promise<void> {
-    this.#logger.info("starting..");
+    this.#logger.info(`starting ${this.#components.length} components`);
 
     await Promise.all(this.#components.map((c) => c.start()));
   }
