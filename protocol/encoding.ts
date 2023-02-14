@@ -19,3 +19,12 @@ export function decodeMany<T>(
 
   return result;
 }
+
+export function bytesToIp(bytes: Uint8Array): string {
+  return `${bytes[0]}.${bytes[1]}.${bytes[2]}.${bytes[3]}`;
+}
+
+export function ipToBytes(ip: string) {
+  const parts = ip.split(".").map((part) => parseInt(part, 10));
+  return new Uint8Array(parts);
+}

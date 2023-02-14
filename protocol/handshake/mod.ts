@@ -1,5 +1,5 @@
-import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
-import { NodeContext } from "../../../node/mod.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
+import { NodeContext } from "../../node/mod.ts";
 import { InitialNetworkMessage, MessageCode } from "../message.ts";
 import { PeerSpec } from "./peer_spec.ts";
 

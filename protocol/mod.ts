@@ -1,1 +1,1 @@
-export { PeerSpec } from "./messages/handshake.ts";
+export * from "./handshake/mod.ts";

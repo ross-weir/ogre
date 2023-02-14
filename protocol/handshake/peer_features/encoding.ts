@@ -1,7 +1,10 @@
-import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
-import { PeerFeature, PeerFeatureId } from "./feature.ts";
-import { LocalAddressFeature } from "./local_address.ts";
-import { ModePeerFeature } from "./mode.ts";
+import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
+import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
+import {
+  LocalAddressPeerFeature,
+  ModePeerFeature,
+  SessionIdPeerFeature,
+} from "./mod.ts";
 
 export function decodePeerFeature(reader: CursorReader): PeerFeature {
   const featureId = reader.getInt8();
@@ -13,7 +16,9 @@ export function decodePeerFeature(reader: CursorReader): PeerFeature {
     case PeerFeatureId.Mode:
       return ModePeerFeature.decode(newReader);
     case PeerFeatureId.LocalAddress:
-      return LocalAddressFeature.decode(newReader);
+      return LocalAddressPeerFeature.decode(newReader);
+    case PeerFeatureId.SessionId:
+      return SessionIdPeerFeature.decode(newReader);
     default:
       throw new Error(`unsupported peer feature id '${featureId}'`);
   }
