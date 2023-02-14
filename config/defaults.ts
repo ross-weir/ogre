@@ -29,6 +29,18 @@ const defaultBaseConfig: PartialErgodeConfig = {
   },
 };
 
+export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+  defaultBaseConfig,
+  {
+    chain: {
+      addressPrefix: 32,
+    },
+    network: {
+      magicBytes: [2, 0, 4, 8],
+    },
+  },
+);
+
 export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   defaultBaseConfig,
   {
@@ -59,6 +71,8 @@ export function defaultsForNetwork(networkType: NetworkType) {
       return mainnetDefaultConfig;
     case "testnet":
       return testnetDefaultConfig;
+    case "devnet":
+      return devnetDefaultConfig;
     default:
       throw new Error(`Invalid network type ${networkType}`);
   }

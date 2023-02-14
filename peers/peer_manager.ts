@@ -35,7 +35,6 @@ export class PeerManager implements Component {
 
   private onConnection(conn: Connection) {
     this.#logger.info("new connection, establishing handshake", conn);
-
     // send handshake
     // wait for handshake
     // add to peers list
