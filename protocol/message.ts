@@ -1,6 +1,6 @@
-import { CursorWriter } from "../../io/cursor_buffer.ts";
-import { NetworkEncodable } from "../encoding.ts";
-import { initialNodeVersion, Version } from "../version.ts";
+import { CursorWriter } from "../io/cursor_buffer.ts";
+import { NetworkEncodable } from "./encoding.ts";
+import { initialNodeVersion, Version } from "./version.ts";
 
 export enum MessageCode {
   Handshake = 75,

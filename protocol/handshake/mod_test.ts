@@ -1,12 +1,12 @@
 import { ScorexReader, ScorexWriter } from "../../io/scorex_buffer.ts";
-import { Handshake, MAX_HANDSHAKE_SIZE, PeerSpec } from "./handshake.ts";
+import { Handshake, MAX_HANDSHAKE_SIZE, PeerSpec } from "./mod.ts";
 import { assert, assertEquals, assertThrows } from "../../test_deps.ts";
 import {
-  LocalAddressFeature,
+  LocalAddressPeerFeature,
   ModePeerFeature,
   PeerFeature,
   PeerFeatureId,
-} from "../peer_features/mod.ts";
+} from "./peer_features/mod.ts";
 import { Version } from "../version.ts";
 import { multiaddr } from "../../deps.ts";
 
@@ -70,7 +70,7 @@ Deno.test("[protocol/messages/handshake] Decoding", async () => {
 
   assertEquals(features[1].id, PeerFeatureId.LocalAddress);
 
-  const localAddrFeature = features[1] as LocalAddressFeature;
+  const localAddrFeature = features[1] as LocalAddressPeerFeature;
 
   assert(localAddrFeature.addr.equals(multiaddr("/ip4/127.0.0.1/tcp/9006")));
 });
@@ -82,7 +82,7 @@ Deno.test("[protocol/messages/handshake] Encoding", async () => {
     isVerifyingTransactions: true,
     blocksToKeep: -1,
   });
-  const localAddrFeature = new LocalAddressFeature(
+  const localAddrFeature = new LocalAddressPeerFeature(
     multiaddr("/ip4/127.0.0.1/tcp/9006"),
   );
   const features: PeerFeature[] = [modeFeature, localAddrFeature];

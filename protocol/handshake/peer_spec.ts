@@ -1,14 +1,20 @@
-import { ErgodeConfig } from "../../../config/mod.ts";
-import { Multiaddr, multiaddr } from "../../../deps.ts";
-import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
-import { decodeMany, NetworkEncodable } from "../../encoding.ts";
+import { ErgodeConfig } from "../../config/mod.ts";
+import { Multiaddr } from "../../deps.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
-  createFeaturesFromConfig,
+  bytesToIp,
+  decodeMany,
+  ipToBytes,
+  NetworkEncodable,
+} from "../encoding.ts";
+import {
   decodePeerFeature,
   encodePeerFeature,
   PeerFeature,
-} from "../../peer_features/mod.ts";
-import { Version } from "../../version.ts";
+} from "./peer_features/mod.ts";
+import { Version } from "../version.ts";
+import { createFeaturesFromConfig } from "./peer_features/mod.ts";
+import { toMultiaddr } from "../../multiaddr/mod.ts";
 
 export interface PeerSpecOpts {
   agentName: string;
@@ -41,7 +47,13 @@ export class PeerSpec implements NetworkEncodable {
     this.refNodeVersion.encode(writer);
     writer.putString(this.nodeName);
     writer.putOption(this.declaredAddress, (w, addr) => {
-      throw new Error("encode declaredAddress with value not implemented");
+      const { host, port } = addr.toOptions();
+      const ipBytes = ipToBytes(host);
+
+      // host byte length + port length
+      w.putUint8(ipBytes.byteLength + 4);
+      w.putBytes(ipBytes);
+      w.putUint32(port);
     });
     writer.putUint8(this.features.length);
     this.features.forEach((f) => encodePeerFeature(writer, f));
@@ -52,8 +64,12 @@ export class PeerSpec implements NetworkEncodable {
     const refNodeVersion = Version.decode(reader);
     const nodeName = reader.getString();
     const declaredAddress = reader.getOption<Multiaddr>((r) => {
-      multiaddr;
-      throw new Error("declaredAddress with value PeerSpec not implemented");
+      const hostLen = r.getUint8();
+      const hostBytes = r.getBytes(hostLen);
+      const port = r.getUint32();
+      const hostIp = bytesToIp(hostBytes);
+
+      return toMultiaddr(`${hostIp}:${port}`);
     });
     const features = decodeMany(reader, decodePeerFeature);
 

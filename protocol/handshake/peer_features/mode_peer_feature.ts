@@ -1,5 +1,5 @@
-import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
-import { PeerFeature, PeerFeatureId } from "./feature.ts";
+import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
+import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
 
 export const KEEP_ALL_BLOCKS = -1;
 export const MAX_MODE_FEATURE_SIZE = 512;
