@@ -48,7 +48,14 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
       addressPrefix: 16,
     },
     network: {
-      magicBytes: [2, 0, 0, 1],
+      magicBytes: [2, 0, 2, 3],
+    },
+    peers: {
+      knownAddrs: [
+        "/ip4/213.239.193.208/tcp/9022",
+        "/ip4/168.138.185.215/tcp/9022",
+        "/ip4/192.234.196.165/tcp/9022",
+      ],
     },
   },
 );
