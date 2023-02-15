@@ -5,7 +5,9 @@ function randInt64() {
   const randomValues = new Uint32Array(2);
   crypto.getRandomValues(randomValues);
 
-  return (BigInt(randomValues[0]) << 32n) + BigInt(randomValues[1]);
+  // Use a bitmask to ensure that the generated value is within the valid i64 range
+  const mask = (1n << 63n) - 1n;
+  return (BigInt(randomValues[0]) << 32n | BigInt(randomValues[1])) & mask;
 }
 
 const MAGIC_BYTES_LEN = 4;
