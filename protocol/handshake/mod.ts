@@ -1,5 +1,4 @@
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
-import { NodeContext } from "../../node/mod.ts";
 import { InitialNetworkMessage, MessageCode } from "../message.ts";
 import { PeerSpec } from "./peer_spec.ts";
 
@@ -42,7 +41,7 @@ export class Handshake extends InitialNetworkMessage {
     return new Handshake(ts, peerSpec);
   }
 
-  static fromCtx(ctx: NodeContext): Handshake {
-    return new Handshake(BigInt(Date.now()), ctx.peerSpec);
+  static withSpec(spec: PeerSpec): Handshake {
+    return new Handshake(BigInt(Date.now()), spec);
   }
 }
