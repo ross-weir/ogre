@@ -55,28 +55,34 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     return conn;
   }
 
-  async closeConnection(conn: Connection): Promise<void> {
+  closeConnection(conn: Connection): Promise<void> {
     // conn.close()
     this.#connections = this.#connections.filter((c) =>
       c.connId !== conn.connId
     );
+
+    return Promise.resolve();
   }
 
-  async start(): Promise<void> {
+  start(): Promise<void> {
     this.#logger.debug("connection manager starting");
 
     this.#autoDialHandle = setInterval(
       () => this.autoDialPeer(),
       AUTO_DIAL_INTERVAL_MS,
     );
+
+    return Promise.resolve();
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
     if (this.#autoDialHandle) {
       clearInterval(this.#autoDialHandle);
     }
 
     // for all connections - close
+
+    return Promise.resolve();
   }
 
   private async autoDialPeer(): Promise<void> {
