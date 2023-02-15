@@ -3,3 +3,4 @@ deno.lock
 target
 bin
 dist
+debug.log
