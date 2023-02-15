@@ -1,8 +1,8 @@
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
-import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
-import { Handshake, PeerSpec } from "../protocol/mod.ts";
+import { PeerSpec } from "../protocol/mod.ts";
+import { Peer } from "./peer.ts";
 
 export interface PeerManagerOpts {
   logger: log.Logger;
@@ -15,7 +15,7 @@ export class PeerManager implements Component {
   readonly #logger: log.Logger;
   readonly #connectionManager: ConnectionManager;
   readonly #spec: PeerSpec;
-  // #peers: Peer[];
+  readonly #peers: Peer[] = [];
 
   constructor({ logger, connectionManager, spec }: PeerManagerOpts) {
     this.#logger = logger;
@@ -34,27 +34,16 @@ export class PeerManager implements Component {
   async stop(): Promise<void> {
   }
 
-  private async onConnection(conn: Connection) {
+  private onConnection(conn: Connection) {
     this.#logger.info(`connection: ${conn.localAddr} -> ${conn.remoteAddr}`);
-    this.#logger.info("handshaking...");
-    // send handshake
-    // wait for handshake
-    const reader = conn.readable.getReader();
-    const { done, value } = await reader.read();
-    const readBuf = await ScorexReader.create(value!);
-    const hs = Handshake.decode(readBuf);
 
-    this.#logger.info(
-      `peer: ${hs.peerSpec.agentName} with ${hs.peerSpec.features.length} features`,
-    );
+    const peer = new Peer({
+      conn,
+      localSpec: this.#spec,
+      logger: this.#logger,
+    });
 
-    const myHs = Handshake.fromCtx({ peerSpec: this.#spec } as any);
-    const writer = await ScorexWriter.create();
-    myHs.encode(writer);
-    conn.writable.getWriter().write(writer.buffer);
-
-    this.#logger.info("handshake established!");
-    // add to peers list
-    // read all messages
+    peer.start();
+    this.#peers.push(peer);
   }
 }
