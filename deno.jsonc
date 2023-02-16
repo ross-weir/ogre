@@ -6,6 +6,7 @@
   },
   "tasks": {
     "test": "deno test --unstable --allow-all",
-    "build:web": "deno run --allow-all web/esbuild.ts"
+    "build:npm": "deno run -A _build/web/npm.ts",
+    "build:web": "deno run -A _build/web/esbuild.ts"
   }
 }

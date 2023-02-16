@@ -1,2 +1,2 @@
 // Entrypoint for web/browser bundles
-export { createWebNode } from "../../node/mod.ts";
+export * from "../../node/mod.ts";

@@ -7,7 +7,7 @@ import { RpcMethod, sendAndReceive } from "./rpc.ts";
 import { createReadableStream, createWritableStream } from "./streams.ts";
 
 export interface WebSocketBridgeOpts {
-  bridgeAddr: Multiaddr;
+  bridgeAddr: string;
 }
 
 export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
