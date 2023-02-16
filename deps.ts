@@ -15,3 +15,6 @@ export * as log from "https://deno.land/std@0.176.0/log/mod.ts";
 export {
   default as lodashMerge,
 } from "https://cdn.skypack.dev/lodash.merge@4.6.2";
+
+// structuredClone isn't available in some web envs (like Tizen) yet.
+export { default as structuredClone } from "https://cdn.skypack.dev/@ungap/structured-clone@1.0.2";

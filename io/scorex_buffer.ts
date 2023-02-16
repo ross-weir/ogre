@@ -15,7 +15,10 @@ async function instantiateWasm(): Promise<void> {
   if (!_wasm) {
     _wasm = true;
 
-    return await initWasm();
+    // supply the wasm URL to simplify usage in the NPM package
+    return await initWasm(
+      "https://www.unpkg.com/@ergoplatform/scorex-buffer@1.0.0/dist/browser/scorex_buffer_bg.wasm",
+    );
   }
 }
 

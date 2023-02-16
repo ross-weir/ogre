@@ -19,36 +19,39 @@ export function createReadableStream(
   ws: WebSocket,
   connId: string,
 ): ReadableStream<Uint8Array> {
-  function waitForDataMessageForConnId(): Promise<Uint8Array> {
+  const backlog: Uint8Array[] = [];
+
+  ws.addEventListener("message", (evt: MessageEvent) => {
+    const msg = JSON.parse(evt.data) as RpcPayload;
+
+    if (msg.method !== RpcMethod.ReceiveData) {
+      return;
+    }
+
+    const { connId: dataConnId, data } = msg.params as ReceiveDataParams;
+
+    if (connId !== dataConnId) {
+      return;
+    }
+
+    backlog.push(base64Decode(data));
+  });
+
+  function pollBacklog(): Promise<Uint8Array> {
     return new Promise((resolve) => {
-      const listener = (evt: MessageEvent) => {
-        const msg = JSON.parse(evt.data) as RpcPayload;
-
-        if (msg.method !== RpcMethod.ReceiveData) {
-          return;
+      const intervalId = setInterval(() => {
+        if (backlog.length) {
+          clearInterval(intervalId);
+          resolve(backlog.shift()!);
         }
-
-        const { connId: dataConnId, data } = msg.params as ReceiveDataParams;
-
-        if (connId !== dataConnId) {
-          return;
-        }
-
-        // TODO: instead of adding/removing listeners could just keep track to see if a listener
-        // has been added for this connId.
-        ws.removeEventListener("message", listener);
-
-        resolve(base64Decode(data));
-      };
-
-      ws.addEventListener("message", listener);
+      }, 50);
     });
   }
 
   return new ReadableStream({
     type: "bytes",
     async pull(controller) {
-      const chunk = await waitForDataMessageForConnId();
+      const chunk = await pollBacklog();
 
       controller.enqueue(chunk);
     },

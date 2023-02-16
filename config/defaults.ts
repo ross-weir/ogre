@@ -1,4 +1,4 @@
-import { lodashMerge } from "../deps.ts";
+import { lodashMerge, structuredClone } from "../deps.ts";
 import { NetworkType, PartialErgodeConfig } from "./schema.ts";
 
 const defaultBaseConfig: PartialErgodeConfig = {
@@ -30,7 +30,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
 };
 
 export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  { ...defaultBaseConfig },
+  structuredClone(defaultBaseConfig),
   {
     chain: {
       addressPrefix: 32,
@@ -42,7 +42,7 @@ export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  { ...defaultBaseConfig },
+  structuredClone(defaultBaseConfig),
   {
     chain: {
       addressPrefix: 16,
@@ -61,7 +61,7 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
-  { ...defaultBaseConfig },
+  structuredClone(defaultBaseConfig),
   {
     chain: {
       addressPrefix: 0,
