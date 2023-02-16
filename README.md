@@ -14,7 +14,7 @@ My vision for `ergode` is to provide a node that can run on smart devices: mobil
 
 Web based environments don't allow raw TCP connections (p2p) for example. Currently the Ergo reference client only supports TCP as a p2p network transport.
 
-To get around this, when running in web environments `ergode` depends on a sidecar app that will proxy TCP connections for us, currently this is done over websockets using some RPC type calls.
+To get around this, when running in web environments `ergode` depends on a sidecar app that will proxy TCP connections for us, currently this is done over websockets using some RPC type calls. The implementation of the sidecar will be the platform specific code we're trying to minimize by targeting web.
 
 ### How can the node run on web and natively?
 
