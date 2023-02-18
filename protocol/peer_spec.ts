@@ -8,12 +8,12 @@ import {
   NetworkEncodable,
 } from "./encoding.ts";
 import {
+  createFeaturesFromConfig,
   decodePeerFeature,
   encodePeerFeature,
   PeerFeature,
 } from "./handshake/peer_features/mod.ts";
 import { Version } from "./version.ts";
-import { createFeaturesFromConfig } from "./handshake/peer_features/mod.ts";
 import { toMultiaddr } from "../multiaddr/mod.ts";
 
 export interface PeerSpecOpts {
