@@ -33,7 +33,7 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
 
     this.#connectionManager.addEventListener(
       "connection:new",
-      ({ detail }) => this.onConnection(detail),
+      ({ detail }) => this.#onConnection(detail),
     );
   }
 
@@ -43,7 +43,7 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
   async stop(): Promise<void> {
   }
 
-  private onConnection(conn: Connection) {
+  #onConnection(conn: Connection) {
     this.#logger.info(`connection: ${conn.localAddr} -> ${conn.remoteAddr}`);
 
     const peer = new Peer({

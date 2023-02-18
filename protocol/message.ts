@@ -6,6 +6,12 @@ import { blakejs } from "../deps.ts";
 
 /** Identifiers for messages that make up the protocol */
 export enum MessageCode {
+  GetPeers = 1,
+  Peers = 2,
+  RequestModifiers = 22,
+  Modifiers = 33,
+  Inv = 55,
+  SyncInfo = 65,
   Handshake = 75,
 }
 
