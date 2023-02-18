@@ -57,6 +57,8 @@ export class Ergode implements Component {
     });
     this.#components.push(this.peerManager);
 
+    // peerManager.on("peer:spec" (specs) => peerAddressBook.add(specs))
+
     // metric gatherer? subscribe to events from previous components
   }
 
