@@ -1,8 +1,6 @@
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import { InitialNetworkMessage, MessageCode } from "../message.ts";
-import { PeerSpec } from "./peer_spec.ts";
-
-export * from "./peer_spec.ts";
+import { PeerSpec } from "../peer_spec.ts";
 
 export const MAX_HANDSHAKE_SIZE = 8096;
 
