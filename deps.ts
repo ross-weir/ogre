@@ -18,3 +18,5 @@ export {
 
 // structuredClone isn't available in some web envs (like Tizen) yet.
 export { default as structuredClone } from "https://cdn.skypack.dev/@ungap/structured-clone@1.0.2";
+
+export { default as blakejs } from "https://cdn.skypack.dev/blakejs@1.2.1";
