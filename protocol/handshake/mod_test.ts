@@ -1,13 +1,13 @@
 import { ScorexReader, ScorexWriter } from "../../io/scorex_buffer.ts";
 import { Handshake, MAX_HANDSHAKE_SIZE } from "./mod.ts";
-import { PeerSpec } from "../peer_spec.ts";
-import { assert, assertEquals, assertThrows } from "../../test_deps.ts";
 import {
   LocalAddressPeerFeature,
   ModePeerFeature,
   PeerFeature,
   PeerFeatureId,
-} from "./peer_features/mod.ts";
+  PeerSpec,
+} from "../../peers/mod.ts";
+import { assert, assertEquals, assertThrows } from "../../test_deps.ts";
 import { Version } from "../version.ts";
 import { multiaddr } from "../../deps.ts";
 import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";

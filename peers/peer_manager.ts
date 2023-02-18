@@ -3,7 +3,7 @@ import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
 import { DefaultMessageHandler } from "../protocol/mod.ts";
-import { PeerSpec } from "../protocol/mod.ts";
+import { PeerSpec } from "./peer_spec.ts";
 import { Peer } from "./peer.ts";
 
 export interface PeerManagerEvents {

@@ -1,5 +1,5 @@
 import { ErgodeConfig } from "../config/mod.ts";
-import { PeerSpec } from "../protocol/mod.ts";
+import { PeerSpec } from "../peers/mod.ts";
 
 export interface NodeContext {
   config: ErgodeConfig;

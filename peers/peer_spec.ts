@@ -6,14 +6,14 @@ import {
   decodeMany,
   ipToBytes,
   NetworkEncodable,
-} from "./encoding.ts";
+} from "../protocol/encoding.ts";
 import {
   createFeaturesFromConfig,
   decodePeerFeature,
   encodePeerFeature,
   PeerFeature,
-} from "./handshake/peer_features/mod.ts";
-import { Version } from "./version.ts";
+} from "./peer_features/mod.ts";
+import { Version } from "../protocol/version.ts";
 import { toMultiaddr } from "../multiaddr/mod.ts";
 
 export interface PeerSpecOpts {

@@ -8,8 +8,7 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
-import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
-import { PeerSpec } from "../protocol/mod.ts";
+import { PeerAddressBook, PeerManager, PeerSpec } from "../peers/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 

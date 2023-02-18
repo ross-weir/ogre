@@ -1,4 +1,4 @@
-import { ErgodeConfig } from "../../../config/mod.ts";
+import { ErgodeConfig } from "../../config/mod.ts";
 import { ModePeerFeature } from "./mode_peer_feature.ts";
 import { PeerFeature } from "./peer_feature.ts";
 import { SessionIdPeerFeature } from "./session_id_peer_feature.ts";

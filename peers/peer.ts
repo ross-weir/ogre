@@ -3,7 +3,8 @@ import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
-import { Handshake, NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
+import { PeerSpec } from "./peer_spec.ts";
+import { Handshake, NetworkMessageHandler } from "../protocol/mod.ts";
 
 export interface PeerEvents {
   "io:bytesOut": number;

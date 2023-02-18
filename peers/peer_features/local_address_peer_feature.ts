@@ -1,7 +1,7 @@
-import { Multiaddr } from "../../../deps.ts";
-import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
-import { toMultiaddr } from "../../../multiaddr/mod.ts";
-import { bytesToIp, ipToBytes } from "../../encoding.ts";
+import { Multiaddr } from "../../deps.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
+import { toMultiaddr } from "../../multiaddr/mod.ts";
+import { bytesToIp, ipToBytes } from "../../protocol/encoding.ts";
 import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
 
 const HOST_LENGTH = 4;

@@ -1,4 +1,4 @@
-import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
 import {
   LocalAddressPeerFeature,
