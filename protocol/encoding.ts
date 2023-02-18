@@ -1,11 +1,21 @@
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
 
+/** Implementors can be encoded and sent over the wire */
 export interface NetworkEncodable {
+  /** Encode instance for Ergo network */
   encode(writer: CursorWriter): void;
 }
 
 export type DecoderFn<T> = (reader: CursorReader) => T;
 
+/**
+ * Decodes & returns many types of `T` using
+ * the provided function.
+ *
+ * @param reader Reader used during decoding
+ * @param decoder Function used to decode instances
+ * @returns Array of `T`s
+ */
 export function decodeMany<T>(
   reader: CursorReader,
   decoder: DecoderFn<T>,

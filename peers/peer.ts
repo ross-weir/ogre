@@ -3,7 +3,7 @@ import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
-import { Handshake, PeerSpec } from "../protocol/mod.ts";
+import { Handshake, NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
 
 export interface PeerEvents {
   "io:bytesOut": number;
@@ -14,6 +14,7 @@ export interface PeerOpts {
   conn: Connection;
   localSpec: PeerSpec;
   logger: log.Logger;
+  handler: NetworkMessageHandler;
 }
 
 export class Peer extends EventEmitter<PeerEvents> implements Component {
@@ -22,15 +23,17 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
   readonly #reader: ReadableStreamDefaultReader<Uint8Array>;
   readonly #writer: WritableStreamDefaultWriter<Uint8Array>;
   readonly #localSpec: PeerSpec;
+  readonly #handler: NetworkMessageHandler;
   #lastMsgTimestamp?: number;
   #remoteHandshake?: Handshake;
 
-  constructor({ conn, localSpec, logger }: PeerOpts) {
+  constructor({ conn, localSpec, logger, handler }: PeerOpts) {
     super();
 
     this.#logger = logger;
     this.#conn = conn;
     this.#localSpec = localSpec;
+    this.#handler = handler;
 
     this.#reader = this.#conn.readable.getReader();
     this.#writer = this.#conn.writable.getWriter();
@@ -38,8 +41,6 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
 
   async start(): Promise<void> {
     await this.#sendHandshake();
-
-    this.#logger.debug("handshake sent");
 
     const remoteData = await this.#read();
     const reader = await ScorexReader.create(remoteData);
@@ -79,22 +80,17 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     // TODO: handle "done" scenario
     const { value } = await this.#reader.read();
 
-    this.#lastMsgTimestamp = Date.now();
-
-    if (value) {
-      this.dispatchEvent(
-        new CustomEvent("io:bytesIn", { detail: value.byteLength }),
-      );
-    }
-
     return value!;
   }
 
   async #readContinuation(): Promise<void> {
-    const _data = await this.#read();
+    const data = await this.#read();
+    this.#lastMsgTimestamp = Date.now();
 
-    this.#logger.debug("readContinuation got data");
-    // handle msg
+    this.dispatchEvent(
+      new CustomEvent("io:bytesIn", { detail: data.byteLength }),
+    );
+    this.#handler.handle(data, this);
 
     return this.#readContinuation();
   }

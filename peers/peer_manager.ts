@@ -2,6 +2,7 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
+import { DefaultMessageHandler } from "../protocol/mod.ts";
 import { PeerSpec } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
 
@@ -49,6 +50,7 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
       conn,
       localSpec: this.#spec,
       logger: this.#logger,
+      handler: new DefaultMessageHandler(),
     });
 
     peer.start();

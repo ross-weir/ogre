@@ -1,5 +1,6 @@
 import { ScorexReader, ScorexWriter } from "../../io/scorex_buffer.ts";
-import { Handshake, MAX_HANDSHAKE_SIZE, PeerSpec } from "./mod.ts";
+import { Handshake, MAX_HANDSHAKE_SIZE } from "./mod.ts";
+import { PeerSpec } from "../peer_spec.ts";
 import { assert, assertEquals, assertThrows } from "../../test_deps.ts";
 import {
   LocalAddressPeerFeature,
@@ -9,26 +10,7 @@ import {
 } from "./peer_features/mod.ts";
 import { Version } from "../version.ts";
 import { multiaddr } from "../../deps.ts";
-
-function hexToBytes(hex: string) {
-  return new Uint8Array(
-    hex.match(/[\da-f]{2}/gi)!.map(function (h) {
-      return parseInt(h, 16);
-    }),
-  );
-}
-
-function uint8ArrayToHexString(arr: Uint8Array): string {
-  let hex = "";
-  for (let i = 0; i < arr.length; i++) {
-    let hexValue = arr[i].toString(16);
-    if (hexValue.length === 1) {
-      hexValue = "0" + hexValue;
-    }
-    hex += hexValue;
-  }
-  return hex;
-}
+import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";
 
 Deno.test("[protocol/messages/handshake] Decoding throws error if handshake too large", async () => {
   const bytes = new Uint8Array(MAX_HANDSHAKE_SIZE + 1);
@@ -95,7 +77,7 @@ Deno.test("[protocol/messages/handshake] Encoding", async () => {
   const hs = new Handshake(1610134874428n, peerSpec);
   const writer = await ScorexWriter.create();
   hs.encode(writer);
-  const hsHex = uint8ArrayToHexString(writer.buffer);
+  const hsHex = bytesToHex(writer.buffer);
 
   assertEquals(
     hsHex,
