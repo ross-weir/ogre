@@ -6,8 +6,8 @@ import { DialOpts, Transport } from "../transports/mod.ts";
 import { Connection } from "./connection.ts";
 
 export interface ConnectionManagerEvents {
-  "peer:connect": CustomEvent<Connection>;
-  "peer:disconnect": CustomEvent<Connection>;
+  "connection:new": CustomEvent<Connection>;
+  "connection:close": CustomEvent<Connection>;
 }
 
 const AUTO_DIAL_INTERVAL_MS = 10000;
@@ -48,7 +48,7 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     const conn = await this.#transport.dial(addr, opts);
 
     this.#connections.push(conn);
-    this.dispatchEvent(new CustomEvent("peer:connect", { detail: conn }));
+    this.dispatchEvent(new CustomEvent("connection:new", { detail: conn }));
 
     this.#logger.info(`connected to ${addr.toString()}`);
 

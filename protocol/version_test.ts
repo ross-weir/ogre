@@ -21,3 +21,9 @@ Deno.test("[protocol/version] Creates version from string", () => {
   assertEquals(ver.minor, 0);
   assertEquals(ver.patch, 4);
 });
+
+Deno.test("[protocol/version] ToString conversion", () => {
+  const ver = new Version(4, 3, 9);
+
+  assertEquals(ver.toString(), "4.3.9");
+});

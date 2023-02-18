@@ -55,6 +55,18 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     throw new Error("Method not implemented.");
   }
 
+  get handshake(): Handshake | undefined {
+    return this.#remoteHandshake;
+  }
+
+  get lastMsgTimestamp(): number | undefined {
+    return this.#lastMsgTimestamp;
+  }
+
+  get remoteAddr(): string {
+    return this.#conn.remoteAddr.toString();
+  }
+
   send(data: Uint8Array): Promise<void> {
     this.dispatchEvent(
       new CustomEvent("io:bytesOut", { detail: data.byteLength }),
