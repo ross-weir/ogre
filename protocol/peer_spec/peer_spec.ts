@@ -1,20 +1,20 @@
-import { ErgodeConfig } from "../config/mod.ts";
-import { Multiaddr } from "../deps.ts";
-import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
+import { ErgodeConfig } from "../../config/mod.ts";
+import { Multiaddr } from "../../deps.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
   bytesToIp,
   decodeMany,
   ipToBytes,
   NetworkEncodable,
-} from "./encoding.ts";
+} from "../encoding.ts";
 import {
   createFeaturesFromConfig,
   decodePeerFeature,
   encodePeerFeature,
   PeerFeature,
-} from "./handshake/peer_features/mod.ts";
-import { Version } from "./version.ts";
-import { toMultiaddr } from "../multiaddr/mod.ts";
+} from "./peer_features/mod.ts";
+import { Version } from "../version.ts";
+import { toMultiaddr } from "../../multiaddr/mod.ts";
 
 export interface PeerSpecOpts {
   agentName: string;
