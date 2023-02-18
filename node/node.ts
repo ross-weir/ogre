@@ -23,21 +23,21 @@ export interface NodeOpts {
 export class Ergode implements Component {
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
-  readonly #config: ErgodeConfig;
-  readonly #opts: NodeOpts;
+  readonly config: ErgodeConfig;
+  readonly opts: NodeOpts;
   readonly peerManager: PeerManager;
 
   constructor(opts: NodeOpts) {
-    this.#opts = opts;
-    this.#config = mergeUserConfigAndValidate(opts.networkType, opts.config);
+    this.opts = opts;
+    this.config = mergeUserConfigAndValidate(opts.networkType, opts.config);
 
-    setupLogging(this.#config.logging);
+    setupLogging(this.config.logging);
 
     this.#logger = log.getLogger();
 
     const peerAddressBook = new PeerAddressBook({
       logger: this.#logger,
-      configAddrs: this.#config.peers.knownAddrs,
+      configAddrs: this.config.peers.knownAddrs,
     });
     this.#components.push(peerAddressBook);
 
@@ -45,11 +45,11 @@ export class Ergode implements Component {
       logger: this.#logger,
       peerAddressBook,
       transport: opts.transport,
-      maxConnections: this.#config.peers.maxConnections,
+      maxConnections: this.config.peers.maxConnections,
     });
     this.#components.push(connectionManager);
 
-    const spec = PeerSpec.fromConfig(this.#config);
+    const spec = PeerSpec.fromConfig(this.config);
     this.peerManager = new PeerManager({
       logger: this.#logger,
       connectionManager,
@@ -72,15 +72,7 @@ export class Ergode implements Component {
     await Promise.all(this.#components.map((c) => c.stop()));
   }
 
-  get config(): ErgodeConfig {
-    return this.#config;
-  }
-
   get version(): string {
     return version;
-  }
-
-  get options(): NodeOpts {
-    return this.#opts;
   }
 }
