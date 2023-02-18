@@ -1,4 +1,5 @@
 import {
+  ErgodeConfig,
   mergeUserConfigAndValidate,
   NetworkType,
   PartialErgodeConfig,
@@ -10,6 +11,7 @@ import { ConnectionManager } from "../net/mod.ts";
 import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
 import { PeerSpec } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
+import { version } from "../version.ts";
 
 export interface NodeOpts {
   networkType: NetworkType;
@@ -21,17 +23,21 @@ export interface NodeOpts {
 export class Ergode implements Component {
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
+  readonly config: ErgodeConfig;
+  readonly opts: NodeOpts;
+  readonly peerManager: PeerManager;
 
   constructor(opts: NodeOpts) {
-    const config = mergeUserConfigAndValidate(opts.networkType, opts.config);
+    this.opts = opts;
+    this.config = mergeUserConfigAndValidate(opts.networkType, opts.config);
 
-    setupLogging(config.logging);
+    setupLogging(this.config.logging);
 
     this.#logger = log.getLogger();
 
     const peerAddressBook = new PeerAddressBook({
       logger: this.#logger,
-      configAddrs: config.peers.knownAddrs,
+      configAddrs: this.config.peers.knownAddrs,
     });
     this.#components.push(peerAddressBook);
 
@@ -39,17 +45,19 @@ export class Ergode implements Component {
       logger: this.#logger,
       peerAddressBook,
       transport: opts.transport,
-      maxConnections: config.peers.maxConnections,
+      maxConnections: this.config.peers.maxConnections,
     });
     this.#components.push(connectionManager);
 
-    const spec = PeerSpec.fromConfig(config);
-    const peerManager = new PeerManager({
+    const spec = PeerSpec.fromConfig(this.config);
+    this.peerManager = new PeerManager({
       logger: this.#logger,
       connectionManager,
       spec,
     });
-    this.#components.push(peerManager);
+    this.#components.push(this.peerManager);
+
+    // peerManager.on("peer:spec" (specs) => peerAddressBook.add(specs))
 
     // metric gatherer? subscribe to events from previous components
   }
@@ -64,5 +72,9 @@ export class Ergode implements Component {
     this.#logger.info("shutting down");
 
     await Promise.all(this.#components.map((c) => c.stop()));
+  }
+
+  get version(): string {
+    return version;
   }
 }

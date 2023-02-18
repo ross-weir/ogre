@@ -23,6 +23,10 @@ export class Version implements NetworkEncodable {
     return new Version(reader.getInt8(), reader.getInt8(), reader.getInt8());
   }
 
+  toString(): string {
+    return `${this.major}.${this.minor}.${this.patch}`;
+  }
+
   static fromString(s: string): Version {
     if (!isSemVer(s)) {
       throw new Error(`must be semantic version formatting, received: ${s}`);
