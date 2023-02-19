@@ -9,7 +9,7 @@ import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
 import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
-import { PeerSpec } from "../protocol/mod.ts";
+import { DefaultMessageHandler, PeerSpec } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 
@@ -49,15 +49,19 @@ export class Ergode implements Component {
     });
     this.#components.push(connectionManager);
 
+    const msgHandler = new DefaultMessageHandler({
+      peerAddressBook,
+      config: this.config,
+    });
     const spec = PeerSpec.fromConfig(this.config);
+
     this.peerManager = new PeerManager({
       logger: this.#logger,
       connectionManager,
       spec,
+      msgHandler,
     });
     this.#components.push(this.peerManager);
-
-    // peerManager.on("peer:spec" (specs) => peerAddressBook.add(specs))
 
     // metric gatherer? subscribe to events from previous components
   }

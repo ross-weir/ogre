@@ -3,6 +3,7 @@ import { NetworkEncodable } from "./encoding.ts";
 import { BadLengthError, InvalidChecksumError } from "./errors.ts";
 import { initialNodeVersion, Version } from "./version.ts";
 import { blakejs } from "../deps.ts";
+import { isBytesEq } from "../_utils/mod.ts";
 
 /** Identifiers for messages that make up the protocol */
 export enum MessageCode {
@@ -38,10 +39,6 @@ export abstract class InitialNetworkMessage extends NetworkMessage {
   get protocolVersion(): Version {
     return initialNodeVersion;
   }
-}
-
-function hashesAreEqual(a: Uint8Array, b: Uint8Array): boolean {
-  return a.every((v, i) => b[i] === v);
 }
 
 const MESSAGE_ID_LENGTH = 1;
@@ -115,7 +112,7 @@ export class RawNetworkMessage {
     dvOffset += MAGIC_BYTES_LENGTH;
 
     const code = dv.getInt8(dvOffset);
-    dvOffset += 1;
+    dvOffset += MESSAGE_ID_LENGTH;
 
     const bodyLength = dv.getInt32(dvOffset);
     dvOffset += 4;
@@ -136,7 +133,7 @@ export class RawNetworkMessage {
       CHECKSUM_LENGTH,
     );
 
-    if (!hashesAreEqual(actualChecksum, checksum)) {
+    if (!isBytesEq(actualChecksum, checksum)) {
       throw new InvalidChecksumError();
     }
 

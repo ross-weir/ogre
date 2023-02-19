@@ -6,6 +6,7 @@ import {
   SessionIdPeerFeature,
 } from "./mod.ts";
 
+/** Decodes bytes into a concrete `PeerFeature` based on the supplied feature id. */
 export function decodePeerFeature(reader: CursorReader): PeerFeature {
   const featureId = reader.getInt8();
   const featureSize = reader.getUint16();
@@ -24,6 +25,7 @@ export function decodePeerFeature(reader: CursorReader): PeerFeature {
   }
 }
 
+/** Encode a `PeerFeature` so it can be sent to peers. */
 export function encodePeerFeature(writer: CursorWriter, pf: PeerFeature): void {
   writer.putInt8(pf.id);
 
