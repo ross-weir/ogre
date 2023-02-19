@@ -3,7 +3,11 @@ import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
-import { Handshake, NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
+import {
+  HandshakeMessage,
+  NetworkMessageHandler,
+  PeerSpec,
+} from "../protocol/mod.ts";
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
@@ -27,7 +31,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
   readonly #localSpec: PeerSpec;
   readonly #handler: NetworkMessageHandler;
   #lastMsgTimestamp?: number;
-  #remoteHandshake?: Handshake;
+  #remoteHandshake?: HandshakeMessage;
 
   constructor({ conn, localSpec, logger, handler }: PeerOpts) {
     super();
@@ -47,7 +51,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     const remoteData = await this.#read();
     const reader = await ScorexReader.create(remoteData);
 
-    this.#remoteHandshake = Handshake.decode(reader);
+    this.#remoteHandshake = HandshakeMessage.decode(reader);
 
     this.#logger.debug("received handshake from peer");
 
@@ -64,7 +68,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
    * Returns `undefined` if we are yet to receive a handshake
    * from the peer.
    */
-  get handshake(): Handshake | undefined {
+  get handshake(): HandshakeMessage | undefined {
     return this.#remoteHandshake;
   }
 
@@ -113,7 +117,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
   async #sendHandshake(): Promise<void> {
     this.#logger.debug("handshaking peer");
 
-    const hs = Handshake.withSpec(this.#localSpec);
+    const hs = HandshakeMessage.withSpec(this.#localSpec);
     const writer = await ScorexWriter.create();
 
     hs.encode(writer);

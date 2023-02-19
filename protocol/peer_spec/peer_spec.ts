@@ -65,7 +65,7 @@ export class PeerSpec implements NetworkEncodable {
     const nodeName = reader.getString();
     const declaredAddress = reader.getOption<Multiaddr>((r) => {
       const hostLen = r.getUint8();
-      const hostBytes = r.getBytes(hostLen);
+      const hostBytes = r.getBytes(hostLen - 4);
       const port = r.getUint32();
       const hostIp = bytesToIp(hostBytes);
 

@@ -3,6 +3,7 @@ import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
 import {
   LocalAddressPeerFeature,
   ModePeerFeature,
+  RestApiPeerFeature,
   SessionIdPeerFeature,
 } from "./mod.ts";
 
@@ -20,6 +21,8 @@ export function decodePeerFeature(reader: CursorReader): PeerFeature {
       return LocalAddressPeerFeature.decode(newReader);
     case PeerFeatureId.SessionId:
       return SessionIdPeerFeature.decode(newReader);
+    case PeerFeatureId.RestApi:
+      return RestApiPeerFeature.decode(newReader);
     default:
       throw new Error(`unsupported peer feature id '${featureId}'`);
   }
