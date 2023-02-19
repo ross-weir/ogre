@@ -2,7 +2,7 @@ import { CursorReader } from "../../io/cursor_buffer.ts";
 import { ScorexReader } from "../../io/scorex_buffer.ts";
 import { Peer } from "../../peers/mod.ts";
 import { isBytesEq } from "../../_utils/mod.ts";
-import { BadMagicBytesError, UnsupportedMessageCode } from "../errors.ts";
+import { BadMagicBytesError, UnsupportedMessageCodeError } from "../errors.ts";
 import { MessageCode, RawNetworkMessage } from "../message.ts";
 import { MessageHandlerContext } from "./handler_context.ts";
 import { peersHandler } from "./peers/mod.ts";
@@ -54,7 +54,7 @@ export class DefaultMessageHandler implements NetworkMessageHandler {
     const fn = _handlerMap[decodedMsg.code];
 
     if (!fn) {
-      throw new UnsupportedMessageCode(decodedMsg.code);
+      throw new UnsupportedMessageCodeError(decodedMsg.code);
     }
 
     return fn(reader.newReader(decodedMsg.body), peer, this.#ctx);

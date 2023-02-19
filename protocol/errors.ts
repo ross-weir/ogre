@@ -38,7 +38,7 @@ export class BadLengthError extends MaliciousBehaviourError {
  */
 export class InvalidChecksumError extends MaliciousBehaviourError {}
 
-export class UnsupportedMessageCode extends Error {
+export class UnsupportedMessageCodeError extends Error {
   readonly messageCode: number;
 
   constructor(
