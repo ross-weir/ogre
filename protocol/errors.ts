@@ -4,7 +4,7 @@ export class MaliciousBehaviourError extends Error {}
 /** Error raised when magic bytes in a network message don't match our configured magic. */
 export class BadMagicBytesError extends MaliciousBehaviourError {
   /** The invalid magic bytes received. */
-  magicBytes: Uint8Array;
+  readonly magicBytes: Uint8Array;
 
   constructor(
     magicBytes: Uint8Array,
@@ -19,7 +19,7 @@ export class BadMagicBytesError extends MaliciousBehaviourError {
 /** Error raised when the length of a message received is invalid. */
 export class BadLengthError extends MaliciousBehaviourError {
   /** The invalid length received. */
-  lengthReceived: number;
+  readonly lengthReceived: number;
 
   constructor(
     lengthReceived: number,
@@ -37,3 +37,16 @@ export class BadLengthError extends MaliciousBehaviourError {
  * we calculated for the same body.
  */
 export class InvalidChecksumError extends MaliciousBehaviourError {}
+
+export class UnsupportedMessageCodeError extends Error {
+  readonly messageCode: number;
+
+  constructor(
+    messageCode: number,
+    ...params: ConstructorParameters<ErrorConstructor>
+  ) {
+    super(...params);
+
+    this.messageCode = messageCode;
+  }
+}

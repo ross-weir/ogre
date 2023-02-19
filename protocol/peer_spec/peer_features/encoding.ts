@@ -3,9 +3,11 @@ import { PeerFeature, PeerFeatureId } from "./peer_feature.ts";
 import {
   LocalAddressPeerFeature,
   ModePeerFeature,
+  RestApiPeerFeature,
   SessionIdPeerFeature,
 } from "./mod.ts";
 
+/** Decodes bytes into a concrete `PeerFeature` based on the supplied feature id. */
 export function decodePeerFeature(reader: CursorReader): PeerFeature {
   const featureId = reader.getInt8();
   const featureSize = reader.getUint16();
@@ -19,11 +21,14 @@ export function decodePeerFeature(reader: CursorReader): PeerFeature {
       return LocalAddressPeerFeature.decode(newReader);
     case PeerFeatureId.SessionId:
       return SessionIdPeerFeature.decode(newReader);
+    case PeerFeatureId.RestApi:
+      return RestApiPeerFeature.decode(newReader);
     default:
       throw new Error(`unsupported peer feature id '${featureId}'`);
   }
 }
 
+/** Encode a `PeerFeature` so it can be sent to peers. */
 export function encodePeerFeature(writer: CursorWriter, pf: PeerFeature): void {
   writer.putInt8(pf.id);
 

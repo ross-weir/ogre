@@ -4,7 +4,7 @@ import { PeerSpec } from "../../peer_spec/mod.ts";
 
 export const MAX_HANDSHAKE_SIZE = 8096;
 
-export class Handshake extends InitialNetworkMessage {
+export class HandshakeMessage extends InitialNetworkMessage {
   readonly unixTimestamp: bigint;
   readonly peerSpec: PeerSpec;
 
@@ -28,7 +28,7 @@ export class Handshake extends InitialNetworkMessage {
     this.peerSpec.encode(writer);
   }
 
-  static decode(reader: CursorReader): Handshake {
+  static decode(reader: CursorReader): HandshakeMessage {
     if (reader.buffer.byteLength > MAX_HANDSHAKE_SIZE) {
       throw new Error("bad handshake size");
     }
@@ -36,10 +36,10 @@ export class Handshake extends InitialNetworkMessage {
     const ts = reader.getUint64();
     const peerSpec = PeerSpec.decode(reader);
 
-    return new Handshake(ts, peerSpec);
+    return new HandshakeMessage(ts, peerSpec);
   }
 
-  static withSpec(spec: PeerSpec): Handshake {
-    return new Handshake(BigInt(Date.now()), spec);
+  static withSpec(spec: PeerSpec): HandshakeMessage {
+    return new HandshakeMessage(BigInt(Date.now()), spec);
   }
 }

@@ -2,7 +2,7 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
-import { DefaultMessageHandler } from "../protocol/mod.ts";
+import { NetworkMessageHandler } from "../protocol/mod.ts";
 import { PeerSpec } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
 
@@ -15,6 +15,7 @@ export interface PeerManagerOpts {
   connectionManager: ConnectionManager;
   // our peer spec sent with handshakes to remote peers
   spec: PeerSpec;
+  msgHandler: NetworkMessageHandler;
 }
 
 export class PeerManager extends EventEmitter<PeerManagerEvents>
@@ -22,14 +23,18 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
   readonly #logger: log.Logger;
   readonly #connectionManager: ConnectionManager;
   readonly #spec: PeerSpec;
+  readonly #msgHandler: NetworkMessageHandler;
   readonly #peers: Peer[] = [];
 
-  constructor({ logger, connectionManager, spec }: PeerManagerOpts) {
+  constructor(
+    { logger, connectionManager, spec, msgHandler }: PeerManagerOpts,
+  ) {
     super();
 
     this.#logger = logger;
     this.#connectionManager = connectionManager;
     this.#spec = spec;
+    this.#msgHandler = msgHandler;
 
     this.#connectionManager.addEventListener(
       "connection:new",
@@ -50,7 +55,7 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
       conn,
       localSpec: this.#spec,
       logger: this.#logger,
-      handler: new DefaultMessageHandler(),
+      handler: this.#msgHandler,
     });
 
     peer.start();
