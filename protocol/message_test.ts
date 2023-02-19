@@ -1,6 +1,6 @@
 import { assertEquals } from "../test_deps.ts";
 import { ScorexReader } from "../io/scorex_buffer.ts";
-import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
+import { hexToBytes } from "../_utils/hex.ts";
 import { RawNetworkMessage } from "./message.ts";
 
 /** Real message recorded during reference client execution */
@@ -15,8 +15,4 @@ Deno.test("[protocol/message] RawNetworkMessage decodes", async () => {
   assertEquals(msg.code, 2); // `Peers` message
   assertEquals(msg.bodyLength, 1098);
   assertEquals(msg.checksum, new Uint8Array([193, 202, 176, 103]));
-
-  console.log(bytesToHex(msg.body));
-
-  // "peers" message with 14 specs
 });
