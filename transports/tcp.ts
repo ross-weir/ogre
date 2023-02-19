@@ -10,6 +10,16 @@ function denoAddrToMulti(addr: Deno.NetAddr): Multiaddr {
   return toMultiaddr(`${hostname}:${port}`);
 }
 
+/**
+ * Creates a TCP transport that uses
+ * networking functions directly without
+ * the use of a bridge component.
+ *
+ * This bridge is suitable for nodes running
+ * natively on windows/linux/apple platforms.
+ *
+ * @returns TCP based transport.
+ */
 export function tcpTransport(): Transport {
   return {
     async dial(addr: Multiaddr, _opts?: DialOpts): Promise<Connection> {

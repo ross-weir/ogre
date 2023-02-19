@@ -1,8 +1,8 @@
-import { Connection } from "../../net/mod.ts";
-import { Multiaddr, multiaddrToUri } from "../../deps.ts";
-import { toMultiaddr } from "../../multiaddr/mod.ts";
-import { Listener } from "../listener.ts";
-import { DialOpts, Transport } from "../transport.ts";
+import { Connection } from "../../../net/mod.ts";
+import { Multiaddr, multiaddrToUri } from "../../../deps.ts";
+import { toMultiaddr } from "../../../multiaddr/mod.ts";
+import { Listener } from "../../listener.ts";
+import { DialOpts, Transport } from "../../transport.ts";
 import { RpcMethod, sendAndReceive } from "./rpc.ts";
 import { createReadableStream, createWritableStream } from "./streams.ts";
 
