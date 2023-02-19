@@ -1,6 +1,7 @@
 import { lodashMerge, structuredClone } from "../deps.ts";
 import { NetworkType, PartialErgodeConfig } from "./schema.ts";
 
+/** Base defaults used for all network configs. */
 const defaultBaseConfig: PartialErgodeConfig = {
   node: {
     stateType: "utxo",
@@ -29,6 +30,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
   },
 };
 
+/** Default config for devnet network */
 export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
@@ -41,6 +43,7 @@ export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   },
 );
 
+/** Default config for testnet network */
 export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
@@ -60,6 +63,7 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   },
 );
 
+/** Default config for mainnet network */
 export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
@@ -72,6 +76,11 @@ export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   },
 );
 
+/**
+ * Get the default config values for a network.
+ * @param networkType Network type to get the default config for.
+ * @returns Default config for the required network.
+ */
 export function defaultsForNetwork(networkType: NetworkType) {
   switch (networkType) {
     case "mainnet":

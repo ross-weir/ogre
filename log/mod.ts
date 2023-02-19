@@ -1,6 +1,7 @@
 import { LoggingConfig } from "../config/mod.ts";
 import { log } from "../deps.ts";
 
+/** Setup application logging configuration */
 export function setupLogging({ console }: LoggingConfig) {
   return log.setup({
     handlers: {

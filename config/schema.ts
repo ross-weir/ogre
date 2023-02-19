@@ -3,14 +3,27 @@ import { isSemVer } from "../_utils/isSemVer.ts";
 
 const logLevels = z.enum(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]);
 
+/** Logging config schema */
 const loggingConfigSchema = z.object({
   console: z.object({
     level: logLevels,
   }),
 });
 
+/** Logging config schema type. */
 export type LoggingConfig = z.infer<typeof loggingConfigSchema>;
 
+/**
+ * Full ergode config schema, can be used to validate
+ * user supplied configuration.
+ *
+ * @example
+ * ```ts
+ * import {ergodeConfigSchema} from "./schema.ts";
+ *
+ * const config = {};
+ * ergodeConfigSchema.parse(config);
+ */
 export const ergodeConfigSchema = z.object({
   node: z.object({
     stateType: z.enum(["utxo", "digest"]),
@@ -46,10 +59,15 @@ export const ergodeConfigSchema = z.object({
   }),
   logging: loggingConfigSchema,
 });
+
+/** Ergode config schema type. */
 export type ErgodeConfig = z.infer<typeof ergodeConfigSchema>;
 
 const partialErgodeConfigSchema = ergodeConfigSchema.deepPartial();
+
+/** Ergode config schema type with all values optional. */
 export type PartialErgodeConfig = z.infer<typeof partialErgodeConfigSchema>;
 
+/** NetworkType schema. */
 export const networkTypeSchema = z.enum(["mainnet", "testnet", "devnet"]);
 export type NetworkType = z.infer<typeof networkTypeSchema>;
