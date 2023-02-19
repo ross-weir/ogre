@@ -6,10 +6,22 @@ import { DialOpts, Transport } from "../../transport.ts";
 import { RpcMethod, sendAndReceive } from "./rpc.ts";
 import { createReadableStream, createWritableStream } from "./streams.ts";
 
+/** Websocket bridge options. */
 export interface WebSocketBridgeOpts {
+  /** Address of the websocket server providing the bridge. */
   bridgeAddr: string;
 }
 
+/**
+ * Create a transport that is bridged using websocket connections.
+ *
+ * This bridge will proxy TCP traffic through a websocket, useful
+ * in web environments where low-level networking operations
+ * aren't supported but websockets are.
+ *
+ * @param opts Websocket bridge options.
+ * @returns A transport using a websocket bridge.
+ */
 export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
   const ws = new WebSocket(multiaddrToUri(opts.bridgeAddr));
 
