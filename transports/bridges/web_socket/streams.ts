@@ -13,7 +13,7 @@ import {
   RpcPayload,
   sendAndForget,
 } from "./rpc.ts";
-import { base64Decode, base64Encode } from "../../deps.ts";
+import { base64Decode, base64Encode } from "../../../deps.ts";
 
 export function createReadableStream(
   ws: WebSocket,
