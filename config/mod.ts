@@ -14,6 +14,14 @@ export * from "./schema.ts";
  *
  * Raises an exception if config is invalid.
  *
+ * @example
+ * ```ts
+ * import {mergeUserConfigAndValidate} from "./mod.ts";
+ *
+ * const userConfig = {};
+ * const fullConfig = mergeUserConfigAndValidate("testnet", userConfig);
+ * ```
+ *
  * @param network the network the node is running on
  * @param userConfig the user supplied config
  * @returns the merged config
