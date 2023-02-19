@@ -10,7 +10,7 @@ function denoAddrToMulti(addr: Deno.NetAddr): Multiaddr {
   return toMultiaddr(`${hostname}:${port}`);
 }
 
-export function tcp(): Transport {
+export function tcpTransport(): Transport {
   return {
     async dial(addr: Multiaddr, _opts?: DialOpts): Promise<Connection> {
       const connId = crypto.randomUUID();

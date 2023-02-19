@@ -5,7 +5,7 @@ import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
 import { Handshake, NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
 
-/** Events emitted by `Peer`s */
+/** Events emitted by `Peer`s. */
 export interface PeerEvents {
   "io:bytesOut": number;
   "io:bytesIn": number;
@@ -55,7 +55,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
   }
 
   stop(): Promise<void> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve();
   }
 
   /**

@@ -1,7 +1,12 @@
 {
+  "fmt": {
+    "files": {
+      "exclude": [".git", "dist"]
+    }
+  },
   "lint": {
     "files": {
-      "exclude": ["events/mod.ts"]
+      "exclude": [".git", "dist", "events/mod.ts"]
     }
   },
   "tasks": {
