@@ -15,6 +15,12 @@ jobs:
           deno-version: v1.x
       - name: Run tests
         run: deno task test
+      - name: Coverage
+        run: deno task cov
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.lcov
   lint:
     runs-on: ubuntu-latest
     steps:
