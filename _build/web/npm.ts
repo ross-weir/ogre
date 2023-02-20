@@ -1,11 +1,8 @@
 // Build web based node as a NPM compatible package.
-
 import { build, emptyDir } from "https://deno.land/x/dnt@0.33.1/mod.ts";
+import { version } from "../../version.ts";
 
 await emptyDir("./dist/npm");
-
-// throw error if undefined
-const version = Deno.args[0];
 
 await build({
   entryPoints: ["./_build/web/entrypoint.ts"],
@@ -20,7 +17,7 @@ await build({
   shims: {},
   package: {
     name: "@ergode/node",
-    version: version || "0.0.0",
+    version,
     description: "Ergode ergo node targeting web environments",
     license: "MIT",
     repository: {
