@@ -1,6 +1,6 @@
 # Ergode
 
-[![ci](https://github.com/ross-weir/ergode/actions/workflows/ci.yml/badge.svg)](https://github.com/ross-weir/ergode/actions/workflows/ci.yml)
+[![ci](https://github.com/ross-weir/ergode/actions/workflows/ci.yml/badge.svg)](https://github.com/ross-weir/ergode/actions/workflows/ci.yml) [![codecov](https://codecov.io/github/ross-weir/ergode/branch/main/graph/badge.svg?token=9LGTORWR68)](https://codecov.io/github/ross-weir/ergode)
 
 `ergode` (ergo-node) is a Ergo node implemented in TypeScript targeting web &
 native runtimes.
