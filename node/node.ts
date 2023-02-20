@@ -21,6 +21,7 @@ export interface NodeOpts {
 }
 
 export class Ergode implements Component {
+  #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
   readonly config: ErgodeConfig;
@@ -67,15 +68,25 @@ export class Ergode implements Component {
   }
 
   async start(): Promise<void> {
+    if (this.#started) {
+      return;
+    }
+
+    this.#started = true;
     this.#logger.info(`starting ${this.#components.length} components`);
 
     await Promise.all(this.#components.map((c) => c.start()));
   }
 
   async stop(): Promise<void> {
+    if (!this.#started) {
+      return;
+    }
+
     this.#logger.info("shutting down");
 
     await Promise.all(this.#components.map((c) => c.stop()));
+    this.#started = false;
   }
 
   get version(): string {

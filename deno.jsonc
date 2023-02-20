@@ -11,6 +11,7 @@
   },
   "tasks": {
     "test": "deno test --unstable --allow-all",
+    "build:cli": "deno compile -A --output bin/ergode _build/native/cli.ts",
     "build:npm": "deno run -A _build/web/npm.ts",
     "build:web": "deno run -A _build/web/esbuild.ts"
   }
