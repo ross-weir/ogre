@@ -4,6 +4,7 @@ import { NetworkType } from "../../config/mod.ts";
 import { createNativeNode, Ergode } from "../../node/mod.ts";
 import { version } from "../../version.ts";
 import { secretQuote } from "./secret_file.ts";
+import { PartialErgodeConfig } from "../../config/schema.ts";
 
 let _ergode: Ergode | undefined;
 
@@ -22,20 +23,29 @@ function scriptName() {
   return name;
 }
 
-async function runHandler({ network, config }: RunOpts) {
+async function getConfig(configPath: string) {
   try {
-    const userCfgStr = await Deno.readTextFile(config);
-    const cfg = toml.parse(userCfgStr);
+    const userCfgStr = await Deno.readTextFile(configPath);
 
-    _ergode = createNativeNode({ networkType: network, config: cfg });
-    _ergode.start();
+    return toml.parse(userCfgStr);
   } catch (e) {
     if (e instanceof Deno.errors.NotFound) {
-      console.log(`Config file does not exist: '${config}'`);
+      console.log(`Config file not found: '${configPath}'`);
+      console.log("Default configuration will be used");
+
+      return {};
     } else {
       throw e;
     }
   }
+}
+
+async function runHandler({ network, config }: RunOpts) {
+  // createNativeNode will throw an error if config file is invalid.
+  const cfg = await getConfig(config) as PartialErgodeConfig;
+
+  _ergode = createNativeNode({ networkType: network, config: cfg });
+  _ergode.start();
 }
 
 async function onExit() {
