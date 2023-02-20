@@ -50,6 +50,7 @@ Deno.addSignalListener("SIGINT", onExit);
 yargs(Deno.args).scriptName(scriptName()).command(
   "run",
   "Start running Ergode",
+  // deno-lint-ignore no-explicit-any
   function (yargs: any) {
     return yargs.option("network", {
       alias: "n",
