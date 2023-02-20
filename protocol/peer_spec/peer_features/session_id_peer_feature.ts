@@ -18,14 +18,14 @@ export interface SessionIdOpts {
 }
 
 export class SessionIdPeerFeature extends PeerFeature {
-  readonly #magicBytes: Uint8Array;
-  readonly #sessionId: bigint;
+  readonly magicBytes: Uint8Array;
+  readonly sessionId: bigint;
 
   constructor({ magicBytes, sessionId }: SessionIdOpts) {
     super();
 
-    this.#magicBytes = magicBytes;
-    this.#sessionId = sessionId;
+    this.magicBytes = magicBytes;
+    this.sessionId = sessionId;
   }
 
   get id(): PeerFeatureId {
@@ -33,8 +33,8 @@ export class SessionIdPeerFeature extends PeerFeature {
   }
 
   encode(writer: CursorWriter): void {
-    writer.putBytes(this.#magicBytes);
-    writer.putInt64(this.#sessionId);
+    writer.putBytes(this.magicBytes);
+    writer.putInt64(this.sessionId);
   }
 
   static decode(reader: CursorReader): SessionIdPeerFeature {

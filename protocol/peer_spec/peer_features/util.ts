@@ -3,7 +3,7 @@ import { ModePeerFeature } from "./mode_peer_feature.ts";
 import { PeerFeature } from "./peer_feature.ts";
 import { SessionIdPeerFeature } from "./session_id_peer_feature.ts";
 
-function stateTypeStrToCode(stateType: "utxo" | "digest") {
+export function stateTypeStrToCode(stateType: "utxo" | "digest") {
   if (stateType === "utxo") {
     return 0;
   }

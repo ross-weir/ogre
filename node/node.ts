@@ -69,6 +69,8 @@ export class Ergode implements Component {
 
   async start(): Promise<void> {
     if (this.#started) {
+      this.#logger.debug("Ergode has already started");
+
       return;
     }
 
@@ -80,6 +82,8 @@ export class Ergode implements Component {
 
   async stop(): Promise<void> {
     if (!this.#started) {
+      this.#logger.debug("Ergode is not running");
+
       return;
     }
 
