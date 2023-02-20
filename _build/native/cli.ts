@@ -3,7 +3,7 @@ import * as toml from "https://deno.land/std@0.177.0/encoding/toml.ts";
 import { NetworkType } from "../../config/mod.ts";
 import { createNativeNode, Ergode } from "../../node/mod.ts";
 import { version } from "../../version.ts";
-import { secretImage } from "./secret_file.ts";
+import { secretQuote } from "./secret_file.ts";
 
 let _ergode: Ergode | undefined;
 
@@ -67,10 +67,10 @@ yargs(Deno.args).scriptName(scriptName()).command(
   },
   runHandler,
 ).command(
-  "ktoken",
+  "ogre",
   "???",
   {},
-  () => console.log(secretImage),
+  () => console.log(secretQuote),
 ).version(
   `Ergode version: v${version}`,
 ).parse();
