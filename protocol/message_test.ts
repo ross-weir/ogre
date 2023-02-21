@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertThrows } from "../test_deps.ts";
-import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
+import { ScorexReader } from "../io/scorex_buffer.ts";
 import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
 import { RawNetworkMessage } from "./message.ts";
 import { MaliciousBehaviourError } from "./errors.ts";
