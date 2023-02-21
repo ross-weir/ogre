@@ -96,6 +96,7 @@ Some examples:
 - [Web extensions use `Native Messaging` in conjuction with a native app](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)
   - This is how `ergode` could be used to add a light node to web extension wallets like `nautilus` and `SAFEW`.
   - The bridge used for this would be `stdio`.
+  - This is how password manager extensions work.
 - [`Capacitor plugin`](https://capacitorjs.com/docs/plugins)
   - This is how TCP connections will be provided to a `ergode` mobile phone app.
   - Since `ergode` is build around being webview compatible `ionic` + `capacitor` seems like a good choice of tech.
