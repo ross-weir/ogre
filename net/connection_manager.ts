@@ -5,20 +5,37 @@ import { PeerAddressBook } from "../peers/mod.ts";
 import { DialOpts, Transport } from "../transports/mod.ts";
 import { Connection } from "./connection.ts";
 
+/** Events emitted by `ConnectionManager` instances. */
 export interface ConnectionManagerEvents {
+  /** Emitted when a new connection is established. */
   "connection:new": CustomEvent<Connection>;
+  /** Emitted when a connection is closed for any reason. */
   "connection:close": CustomEvent<Connection>;
 }
 
+/** How often to auto-dial new peers in milliseconds. */
 const AUTO_DIAL_INTERVAL_MS = 10000;
 
+/** `ConnectionManager` options. */
 export interface ConnectionManagerOpts {
+  /** Logger instance for the connection manager. */
   logger: log.Logger;
+  /** Underlying networking transport for connections. */
   transport: Transport;
+  /**
+   * Max number of simultaneous connections.
+   * Includes inbound + outbound connections.
+   */
   maxConnections: number;
+  /** Peer address book used by the connection manager. */
   peerAddressBook: PeerAddressBook;
 }
 
+/**
+ * Connection manager is used to manage outbound and incoming connections.
+ * It will automatically connect to new peers at a set interval
+ * as long as the connection count is below `ConnectionManagerOpts.maxConnections`.
+ */
 export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
   implements Component {
   readonly #logger: log.Logger;
@@ -41,6 +58,12 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     this.#transport = transport;
   }
 
+  /**
+   * Open a new connection with a remote peer.
+   * @param addr Address in `Multiaddr` format to open a connection to.
+   * @param opts Options for the dial request.
+   * @returns A promise resolving to a connection.
+   */
   async openConnection(addr: Multiaddr, opts?: DialOpts): Promise<Connection> {
     this.#logger.debug(`connecting to ${addr.toString()}`);
 
@@ -55,6 +78,11 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     return conn;
   }
 
+  /**
+   * Close an established connection.
+   * @param conn `Connection` to close.
+   * @returns void
+   */
   closeConnection(conn: Connection): Promise<void> {
     // conn.close()
     this.#connections = this.#connections.filter((c) =>
