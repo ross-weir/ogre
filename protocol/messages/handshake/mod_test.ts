@@ -84,3 +84,15 @@ Deno.test("[protocol/messages/handshake] Encoding", async () => {
     "bcd2919cee2e076572676f726566030306126572676f2d6d61696e6e65742d332e332e36000210040001000102067f000001ae46",
   );
 });
+
+Deno.test("[protocol/messages/handshake] HandshakeMessage.name", () => {
+  const hs = HandshakeMessage.withSpec({} as PeerSpec);
+
+  assertEquals(hs.name, "Handshake");
+});
+
+Deno.test("[protocol/messages/handshake] HandshakeMessage.code", () => {
+  const hs = HandshakeMessage.withSpec({} as PeerSpec);
+
+  assertEquals(hs.code, 75);
+});
