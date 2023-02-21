@@ -64,9 +64,8 @@ Deno.test("[protocol/message] RawNetworkMessage.decode throws MaliciousBehaviour
     body: new Uint8Array(500),
     checksum: new Uint8Array([]),
   });
-  const writer = await ScorexWriter.create();
-  msg.encode(writer);
-  const reader = await ScorexReader.create(writer.buffer);
+  const buf = msg.encode();
+  const reader = await ScorexReader.create(buf);
 
   assertThrows(
     () => RawNetworkMessage.decode(reader),
