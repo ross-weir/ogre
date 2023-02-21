@@ -7,9 +7,8 @@
 `ergode` (ergo-node) is a Ergo node implemented in TypeScript targeting web &
 native runtimes.
 
-Current focus is on building a light node for mobile phones. It would also be
-cool to see the library used to add light nodes to wallet browser extensions
-like the awesome Nautilus & SAFEW and smart devices like wearables & TVs.
+Initial focus is on light operating modes but `ergode` plans to be multi-mode like the `Ergo` reference client so full operating mode could be
+added in the distant future.
 
 ## Build and Run
 
