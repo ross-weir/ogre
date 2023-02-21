@@ -63,7 +63,7 @@ interface RawNetworkMessageParams {
  * EXCEPT `Handshake`, handshakes do not follow this encoding
  * format.
  */
-export class RawNetworkMessage {
+export class RawNetworkMessage implements NetworkEncodable {
   /** The network magic bytes */
   readonly magicBytes: Uint8Array;
   /** Code of the message contained in `body` */
@@ -83,6 +83,14 @@ export class RawNetworkMessage {
     this.bodyLength = bodyLength;
     this.checksum = checksum;
     this.body = body;
+  }
+
+  encode(writer: CursorWriter): void {
+    writer.putBytes(this.magicBytes);
+    writer.putInt8(this.code);
+    writer.putInt32(this.bodyLength);
+    writer.putBytes(this.checksum);
+    writer.putBytes(this.body);
   }
 
   /**
@@ -134,7 +142,7 @@ export class RawNetworkMessage {
     );
 
     if (!isBytesEq(actualChecksum, checksum)) {
-      throw new InvalidChecksumError();
+      throw new InvalidChecksumError("Invalid checksum for message body");
     }
 
     return new RawNetworkMessage({
