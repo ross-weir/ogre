@@ -13,13 +13,21 @@ import { DefaultMessageHandler, PeerSpec } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 
+/** Options used to configure Ergode. */
 export interface NodeOpts {
+  /** Which Ergo network to connect to. */
   networkType: NetworkType;
+  /**
+   * User supplied configuration.
+   * Merged with a set of defaults defined for
+   * the supplied network type.
+   */
   config: PartialErgodeConfig;
+  /** Underlying network transport for the node. */
   transport: Transport;
-  gatherMetrics?: boolean;
 }
 
+/** The main Ergode class, encapsulates all node components. */
 export class Ergode implements Component {
   #started = false;
   readonly #logger: log.Logger;
@@ -93,6 +101,7 @@ export class Ergode implements Component {
     this.#started = false;
   }
 
+  /** The version of Ergode library. */
   get version(): string {
     return version;
   }
