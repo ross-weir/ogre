@@ -1,8 +1,21 @@
-import { assertEquals, assertThrows } from "../test_deps.ts";
+import { assert, assertEquals, assertThrows } from "../test_deps.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
-import { hexToBytes } from "../_utils/hex.ts";
+import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
 import { RawNetworkMessage } from "./message.ts";
 import { MaliciousBehaviourError } from "./errors.ts";
+
+Deno.test("[protocol/message] RawNetworkMessage.encode", () => {
+  const msg = new RawNetworkMessage({
+    magicBytes: new Uint8Array([2, 0, 2, 3]),
+    code: 2,
+    bodyLength: 1098,
+    checksum: new Uint8Array([193, 202, 176, 103]),
+    body: new Uint8Array(1098),
+  });
+  const buffer = msg.encode();
+
+  assert(bytesToHex(buffer).startsWith("02000203020000044ac1cab067"));
+});
 
 /** Real message recorded during reference client execution */
 Deno.test("[protocol/message] RawNetworkMessage decodes", async () => {

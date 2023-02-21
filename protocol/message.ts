@@ -85,10 +85,14 @@ export class RawNetworkMessage implements NetworkEncodable {
     this.body = body;
   }
 
-  encode(writer: CursorWriter): void {
+  encode(): Uint8Array {
     // This payload is not encoded with VLQ/ZigZag, only the body is
     // due to historical reasons.
-    const dv = new DataView(writer.buffer.buffer);
+    // TODO: Replace with CursorWriter implementation
+    const dvSize = this.magicBytes.length + MESSAGE_ID_LENGTH + 4 +
+      this.checksum.length + this.body.length;
+    const buffer = new ArrayBuffer(dvSize);
+    const dv = new DataView(buffer);
     let dvOffset = 0;
 
     this.magicBytes.forEach((byte) => {
@@ -111,6 +115,8 @@ export class RawNetworkMessage implements NetworkEncodable {
       dv.setUint8(dvOffset, byte);
       dvOffset += 1;
     });
+
+    return new Uint8Array(dv.buffer);
   }
 
   /**
@@ -133,6 +139,7 @@ export class RawNetworkMessage implements NetworkEncodable {
 
     // This payload is not encoded with VLQ/ZigZag, only the body is
     // due to historical reasons.
+    // TODO: Replace with CursorReader implementation
     const dv = new DataView(reader.buffer.buffer);
     let dvOffset = 0;
 
