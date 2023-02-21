@@ -14,6 +14,7 @@ Deno.test("[protocol/message] RawNetworkMessage.encode", () => {
   });
   const buffer = msg.encode();
 
+  // assert everything looks good excluding body bytes
   assert(bytesToHex(buffer).startsWith("02000203020000044ac1cab067"));
 });
 
