@@ -1,5 +1,6 @@
 import { Component } from "../core/component.ts";
 import { log, Multiaddr, multiaddr } from "../deps.ts";
+import { PeerSpec } from "./peer_spec.ts";
 
 export interface PeerStoreOpts {
   logger: log.Logger;
@@ -8,7 +9,8 @@ export interface PeerStoreOpts {
 
 export class PeerStore implements Component {
   readonly #logger: log.Logger;
-  readonly #peerAddrs: Set<Multiaddr>;
+  readonly #userProvidedAddrs: Multiaddr[];
+  readonly #peerSpecs: PeerSpec[] = [];
 
   /**
    * Create a new PeerStore instance.
@@ -17,17 +19,22 @@ export class PeerStore implements Component {
    */
   constructor({ logger, configAddrs }: PeerStoreOpts) {
     this.#logger = logger;
-    this.#peerAddrs = new Set(configAddrs.map(multiaddr));
+    this.#userProvidedAddrs = configAddrs.map(multiaddr);
   }
 
   add(addr: Multiaddr) {
+    // TODO: don't add self
     this.#logger.debug(`adding ${addr.toString()} to address book`);
 
-    this.#peerAddrs.add(addr);
+    this.#userProvidedAddrs.push(addr);
+  }
+
+  exists(peer: PeerSpec) {
+    // return !!this.#peerSpecs.find(p => p.address === peer.address) where address is "declared address" or local address
   }
 
   get addrs(): Multiaddr[] {
-    return Array.from(this.#peerAddrs);
+    return this.#userProvidedAddrs;
   }
 
   async start(): Promise<void> {
