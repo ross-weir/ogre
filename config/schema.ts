@@ -1,4 +1,5 @@
 import { z } from "../deps.ts";
+import { isDigestWithLen } from "../_utils/hex.ts";
 import { isSemVer } from "../_utils/isSemVer.ts";
 
 const logLevels = z.enum(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]);
@@ -39,6 +40,9 @@ export const ergodeConfigSchema = z.object({
     // Version 3 is about 5.0 contracts interpreter with JIT costing, monotonic creation height rule
     protocolVersion: z.number().min(1).max(3),
     addressPrefix: z.number(),
+    genesisStateDigest: z.string().refine(isDigestWithLen(33), {
+      message: "must be hex string of digest with length 33",
+    }),
   }),
   p2p: z.object({
     nodeName: z.string(),

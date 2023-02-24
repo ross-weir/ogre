@@ -36,6 +36,8 @@ export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   {
     chain: {
       addressPrefix: 32,
+      genesisStateDigest:
+        "cb63aa99a3060f341781d8662b58bf18b9ad258db4fe88d09f8f71cb668cad4502",
     },
     network: {
       magicBytes: [2, 0, 4, 8],
@@ -49,6 +51,8 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   {
     chain: {
       addressPrefix: 16,
+      genesisStateDigest:
+        "cb63aa99a3060f341781d8662b58bf18b9ad258db4fe88d09f8f71cb668cad4502",
     },
     network: {
       magicBytes: [2, 0, 2, 3],
@@ -69,6 +73,8 @@ export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
   {
     chain: {
       addressPrefix: 0,
+      genesisStateDigest:
+        "a5df145d41ab15a01e0cd3ffbab046f0d029e5412293072ad0f5827428589b9302",
     },
     network: {
       magicBytes: [1, 0, 2, 4],
