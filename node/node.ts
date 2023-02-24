@@ -8,7 +8,7 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
-import { PeerAddressBook, PeerManager } from "../peers/mod.ts";
+import { PeerManager, PeerStore } from "../peers/mod.ts";
 import { DefaultMessageHandler, PeerSpec } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
@@ -44,22 +44,22 @@ export class Ergode implements Component {
 
     this.#logger = log.getLogger();
 
-    const peerAddressBook = new PeerAddressBook({
+    const peerStore = new PeerStore({
       logger: this.#logger,
       configAddrs: this.config.peers.knownAddrs,
     });
-    this.#components.push(peerAddressBook);
+    this.#components.push(peerStore);
 
     const connectionManager = new ConnectionManager({
       logger: this.#logger,
-      peerAddressBook,
+      peerStore,
       transport: opts.transport,
       maxConnections: this.config.peers.maxConnections,
     });
     this.#components.push(connectionManager);
 
     const msgHandler = new DefaultMessageHandler({
-      peerAddressBook,
+      peerStore,
       config: this.config,
     });
     const spec = PeerSpec.fromConfig(this.config);

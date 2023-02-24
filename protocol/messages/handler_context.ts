@@ -1,9 +1,9 @@
 import { ErgodeConfig } from "../../config/schema.ts";
-import { PeerAddressBook } from "../../peers/peer_address_book.ts";
+import { PeerStore } from "../../peers/mod.ts";
 
 /** Context used by `MessageHandler` while handling messages */
 export interface MessageHandlerContext {
-  peerAddressBook: PeerAddressBook;
+  peerStore: PeerStore;
   config: ErgodeConfig;
   // databases
   // etc

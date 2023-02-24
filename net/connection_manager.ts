@@ -1,7 +1,7 @@
 import { Component } from "../core/component.ts";
 import { log, Multiaddr } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
-import { PeerAddressBook } from "../peers/mod.ts";
+import { PeerStore } from "../peers/mod.ts";
 import { DialOpts, Transport } from "../transports/mod.ts";
 import { Connection } from "./connection.ts";
 
@@ -27,8 +27,8 @@ export interface ConnectionManagerOpts {
    * Includes inbound + outbound connections.
    */
   maxConnections: number;
-  /** Peer address book used by the connection manager. */
-  peerAddressBook: PeerAddressBook;
+  /** Peer store used by the connection manager. */
+  peerStore: PeerStore;
 }
 
 /**
@@ -41,20 +41,19 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
   readonly #logger: log.Logger;
   readonly #transport: Transport;
   readonly #maxConnections: number;
-  readonly #peerAddressBook: PeerAddressBook;
+  readonly #peerStore: PeerStore;
   #connections: Connection[];
   #autoDialHandle?: number;
 
   constructor(
-    { logger, transport, maxConnections, peerAddressBook }:
-      ConnectionManagerOpts,
+    { logger, transport, maxConnections, peerStore }: ConnectionManagerOpts,
   ) {
     super();
 
     this.#logger = logger;
     this.#connections = [];
     this.#maxConnections = maxConnections;
-    this.#peerAddressBook = peerAddressBook;
+    this.#peerStore = peerStore;
     this.#transport = transport;
   }
 
@@ -123,7 +122,7 @@ export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
     this.#logger.debug("auto dialing random peer");
 
     // what about pending connections?
-    const potentialPeers = this.#peerAddressBook.addrs.filter((addr) =>
+    const potentialPeers = this.#peerStore.addrs.filter((addr) =>
       !this.#connections.some((conn) => conn.remoteAddr.equals(addr))
     );
 

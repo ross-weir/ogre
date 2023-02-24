@@ -1,21 +1,21 @@
 import { Component } from "../core/component.ts";
 import { log, Multiaddr, multiaddr } from "../deps.ts";
 
-export interface PeerAddressBookOpts {
+export interface PeerStoreOpts {
   logger: log.Logger;
   configAddrs: string[];
 }
 
-export class PeerAddressBook implements Component {
+export class PeerStore implements Component {
   readonly #logger: log.Logger;
   readonly #peerAddrs: Set<Multiaddr>;
 
   /**
-   * Create a new PeerAddressBook instance
+   * Create a new PeerStore instance.
    *
    * @param configAddrs known addresses defined in the ergode configuration or supplied by user
    */
-  constructor({ logger, configAddrs }: PeerAddressBookOpts) {
+  constructor({ logger, configAddrs }: PeerStoreOpts) {
     this.#logger = logger;
     this.#peerAddrs = new Set(configAddrs.map(multiaddr));
   }
