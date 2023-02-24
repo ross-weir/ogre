@@ -17,3 +17,14 @@ export function bytesToHex(arr: Uint8Array): string {
   }
   return hex;
 }
+
+/**
+ * Check if the provided hex string is digest of the expected length.
+ * @param len Expected length of the digest.
+ * @returns Bool if the digest is of expected length.
+ */
+export function isDigestWithLen(len: number) {
+  return function (hex: string) {
+    return hexToBytes(hex).byteLength === len;
+  };
+}
