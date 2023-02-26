@@ -1,6 +1,6 @@
 import { Component } from "../core/component.ts";
 import { log, Multiaddr, multiaddr } from "../deps.ts";
-import { PeerSpec } from "./peer_spec.ts";
+import { PeerSpec } from "../protocol/peer_spec/mod.ts";
 
 export interface PeerStoreOpts {
   logger: log.Logger;
@@ -22,19 +22,31 @@ export class PeerStore implements Component {
     this.#userProvidedAddrs = configAddrs.map(multiaddr);
   }
 
-  add(addr: Multiaddr) {
-    // TODO: don't add self
-    this.#logger.debug(`adding ${addr.toString()} to address book`);
+  /**
+   * Add the provided peer spec to the store.
+   * No-op if the peer spec already exists.
+   *
+   * @param peerSpec Spec to add to the store.
+   */
+  add(peerSpec: PeerSpec) {
+    if (this.#exists(peerSpec)) {
+      this.#logger.debug("Peer spec already exists");
 
-    this.#userProvidedAddrs.push(addr);
-  }
+      return;
+    }
 
-  exists(peer: PeerSpec) {
-    // return !!this.#peerSpecs.find(p => p.address === peer.address) where address is "declared address" or local address
+    this.#peerSpecs.push(peerSpec);
   }
 
   get addrs(): Multiaddr[] {
-    return this.#userProvidedAddrs;
+    const specAddrs = this.#peerSpecs.map((p) => p.addr);
+    const uniqueAddrs = new Set([...specAddrs, ...this.#userProvidedAddrs]);
+
+    return Array.from(uniqueAddrs);
+  }
+
+  #exists(peer: PeerSpec) {
+    return !!this.#peerSpecs.find((p) => p.addr === peer.addr);
   }
 
   async start(): Promise<void> {

@@ -11,7 +11,9 @@ import {
   createFeaturesFromConfig,
   decodePeerFeature,
   encodePeerFeature,
+  LocalAddressPeerFeature,
   PeerFeature,
+  PeerFeatureId,
 } from "./peer_features/mod.ts";
 import { Version } from "../version.ts";
 import { toMultiaddr } from "../../multiaddr/mod.ts";
@@ -40,6 +42,21 @@ export class PeerSpec implements NetworkEncodable {
     this.nodeName = nodeName;
     this.declaredAddress = declaredAddress;
     this.features = features;
+  }
+
+  /**
+   * Get the address for the `PeerSpec`.
+   * Defaults to the `declaredAddress` and falls back
+   * to the `LocalAddressPeerFeature` address if the feature
+   * is defined.
+   */
+  get addr() {
+    const localAddrFeature = this.features.find((f) =>
+      f.id === PeerFeatureId.LocalAddress
+    );
+
+    return this.declaredAddress ||
+      (localAddrFeature as LocalAddressPeerFeature).addr;
   }
 
   encode(writer: CursorWriter): void {
