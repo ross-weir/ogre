@@ -7,7 +7,7 @@ import { HandshakeMessage, PeerSpec } from "../protocol/mod.ts";
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
-  "peer:message": CustomEvent<Uint8Array>;
+  "message:recv": CustomEvent<Uint8Array>;
 }
 
 export interface PeerOpts {
@@ -95,7 +95,7 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
-      new CustomEvent("peer:message", { detail: data }),
+      new CustomEvent("message:recv", { detail: data }),
     );
 
     return this.#readContinuation();
