@@ -2,12 +2,11 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
-import { NetworkMessageHandler } from "../protocol/mod.ts";
-import { PeerSpec } from "../protocol/mod.ts";
+import { NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
 
 export interface PeerManagerEvents {
-  "peer:new": Peer;
+  "peer:new": CustomEvent<Peer>;
 }
 
 export interface PeerManagerOpts {
@@ -55,11 +54,14 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
       conn,
       localSpec: this.#spec,
       logger: this.#logger,
-      handler: this.#msgHandler,
     });
 
-    peer.start();
     this.#peers.push(peer);
     this.dispatchEvent(new CustomEvent("peer:new", { detail: peer }));
+    peer.addEventListener(
+      "message:recv",
+      ({ detail }) => this.#msgHandler.handle(detail, peer),
+    );
+    peer.start();
   }
 }

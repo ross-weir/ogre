@@ -46,12 +46,15 @@ export class PeersMessage extends InitialNetworkMessage {
   }
 }
 
+/** Handle the "Peers" network message. */
 export function peersHandler(
   reader: CursorReader,
   _peer: Peer,
-  _ctx: MessageHandlerContext,
+  ctx: MessageHandlerContext,
 ): Promise<void> {
-  const _peersMsg = PeersMessage.decode(reader);
+  const { peers } = PeersMessage.decode(reader);
+
+  peers.forEach((ps) => ctx.peerStore.add(ps));
 
   return Promise.resolve();
 }

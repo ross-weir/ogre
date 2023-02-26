@@ -11,7 +11,7 @@
   },
   "tasks": {
     "test": "deno test --unstable --coverage=./cov --allow-all",
-    "cov": "deno --unstable coverage ./cov --lcov > coverage.lcov",
+    "cov": "deno --unstable coverage ./cov --exclude=events/ --lcov > coverage.lcov",
     "build:cli": "deno compile -A --output bin/ergode _build/native/cli.ts",
     "build:npm": "deno run -A _build/web/npm.ts",
     "build:web": "deno run -A _build/web/esbuild.ts"
