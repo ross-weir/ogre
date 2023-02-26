@@ -38,15 +38,35 @@ export class PeerStore implements Component {
     this.#peerSpecs.push(peerSpec);
   }
 
+  /**
+   * Returns an array of all addresses known.
+   *
+   * This includes user provided bootstrap addresses in the configuration
+   * and addresses from `PeerSpec`s received from peers
+   * on the network.
+   */
   get addrs(): Multiaddr[] {
-    const specAddrs = this.#peerSpecs.map((p) => p.addr);
-    const uniqueAddrs = new Set([...specAddrs, ...this.#userProvidedAddrs]);
+    const result = [];
 
-    return Array.from(uniqueAddrs);
+    result.push(...this.#peerSpecs.map((p) => p.addr));
+
+    for (const addr of this.#userProvidedAddrs) {
+      const existing = !!result.find((a) => a.equals(addr));
+
+      if (!existing) {
+        result.push(addr);
+      }
+    }
+
+    return result;
+  }
+
+  get peerSpecs(): PeerSpec[] {
+    return this.#peerSpecs;
   }
 
   #exists(peer: PeerSpec) {
-    return !!this.#peerSpecs.find((p) => p.addr === peer.addr);
+    return !!this.#peerSpecs.find((p) => p.addr.equals(peer.addr));
   }
 
   async start(): Promise<void> {
