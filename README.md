@@ -99,7 +99,7 @@ Some examples:
   - This is how password manager extensions work.
 - [`Capacitor plugin`](https://capacitorjs.com/docs/plugins)
   - This is how TCP connections will be provided to a `ergode` mobile phone app.
-  - Since `ergode` is build around being webview compatible `ionic` + `capacitor` seems like a good choice of tech.
+  - Popular mobile phone frameworks like `ionic` & `capacitor` take a similar approach, build web native apps then use "plugins" to access platform specific functions. This is how we ship `ergode` everywhere with minimal pain.
 - When working on ErgoHack VI I created a bridge based on websockets to communicate with a service app running on Tizen OS.
   - Websockets could be a generic bridge solution.
   - Security will need to be considered for this in practice.
