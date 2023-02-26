@@ -38,7 +38,7 @@ export class DefaultMessageHandler implements NetworkMessageHandler {
       return await this.#handleMsg(msg, peer);
     } catch (e) {
       // check if malicious msg & handle/raise event
-      console.error(e);
+      throw e;
     }
   }
 

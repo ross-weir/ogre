@@ -3,23 +3,17 @@ import { log } from "../deps.ts";
 import { EventEmitter } from "../events/mod.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
-import {
-  HandshakeMessage,
-  NetworkMessageHandler,
-  PeerSpec,
-} from "../protocol/mod.ts";
+import { HandshakeMessage, PeerSpec } from "../protocol/mod.ts";
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
-  "io:bytesOut": number;
-  "io:bytesIn": number;
+  "peer:message": CustomEvent<Uint8Array>;
 }
 
 export interface PeerOpts {
   conn: Connection;
   localSpec: PeerSpec;
   logger: log.Logger;
-  handler: NetworkMessageHandler;
 }
 
 /** Wraps a connection to a peer and handles message sending/receiving. */
@@ -29,17 +23,15 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
   readonly #reader: ReadableStreamDefaultReader<Uint8Array>;
   readonly #writer: WritableStreamDefaultWriter<Uint8Array>;
   readonly #localSpec: PeerSpec;
-  readonly #handler: NetworkMessageHandler;
   #lastMsgTimestamp?: number;
   #remoteHandshake?: HandshakeMessage;
 
-  constructor({ conn, localSpec, logger, handler }: PeerOpts) {
+  constructor({ conn, localSpec, logger }: PeerOpts) {
     super();
 
     this.#logger = logger;
     this.#conn = conn;
     this.#localSpec = localSpec;
-    this.#handler = handler;
 
     this.#reader = this.#conn.readable.getReader();
     this.#writer = this.#conn.writable.getWriter();
@@ -88,10 +80,6 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
 
   /** Send data to the remote peer. */
   send(data: Uint8Array): Promise<void> {
-    this.dispatchEvent(
-      new CustomEvent("io:bytesOut", { detail: data.byteLength }),
-    );
-
     return this.#writer.write(data);
   }
 
@@ -107,9 +95,8 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
-      new CustomEvent("io:bytesIn", { detail: data.byteLength }),
+      new CustomEvent("peer:message", { detail: data }),
     );
-    this.#handler.handle(data, this);
 
     return this.#readContinuation();
   }
