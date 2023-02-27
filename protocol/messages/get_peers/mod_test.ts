@@ -50,7 +50,6 @@ Deno.test("[protocol/messages/get_peers] Handler sends known specs to peer", asy
   const reader = await ScorexReader.create(new Uint8Array([]));
   const peer = createRandomPeer();
   const ctx = createRandomHandlerContext();
-  ctx.config.network.declaredAddress = "127.0.0.1:1337";
   const specs = [createRandomPeerSpec(), createRandomPeerSpec()];
   specs.forEach((p) => ctx.peerStore.add(p));
   const peerSpy = spy(peer, "send");
