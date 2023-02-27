@@ -4,6 +4,7 @@ import { Peer } from "../../peers/mod.ts";
 import { isBytesEq } from "../../_utils/mod.ts";
 import { BadMagicBytesError, UnsupportedMessageCodeError } from "../errors.ts";
 import { MessageCode, RawNetworkMessage } from "../message.ts";
+import { getPeersHandler } from "./get_peers/mod.ts";
 import { MessageHandlerContext } from "./handler_context.ts";
 import { peersHandler } from "./peers/mod.ts";
 
@@ -20,6 +21,7 @@ type ConcreteHandlerFn = (
 ) => Promise<void>;
 
 const _handlerMap: Record<number, ConcreteHandlerFn> = {
+  [MessageCode.GetPeers]: getPeersHandler,
   [MessageCode.Peers]: peersHandler,
 };
 

@@ -50,3 +50,10 @@ export class UnsupportedMessageCodeError extends Error {
     this.messageCode = messageCode;
   }
 }
+
+/**
+ * Error raised when a peer has sent more data than expected.
+ * This is classified as malicious because there's a
+ * decent chance the peer is trying to DoS the node.
+ */
+export class UnexpectedDataError extends MaliciousBehaviourError {}
