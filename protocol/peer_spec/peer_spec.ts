@@ -1,5 +1,5 @@
 import { ErgodeConfig } from "../../config/mod.ts";
-import { Multiaddr } from "../../deps.ts";
+import { Multiaddr, multiaddr } from "../../deps.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
   bytesToIp,
@@ -101,12 +101,14 @@ export class PeerSpec implements NetworkEncodable {
 
   static fromConfig(cfg: ErgodeConfig): PeerSpec {
     const { p2p } = cfg;
+    const { declaredAddress } = cfg.network;
 
     return new PeerSpec({
       agentName: p2p.agentName,
       refNodeVersion: Version.fromString(p2p.refNodeVersion),
       nodeName: p2p.nodeName,
       features: createFeaturesFromConfig(cfg),
+      declaredAddress: declaredAddress ? multiaddr(declaredAddress) : undefined,
     });
   }
 }

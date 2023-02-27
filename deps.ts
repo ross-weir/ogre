@@ -1,4 +1,7 @@
-export { multiaddr } from "https://esm.sh/@multiformats/multiaddr@11.4.0";
+export {
+  isMultiaddr,
+  multiaddr,
+} from "https://esm.sh/@multiformats/multiaddr@11.4.0";
 export type { Multiaddr } from "https://esm.sh/@multiformats/multiaddr@11.4.0";
 
 export { multiaddrToUri } from "https://esm.sh/@multiformats/multiaddr-to-uri@9.0.2";
