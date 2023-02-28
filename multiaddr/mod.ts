@@ -14,3 +14,12 @@ export function toMultiaddr(uri: string) {
 
   return multiaddr(`/ip4/${host}/tcp/${port}`);
 }
+
+export function isMultiaddrStr(s: string): boolean {
+  try {
+    multiaddr(s);
+    return true;
+  } catch {
+    return false;
+  }
+}
