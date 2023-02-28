@@ -19,5 +19,6 @@ Deno.test("[config/defaults] defaultsForNetwork returns correct defaults for mai
 });
 
 Deno.test("[config/defaults] defaultsForNetwork throws error for incorrect network", () => {
-  assertThrows(() => defaultsForNetwork("badnet"));
+  // deno-lint-ignore no-explicit-any
+  assertThrows(() => defaultsForNetwork("badnet" as any));
 });
