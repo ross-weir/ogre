@@ -1,4 +1,5 @@
-import { isMultiaddr, z } from "../deps.ts";
+import { z } from "../deps.ts";
+import { isMultiaddrStr } from "../multiaddr/mod.ts";
 import { isDigestWithLen } from "../_utils/hex.ts";
 import { isSemVer } from "../_utils/isSemVer.ts";
 
@@ -55,11 +56,11 @@ export const ergodeConfigSchema = z.object({
   }),
   network: z.object({
     magicBytes: z.number().array().length(4),
-    declaredAddress: z.string().refine(isMultiaddr).optional(),
+    declaredAddress: z.string().refine(isMultiaddrStr).optional(),
   }),
   peers: z.object({
     handshakeTimeoutMs: z.number(),
-    knownAddrs: z.string().refine(isMultiaddr).array(),
+    knownAddrs: z.string().refine(isMultiaddrStr).array(),
     maxConnections: z.number(),
   }),
   logging: loggingConfigSchema,
