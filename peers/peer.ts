@@ -82,7 +82,11 @@ export class Peer extends Component<PeerEvents> {
   }
 
   /** Send data to the remote peer. */
-  send(data: Uint8Array): Promise<void> {
+  send(msg: NetworkMessage): Promise<void> {
+    this.#logger.debug(`Sending ${msg.name} message to peer`);
+
+    const data = this.#codec.encode(msg);
+
     return this.#writer.write(data);
   }
 
@@ -101,6 +105,7 @@ export class Peer extends Component<PeerEvents> {
       new CustomEvent("message:data", { detail: data }),
     );
 
+    // TODO: catch errors and raise, handle misbehaving peer errors in peer manager
     const msg = this.#codec.decode(data);
 
     this.dispatchEvent(
@@ -118,6 +123,6 @@ export class Peer extends Component<PeerEvents> {
 
     hs.encode(writer);
 
-    return this.send(writer.buffer);
+    return this.#writer.write(writer.buffer);
   }
 }

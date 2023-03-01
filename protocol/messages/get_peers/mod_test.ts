@@ -25,29 +25,29 @@ Deno.test("[protocol/messages/get_peers] GetPeers.code", () => {
   assertEquals(msg.code, 1);
 });
 
-Deno.test("[protocol/messages/get_peers] Decode throws error if buffer has data", async () => {
-  const reader = await ScorexReader.create(new Uint8Array([1]));
+Deno.test("[protocol/messages/get_peers] Decode throws error if buffer has data", () => {
+  const reader = new ScorexReader(new Uint8Array([1]));
 
   assertThrows(() => GetPeersMessage.decode(reader), UnexpectedDataError);
 });
 
-Deno.test("[protocol/messages/get_peers] Decode succeeds for empty data", async () => {
-  const reader = await ScorexReader.create(new Uint8Array([]));
+Deno.test("[protocol/messages/get_peers] Decode succeeds for empty data", () => {
+  const reader = new ScorexReader(new Uint8Array([]));
   const msg = GetPeersMessage.decode(reader);
 
   assert(msg);
 });
 
-Deno.test("[protocol/messages/get_peers] Encode", async () => {
+Deno.test("[protocol/messages/get_peers] Encode", () => {
   const msg = new GetPeersMessage();
-  const writer = await ScorexWriter.create();
+  const writer = new ScorexWriter();
   msg.encode(writer);
 
   assertEquals(writer.buffer, new Uint8Array([]));
 });
 
 Deno.test("[protocol/messages/get_peers] Handler sends known specs to peer", async () => {
-  const ctx = await createRandomHandlerContext();
+  const ctx = createRandomHandlerContext();
   const peer = createRandomPeer(ctx.codec);
   const specs = [createRandomPeerSpec(), createRandomPeerSpec()];
   specs.forEach((p) => ctx.peerStore.add(p));
@@ -55,8 +55,7 @@ Deno.test("[protocol/messages/get_peers] Handler sends known specs to peer", asy
 
   await getPeersHandler(new GetPeersMessage(), peer, ctx);
 
-  const peersMsg = new PeersMessage(specs);
-  const msg = ctx.codec.encode(peersMsg);
+  const msg = new PeersMessage(specs);
 
   assertSpyCall(peerSpy, 0, { args: [msg] });
 });

@@ -65,8 +65,6 @@ export class Ergode {
     const codec = new DefaultNetworkMessageCodec(
       new Uint8Array(this.config.network.magicBytes),
     );
-    this.#components.push(codec);
-
     const msgHandler = new DefaultMessageHandler({
       peerStore,
       config: this.config,
