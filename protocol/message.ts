@@ -43,7 +43,7 @@ export abstract class InitialNetworkMessage extends NetworkMessage {
 
 const MESSAGE_ID_LENGTH = 1;
 const MAGIC_BYTES_LENGTH = 4;
-const CHECKSUM_LENGTH = 4;
+export const CHECKSUM_LENGTH = 4;
 const RAW_HEADER_LENGTH = MESSAGE_ID_LENGTH + MAGIC_BYTES_LENGTH +
   CHECKSUM_LENGTH;
 
