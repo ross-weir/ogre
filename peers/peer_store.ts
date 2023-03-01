@@ -7,7 +7,7 @@ export interface PeerStoreOpts {
   configAddrs: string[];
 }
 
-export class PeerStore implements Component {
+export class PeerStore extends Component {
   readonly #logger: log.Logger;
   readonly #userProvidedAddrs: Multiaddr[];
   readonly #peerSpecs: PeerSpec[] = [];
@@ -18,6 +18,8 @@ export class PeerStore implements Component {
    * @param configAddrs known addresses defined in the ergode configuration or supplied by user
    */
   constructor({ logger, configAddrs }: PeerStoreOpts) {
+    super();
+
     this.#logger = logger;
     this.#userProvidedAddrs = configAddrs.map(multiaddr);
   }

@@ -47,18 +47,16 @@ Deno.test("[protocol/messages/get_peers] Encode", async () => {
 });
 
 Deno.test("[protocol/messages/get_peers] Handler sends known specs to peer", async () => {
-  const reader = await ScorexReader.create(new Uint8Array([]));
-  const peer = createRandomPeer();
-  const ctx = createRandomHandlerContext();
+  const ctx = await createRandomHandlerContext();
+  const peer = createRandomPeer(ctx.codec);
   const specs = [createRandomPeerSpec(), createRandomPeerSpec()];
   specs.forEach((p) => ctx.peerStore.add(p));
   const peerSpy = spy(peer, "send");
 
-  await getPeersHandler(reader, peer, ctx);
+  await getPeersHandler(new GetPeersMessage(), peer, ctx);
 
   const peersMsg = new PeersMessage(specs);
-  const writer = await ScorexWriter.create();
-  peersMsg.encode(writer);
+  const msg = ctx.codec.encode(peersMsg);
 
-  assertSpyCall(peerSpy, 0, { args: [writer.buffer] });
+  assertSpyCall(peerSpy, 0, { args: [msg] });
 });

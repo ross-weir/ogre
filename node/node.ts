@@ -9,7 +9,11 @@ import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
 import { PeerManager, PeerStore } from "../peers/mod.ts";
-import { DefaultMessageHandler, PeerSpec } from "../protocol/mod.ts";
+import {
+  DefaultMessageHandler,
+  DefaultNetworkMessageCodec,
+  PeerSpec,
+} from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 
@@ -28,7 +32,7 @@ export interface NodeOpts {
 }
 
 /** The main Ergode class, encapsulates all node components. */
-export class Ergode implements Component {
+export class Ergode {
   #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
@@ -58,9 +62,15 @@ export class Ergode implements Component {
     });
     this.#components.push(connectionManager);
 
+    const codec = new DefaultNetworkMessageCodec(
+      new Uint8Array(this.config.network.magicBytes),
+    );
+    this.#components.push(codec);
+
     const msgHandler = new DefaultMessageHandler({
       peerStore,
       config: this.config,
+      codec,
     });
     const spec = PeerSpec.fromConfig(this.config);
 
@@ -69,6 +79,7 @@ export class Ergode implements Component {
       connectionManager,
       spec,
       msgHandler,
+      codec,
     });
     this.#components.push(this.peerManager);
 
@@ -85,6 +96,7 @@ export class Ergode implements Component {
     this.#started = true;
     this.#logger.info(`starting ${this.#components.length} components`);
 
+    await Promise.all(this.#components.map((c) => c.beforeStart()));
     await Promise.all(this.#components.map((c) => c.start()));
   }
 
