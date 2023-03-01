@@ -58,13 +58,14 @@ Deno.test("[protocol/messages/peers] Handler adds specs to peer store", async ()
   const hexStr =
     "01076572676F726566050007206572676F2D6E6F64652D746573746E65742D7765752E7A6F6F6D6F75742E696F01082F57E6DFBE4603100400010001030D020002038DDEEFD5FBBF969D3704292868747470733A2F2F6572676F2D6E6F64652D746573746E65742D7765752E7A6F6F6D6F75742E696F";
   const msgBytes = hexToBytes(hexStr);
-  const reader = await ScorexReader.create(new Uint8Array(msgBytes));
-  const peer = createRandomPeer();
-  const ctx = createRandomHandlerContext();
+  const ctx = await createRandomHandlerContext();
+  const peer = createRandomPeer(ctx.codec);
+  const reader = ctx.codec.newReader(msgBytes);
+  const peersMsg = PeersMessage.decode(reader);
 
   assertEquals(ctx.peerStore.peerSpecs.length, 0);
 
-  await peersHandler(reader, peer, ctx);
+  await peersHandler(peersMsg, peer, ctx);
 
   assertEquals(ctx.peerStore.peerSpecs.length, 1);
 });

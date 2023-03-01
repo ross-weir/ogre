@@ -1,8 +1,11 @@
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
-import { EventEmitter } from "../events/mod.ts";
 import { Connection, ConnectionManager } from "../net/mod.ts";
-import { NetworkMessageHandler, PeerSpec } from "../protocol/mod.ts";
+import {
+  NetworkMessageCodec,
+  NetworkMessageHandler,
+  PeerSpec,
+} from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
 
 export interface PeerManagerEvents {
@@ -15,18 +18,19 @@ export interface PeerManagerOpts {
   // our peer spec sent with handshakes to remote peers
   spec: PeerSpec;
   msgHandler: NetworkMessageHandler;
+  codec: NetworkMessageCodec;
 }
 
-export class PeerManager extends EventEmitter<PeerManagerEvents>
-  implements Component {
+export class PeerManager extends Component<PeerManagerEvents> {
   readonly #logger: log.Logger;
   readonly #connectionManager: ConnectionManager;
   readonly #spec: PeerSpec;
   readonly #msgHandler: NetworkMessageHandler;
+  readonly #codec: NetworkMessageCodec;
   readonly #peers: Peer[] = [];
 
   constructor(
-    { logger, connectionManager, spec, msgHandler }: PeerManagerOpts,
+    { logger, connectionManager, spec, msgHandler, codec }: PeerManagerOpts,
   ) {
     super();
 
@@ -34,17 +38,12 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
     this.#connectionManager = connectionManager;
     this.#spec = spec;
     this.#msgHandler = msgHandler;
+    this.#codec = codec;
 
     this.#connectionManager.addEventListener(
       "connection:new",
       ({ detail }) => this.#onConnection(detail),
     );
-  }
-
-  async start(): Promise<void> {
-  }
-
-  async stop(): Promise<void> {
   }
 
   #onConnection(conn: Connection) {
@@ -54,6 +53,7 @@ export class PeerManager extends EventEmitter<PeerManagerEvents>
       conn,
       localSpec: this.#spec,
       logger: this.#logger,
+      codec: this.#codec,
     });
 
     this.#peers.push(peer);

@@ -1,6 +1,5 @@
 import { Component } from "../core/component.ts";
 import { log, Multiaddr } from "../deps.ts";
-import { EventEmitter } from "../events/mod.ts";
 import { PeerStore } from "../peers/mod.ts";
 import { DialOpts, Transport } from "../transports/mod.ts";
 import { Connection } from "./connection.ts";
@@ -36,8 +35,7 @@ export interface ConnectionManagerOpts {
  * It will automatically connect to new peers at a set interval
  * as long as the connection count is below `ConnectionManagerOpts.maxConnections`.
  */
-export class ConnectionManager extends EventEmitter<ConnectionManagerEvents>
-  implements Component {
+export class ConnectionManager extends Component<ConnectionManagerEvents> {
   readonly #logger: log.Logger;
   readonly #transport: Transport;
   readonly #maxConnections: number;

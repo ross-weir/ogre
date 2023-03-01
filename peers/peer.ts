@@ -1,37 +1,44 @@
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
-import { EventEmitter } from "../events/mod.ts";
-import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Connection } from "../net/mod.ts";
-import { HandshakeMessage, PeerSpec } from "../protocol/mod.ts";
+import { NetworkMessage } from "../protocol/message.ts";
+import {
+  HandshakeMessage,
+  NetworkMessageCodec,
+  PeerSpec,
+} from "../protocol/mod.ts";
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
-  "message:recv": CustomEvent<Uint8Array>;
+  "message:data": CustomEvent<Uint8Array>;
+  "message:recv": CustomEvent<NetworkMessage>;
 }
 
 export interface PeerOpts {
   conn: Connection;
   localSpec: PeerSpec;
   logger: log.Logger;
+  codec: NetworkMessageCodec;
 }
 
 /** Wraps a connection to a peer and handles message sending/receiving. */
-export class Peer extends EventEmitter<PeerEvents> implements Component {
+export class Peer extends Component<PeerEvents> {
   readonly #logger: log.Logger;
   readonly #conn: Connection;
   readonly #reader: ReadableStreamDefaultReader<Uint8Array>;
   readonly #writer: WritableStreamDefaultWriter<Uint8Array>;
   readonly #localSpec: PeerSpec;
+  readonly #codec: NetworkMessageCodec;
   #lastMsgTimestamp?: number;
   #remoteHandshake?: HandshakeMessage;
 
-  constructor({ conn, localSpec, logger }: PeerOpts) {
+  constructor({ conn, localSpec, logger, codec }: PeerOpts) {
     super();
 
     this.#logger = logger;
     this.#conn = conn;
     this.#localSpec = localSpec;
+    this.#codec = codec;
 
     this.#reader = this.#conn.readable.getReader();
     this.#writer = this.#conn.writable.getWriter();
@@ -41,17 +48,13 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     await this.#sendHandshake();
 
     const remoteData = await this.#read();
-    const reader = await ScorexReader.create(remoteData);
+    const reader = this.#codec.newReader(remoteData);
 
     this.#remoteHandshake = HandshakeMessage.decode(reader);
 
     this.#logger.debug("received handshake from peer");
 
     this.#readContinuation();
-  }
-
-  stop(): Promise<void> {
-    return Promise.resolve();
   }
 
   /**
@@ -95,19 +98,26 @@ export class Peer extends EventEmitter<PeerEvents> implements Component {
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
-      new CustomEvent("message:recv", { detail: data }),
+      new CustomEvent("message:data", { detail: data }),
+    );
+
+    const msg = this.#codec.decode(data);
+
+    this.dispatchEvent(
+      new CustomEvent("message:recv", { detail: msg }),
     );
 
     return this.#readContinuation();
   }
 
-  async #sendHandshake(): Promise<void> {
+  #sendHandshake(): Promise<void> {
     this.#logger.debug("handshaking peer");
 
     const hs = HandshakeMessage.withSpec(this.#localSpec);
-    const writer = await ScorexWriter.create();
+    const writer = this.#codec.newWriter();
 
     hs.encode(writer);
-    this.send(writer.buffer);
+
+    return this.send(writer.buffer);
   }
 }

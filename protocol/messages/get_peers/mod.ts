@@ -1,5 +1,4 @@
 import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
-import { ScorexWriter } from "../../../io/scorex_buffer.ts";
 import { Peer } from "../../../peers/mod.ts";
 import { UnexpectedDataError } from "../../errors.ts";
 import { InitialNetworkMessage, MessageCode } from "../../message.ts";
@@ -30,14 +29,13 @@ export class GetPeersMessage extends InitialNetworkMessage {
 }
 
 /** Handle `GetPeers` network message. */
-export async function getPeersHandler(
-  _reader: CursorReader,
+export function getPeersHandler(
+  _msg: GetPeersMessage,
   peer: Peer,
   ctx: MessageHandlerContext,
 ): Promise<void> {
   const peersMsg = new PeersMessage(ctx.peerStore.peerSpecs);
-  const writer = await ScorexWriter.create();
+  const msg = ctx.codec.encode(peersMsg);
 
-  peersMsg.encode(writer);
-  peer.send(writer.buffer);
+  return peer.send(msg);
 }
