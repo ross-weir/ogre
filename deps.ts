@@ -1,7 +1,7 @@
-export { multiaddr } from "https://esm.sh/@multiformats/multiaddr@11.4.0";
-export type { Multiaddr } from "https://esm.sh/@multiformats/multiaddr@11.4.0";
+export { multiaddr } from "https://cdn.skypack.dev/@multiformats/multiaddr@11.4.0?dts";
+export type { Multiaddr } from "https://cdn.skypack.dev/@multiformats/multiaddr@11.4.0?dts";
 
-export { multiaddrToUri } from "https://esm.sh/@multiformats/multiaddr-to-uri@9.0.2";
+export { multiaddrToUri } from "https://cdn.skypack.dev/@multiformats/multiaddr-to-uri@9.0.2?dts";
 
 export {
   decode as base64Decode,
