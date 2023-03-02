@@ -34,8 +34,7 @@ export function getPeersHandler(
   peer: Peer,
   ctx: MessageHandlerContext,
 ): Promise<void> {
-  const peersMsg = new PeersMessage(ctx.peerStore.peerSpecs);
-  const msg = ctx.codec.encode(peersMsg);
+  const msg = new PeersMessage(ctx.peerStore.peerSpecs);
 
   return peer.send(msg);
 }

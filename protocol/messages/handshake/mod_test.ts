@@ -12,19 +12,19 @@ import { Version } from "../../version.ts";
 import { multiaddr } from "../../../deps.ts";
 import { bytesToHex, hexToBytes } from "../../../_utils/hex.ts";
 
-Deno.test("[protocol/messages/handshake] Decoding throws error if handshake too large", async () => {
+Deno.test("[protocol/messages/handshake] Decoding throws error if handshake too large", () => {
   const bytes = new Uint8Array(MAX_HANDSHAKE_SIZE + 1);
-  const r = await ScorexReader.create(bytes);
+  const r = new ScorexReader(bytes);
 
   assertThrows(() => HandshakeMessage.decode(r));
 });
 
 // https://github.com/ergoplatform/ergo/blob/d6e7e78b226ed70edb99bb78491b584e2654dd2d/src/test/scala/org/ergoplatform/network/HandshakeSpecification.scala
-Deno.test("[protocol/messages/handshake] Decoding", async () => {
+Deno.test("[protocol/messages/handshake] Decoding", () => {
   const hsHex =
     "bcd2919cee2e076572676f726566030306126572676f2d6d61696e6e65742d332e332e36000210040001000102067f000001ae46";
   const hsBytes = hexToBytes(hsHex);
-  const r = await ScorexReader.create(hsBytes);
+  const r = new ScorexReader(hsBytes);
   const hs = HandshakeMessage.decode(r);
 
   assertEquals(hs.unixTimestamp, 1610134874428n); // Friday, 8 January 2021, 19:41:14
@@ -58,7 +58,7 @@ Deno.test("[protocol/messages/handshake] Decoding", async () => {
 });
 
 // Test that we encode into the hex string from the previous decoding test with the same structures
-Deno.test("[protocol/messages/handshake] Encoding", async () => {
+Deno.test("[protocol/messages/handshake] Encoding", () => {
   const modeFeature = new ModePeerFeature({
     stateType: 0,
     isVerifyingTransactions: true,
@@ -75,7 +75,7 @@ Deno.test("[protocol/messages/handshake] Encoding", async () => {
     features,
   });
   const hs = new HandshakeMessage(1610134874428n, peerSpec);
-  const writer = await ScorexWriter.create();
+  const writer = new ScorexWriter();
   hs.encode(writer);
   const hsHex = bytesToHex(writer.buffer);
 

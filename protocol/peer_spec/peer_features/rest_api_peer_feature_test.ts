@@ -8,11 +8,11 @@ Deno.test("[protocol/peer_features/restapi] Returns correct peer feature id", ()
   assertEquals(feature.id, 4);
 });
 
-Deno.test("[protocol/peer_features/restapi] Encoding", async () => {
+Deno.test("[protocol/peer_features/restapi] Encoding", () => {
   const feature = new RestApiPeerFeature(new URL("http://example.com/"));
-  const writer = await ScorexWriter.create();
+  const writer = new ScorexWriter();
   feature.encode(writer);
-  const reader = await ScorexReader.create(writer.buffer);
+  const reader = new ScorexReader(writer.buffer);
 
   assertEquals(reader.getUint8(), 18);
 

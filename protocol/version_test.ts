@@ -2,10 +2,10 @@ import { assertEquals } from "../test_deps.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Version } from "./version.ts";
 
-Deno.test("[protocol/version] Version encoding roundtrip", async () => {
-  const w = await ScorexWriter.create();
+Deno.test("[protocol/version] Version encoding roundtrip", () => {
+  const w = new ScorexWriter();
   new Version(1, 2, 5).encode(w);
-  const r = await ScorexReader.create(w.buffer);
+  const r = new ScorexReader(w.buffer);
   const decoded = Version.decode(r);
 
   assertEquals(decoded.major, 1);

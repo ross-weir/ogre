@@ -9,18 +9,12 @@ import {
   PutOptionFn,
 } from "./cursor_buffer.ts";
 
-let _wasm = false;
-
-async function instantiateWasm(): Promise<void> {
-  if (!_wasm) {
-    _wasm = true;
-
-    // supply the wasm URL to simplify usage in the NPM package
-    return await initWasm(
-      "https://www.unpkg.com/@ergoplatform/scorex-buffer@1.0.0/dist/browser/scorex_buffer_bg.wasm",
-    );
-  }
-}
+// This won't work for bundlers in browser environments most likely, if it works in ESM
+// modules maybe only support ESM. If not will need to expose a function like
+// "blockUntilWasmLoaded" that resolves when the WASM is loaded.
+await initWasm(
+  "https://www.unpkg.com/@ergoplatform/scorex-buffer@1.0.0/dist/browser/scorex_buffer_bg.wasm",
+);
 
 /**
  * Write data to the underlying buffer in a format used on the Ergo network.
@@ -29,14 +23,8 @@ async function instantiateWasm(): Promise<void> {
 export class ScorexWriter implements CursorWriter {
   #b: WasmScorexWriter;
 
-  private constructor(writer: WasmScorexWriter) {
-    this.#b = writer;
-  }
-
-  static async create(): Promise<ScorexWriter> {
-    await instantiateWasm();
-
-    return new ScorexWriter(new WasmScorexWriter());
+  constructor() {
+    this.#b = new WasmScorexWriter();
   }
 
   putInt8(value: number) {
@@ -96,7 +84,7 @@ export class ScorexWriter implements CursorWriter {
   }
 
   newWriter(): CursorWriter {
-    return new ScorexWriter(new WasmScorexWriter());
+    return new ScorexWriter();
   }
 }
 
@@ -107,14 +95,8 @@ export class ScorexWriter implements CursorWriter {
 export class ScorexReader implements CursorReader {
   #b: WasmScorexReader;
 
-  private constructor(reader: WasmScorexReader) {
-    this.#b = reader;
-  }
-
-  static async create(buf: Uint8Array): Promise<ScorexReader> {
-    await instantiateWasm();
-
-    return new ScorexReader(new WasmScorexReader(buf));
+  constructor(buf: Uint8Array) {
+    this.#b = new WasmScorexReader(buf);
   }
 
   getInt8(): number {
@@ -168,7 +150,7 @@ export class ScorexReader implements CursorReader {
   }
 
   newReader(buf: Uint8Array): CursorReader {
-    return new ScorexReader(new WasmScorexReader(buf));
+    return new ScorexReader(buf);
   }
 
   get buffer(): Uint8Array {
