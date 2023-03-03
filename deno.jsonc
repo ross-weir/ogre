@@ -1,12 +1,12 @@
 {
   "fmt": {
     "files": {
-      "exclude": [".git", "dist", "README.md"]
+      "exclude": [".git", "dist", "README.md", "_test/web-e2e"]
     }
   },
   "lint": {
     "files": {
-      "exclude": [".git", "dist", "events/mod.ts"]
+      "exclude": [".git", "dist", "events/mod.ts", "_test/web-e2e"]
     }
   },
   "tasks": {

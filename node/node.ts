@@ -8,7 +8,7 @@ import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
-import { PeerManager, PeerStore } from "../peers/mod.ts";
+import { PeerManager, PeerManagerEvents, PeerStore } from "../peers/mod.ts";
 import {
   DefaultMessageHandler,
   DefaultNetworkMessageCodec,
@@ -31,16 +31,21 @@ export interface NodeOpts {
   transport: Transport;
 }
 
+// deno-lint-ignore no-empty-interface
+export interface NodeEvents extends PeerManagerEvents {}
+
 /** The main Ergode class, encapsulates all node components. */
-export class Ergode {
+export class Ergode extends Component<NodeEvents> {
   #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
   readonly config: ErgodeConfig;
   readonly opts: NodeOpts;
-  readonly peerManager: PeerManager;
+  readonly #peerManager: PeerManager;
 
   constructor(opts: NodeOpts) {
+    super();
+
     this.opts = opts;
     this.config = mergeUserConfigAndValidate(opts.networkType, opts.config);
 
@@ -72,16 +77,21 @@ export class Ergode {
     });
     const spec = PeerSpec.fromConfig(this.config);
 
-    this.peerManager = new PeerManager({
+    this.#peerManager = new PeerManager({
       logger: this.#logger,
       connectionManager,
       spec,
       msgHandler,
       codec,
     });
-    this.#components.push(this.peerManager);
+    this.#components.push(this.#peerManager);
 
     // metric gatherer? subscribe to events from previous components
+
+    this.#peerManager.addEventListener(
+      "peer:new",
+      (e) => this.#forwardEvent(e),
+    );
   }
 
   async start(): Promise<void> {
@@ -114,5 +124,9 @@ export class Ergode {
   /** The version of Ergode library. */
   get version(): string {
     return version;
+  }
+
+  #forwardEvent<T>(e: CustomEvent<T>) {
+    this.dispatchEvent(new CustomEvent(e.type, { detail: e.detail }));
   }
 }
