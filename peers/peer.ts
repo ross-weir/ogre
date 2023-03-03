@@ -10,7 +10,7 @@ import {
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
-  "peer:data:in": CustomEvent<Uint8Array>;
+  "peer:data:recv": CustomEvent<Uint8Array>;
   "peer:message:recv": CustomEvent<NetworkMessage>;
 }
 
@@ -106,7 +106,7 @@ export class Peer extends Component<PeerEvents> {
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
-      new CustomEvent("peer:data:in", { detail: data }),
+      new CustomEvent("peer:data:recv", { detail: data }),
     );
 
     // TODO: catch errors and raise, handle misbehaving peer errors in peer manager
