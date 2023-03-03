@@ -10,8 +10,8 @@ import {
 
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
-  "message:data": CustomEvent<Uint8Array>;
-  "message:recv": CustomEvent<NetworkMessage>;
+  "peer:data:recv": CustomEvent<Uint8Array>;
+  "peer:message:recv": CustomEvent<NetworkMessage>;
 }
 
 export interface PeerOpts {
@@ -51,6 +51,10 @@ export class Peer extends Component<PeerEvents> {
     const reader = this.#codec.newReader(remoteData);
 
     this.#remoteHandshake = HandshakeMessage.decode(reader);
+
+    this.dispatchEvent(
+      new CustomEvent("peer:message:recv", { detail: this.#remoteHandshake }),
+    );
 
     this.#logger.debug("received handshake from peer");
 
@@ -102,14 +106,14 @@ export class Peer extends Component<PeerEvents> {
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
-      new CustomEvent("message:data", { detail: data }),
+      new CustomEvent("peer:data:recv", { detail: data }),
     );
 
     // TODO: catch errors and raise, handle misbehaving peer errors in peer manager
     const msg = this.#codec.decode(data);
 
     this.dispatchEvent(
-      new CustomEvent("message:recv", { detail: msg }),
+      new CustomEvent("peer:message:recv", { detail: msg }),
     );
 
     return this.#readContinuation();

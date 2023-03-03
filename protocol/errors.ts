@@ -1,5 +1,7 @@
+import { ErgodeError } from "../core/mod.ts";
+
 /** Error raised when malicious peer behaviour is detected. */
-export class MaliciousBehaviourError extends Error {}
+export class MaliciousBehaviourError extends ErgodeError {}
 
 /** Error raised when magic bytes in a network message don't match our configured magic. */
 export class BadMagicBytesError extends MaliciousBehaviourError {

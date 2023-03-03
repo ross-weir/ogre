@@ -59,7 +59,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#peers.push(peer);
     this.dispatchEvent(new CustomEvent("peer:new", { detail: peer }));
     peer.addEventListener(
-      "message:recv",
+      "peer:message:recv",
       ({ detail }) => this.#msgHandler.handle(detail, peer),
     );
     peer.start();
