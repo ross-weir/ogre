@@ -91,7 +91,7 @@ function manageWebsocket(ws: WebSocket) {
   });
 }
 
-export function startBridgeApp(port = 8109) {
+export function startBridgeApp(signal: AbortSignal, port = 8109) {
   const app = new Application();
   const router = new Router();
 
@@ -108,11 +108,10 @@ export function startBridgeApp(port = 8109) {
   app.use(router.routes());
   app.use(router.allowedMethods());
 
-  app.listen({ port });
-
-  console.log(`ws bridge listening on port ${port}`);
+  app.listen({ port, signal });
 
   return app;
 }
 
-startBridgeApp();
+const controller = new AbortController();
+startBridgeApp(controller.signal);
