@@ -12,13 +12,13 @@ export interface RpcPayload {
   params: unknown;
 }
 
-interface DialRequestParams {
+export interface DialRequestParams {
   connId: string;
   host: string;
   port: number;
 }
 
-interface DialResponseParams {
+export interface DialResponseParams {
   connId: string;
   localAddr: string;
   remoteAddr: string;
