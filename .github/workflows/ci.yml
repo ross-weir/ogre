@@ -53,3 +53,5 @@ jobs:
           deno-version: v1.x
       - name: Builds CLI
         run: deno task build:cli
+      - name: Run CLI
+        run: ./bin/ergode --version
