@@ -17,9 +17,10 @@ function App() {
 
     _node = createWebNode(
       {
-        networkType: "testnet",
+        networkType: "devnet",
         config: {
           logging: { console: { level: "DEBUG" } },
+          peers: { knownAddrs: ["/ip4/127.0.0.1/tcp/9020"] },
         },
       },
       { bridgeAddr: "/ip4/127.0.0.1/tcp/8109/ws" }
@@ -35,11 +36,7 @@ function App() {
     _node.start();
   }, []);
 
-  return (
-    <div>
-      <p id="node-state">{JSON.stringify(nodeState)}</p>
-    </div>
-  );
+  return <span id="node-state">{JSON.stringify(nodeState)}</span>;
 }
 
 export default App;

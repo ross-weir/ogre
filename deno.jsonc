@@ -9,6 +9,9 @@
       "exclude": [".git", "dist", "events/mod.ts", "_test/web-e2e"]
     }
   },
+  "test": {
+    "files": { "exclude": ["_test/web-e2e"] }
+  },
   "tasks": {
     "test": "deno test --unstable --coverage=./cov --allow-all",
     "cov": "deno --unstable coverage ./cov --exclude=events/ --lcov > coverage.lcov",
