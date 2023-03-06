@@ -8,7 +8,7 @@ import {
   PeerSpec,
 } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
-import { peersQuery } from "./peer_query.ts";
+import { peersQuery } from "./peers_query.ts";
 
 export interface PeerManagerEvents {
   "peer:new": CustomEvent<Peer>;
