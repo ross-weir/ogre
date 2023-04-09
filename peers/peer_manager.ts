@@ -21,6 +21,7 @@ export interface PeerManagerOpts {
   spec: PeerSpec;
   msgHandler: NetworkMessageHandler;
   codec: NetworkMessageCodec;
+  gossipIntervalSecs: number;
 }
 
 export class PeerManager extends Component<PeerManagerEvents> {
@@ -31,9 +32,11 @@ export class PeerManager extends Component<PeerManagerEvents> {
   readonly #codec: NetworkMessageCodec;
   readonly #peers: Peer[] = [];
   #getPeersTaskHandle?: number;
+  #gossipIntervalSecs: number;
 
   constructor(
-    { logger, connectionManager, spec, msgHandler, codec }: PeerManagerOpts,
+    { logger, connectionManager, spec, msgHandler, codec, gossipIntervalSecs }:
+      PeerManagerOpts,
   ) {
     super();
 
@@ -42,6 +45,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#spec = spec;
     this.#msgHandler = msgHandler;
     this.#codec = codec;
+    this.#gossipIntervalSecs = gossipIntervalSecs;
 
     this.#connectionManager.addEventListener(
       "connection:new",
@@ -52,7 +56,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
   start(): Promise<void> {
     this.#getPeersTaskHandle = setInterval(
       () => this.#getPeersTask(),
-      60000 * 2, // every 2 minutes
+      this.#gossipIntervalSecs,
     );
 
     return Promise.resolve();

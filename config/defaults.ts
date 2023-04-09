@@ -22,6 +22,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
     knownAddrs: [],
     handshakeTimeoutMs: 30000,
     maxConnections: 30,
+    gossipIntervalSec: 120,
   },
   logging: {
     console: {
