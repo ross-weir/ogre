@@ -14,7 +14,7 @@
   },
   "tasks": {
     "test": "deno test --unstable --coverage=./cov --allow-all",
-    "cov": "deno --unstable coverage ./cov --exclude=events/ --exclude=testing.ts --lcov > coverage.lcov",
+    "cov": "deno --unstable coverage ./cov --exclude=events/ --exclude=**/testing.ts --lcov > coverage.lcov",
     "cli": "deno run -A _build/native/cli.ts run --network testnet",
     "cli:debug": "deno run --inspect --inspect-brk -A _build/native/cli.ts run --network testnet",
     "build:cli": "deno compile -A --output bin/ergode _build/native/cli.ts",
