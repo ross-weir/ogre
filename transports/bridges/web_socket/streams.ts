@@ -74,3 +74,11 @@ export function createWritableStream(
     },
   });
 }
+
+export function createCloseStream(ws: WebSocket, connId: string) {
+  return function () {
+    sendAndForget(ws, RpcMethod.CloseRequest, {
+      connId,
+    });
+  };
+}

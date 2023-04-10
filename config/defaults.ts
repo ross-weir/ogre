@@ -23,6 +23,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
     handshakeTimeoutMs: 30000,
     maxConnections: 30,
     gossipIntervalSec: 120,
+    evictIntervalSec: 3600, // once an hour
   },
   logging: {
     console: {

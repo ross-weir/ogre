@@ -4,7 +4,11 @@ import { toMultiaddr } from "../../../multiaddr/mod.ts";
 import { Listener } from "../../listener.ts";
 import { DialOpts, Transport } from "../../transport.ts";
 import { RpcMethod, sendAndReceive } from "./rpc.ts";
-import { createReadableStream, createWritableStream } from "./streams.ts";
+import {
+  createCloseStream,
+  createReadableStream,
+  createWritableStream,
+} from "./streams.ts";
 
 /** Websocket bridge options. */
 export interface WebSocketBridgeOpts {
@@ -35,6 +39,7 @@ export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
       // this ensures none are missed.
       const readable = createReadableStream(ws, connId);
       const writable = createWritableStream(ws, connId);
+      const close = createCloseStream(ws, connId);
 
       const { remoteAddr, localAddr } = await sendAndReceive(
         ws,
@@ -53,6 +58,7 @@ export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
         direction: "outbound",
         readable,
         writable,
+        close,
       };
     },
     createListener(): Listener {

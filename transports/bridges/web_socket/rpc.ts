@@ -1,6 +1,7 @@
 export const enum RpcMethod {
   DialRequest = "dialRequest",
   DialResponse = "dialResponse",
+  CloseRequest = "closeRequest",
   ReceiveData = "receiveData",
   WriteDataRequest = "writeDataRequest",
   WriteDataResponse = "writeDataResponse",
@@ -24,6 +25,10 @@ export interface DialResponseParams {
   remoteAddr: string;
 }
 
+export interface CloseRequestParams {
+  connId: string;
+}
+
 export interface WriteDataRequestParams {
   connId: string;
   data: string; // base64
@@ -41,6 +46,7 @@ export interface ReceiveDataParams {
 
 interface RequestToParamsMap {
   [RpcMethod.DialRequest]: DialRequestParams;
+  [RpcMethod.CloseRequest]: CloseRequestParams;
   [RpcMethod.WriteDataRequest]: WriteDataRequestParams;
 }
 

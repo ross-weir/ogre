@@ -17,4 +17,6 @@ export interface Connection {
   writable: WritableStream<Uint8Array>;
   /** Readable stream for the connection. */
   readable: ReadableStream<Uint8Array>;
+  /** Close the connection. */
+  close: () => void;
 }
