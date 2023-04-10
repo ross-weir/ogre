@@ -62,6 +62,7 @@ export const ergodeConfigSchema = z.object({
     handshakeTimeoutMs: z.number(),
     knownAddrs: z.string().refine(isMultiaddrStr).array(),
     maxConnections: z.number(),
+    gossipIntervalSec: z.number(),
   }),
   logging: loggingConfigSchema,
 });

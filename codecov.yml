@@ -1,0 +1,3 @@
+# deno doesn't support globs for the `coverage` command
+ignore:
+  - "**/testing.ts"

@@ -94,6 +94,11 @@ export class Peer extends Component<PeerEvents> {
     return this.#writer.write(data);
   }
 
+  /** Check if this peer is equal to the provided peer. */
+  isEqual(other: Peer): boolean {
+    return this.remoteAddr === other.remoteAddr;
+  }
+
   async #read(): Promise<Uint8Array> {
     // TODO: handle "done" scenario
     const { value } = await this.#reader.read();
