@@ -48,7 +48,7 @@ Deno.test("[protocol/messages/get_peers] Encode", () => {
 
 Deno.test("[protocol/messages/get_peers] Handler sends known specs to peer", async () => {
   const ctx = createRandomHandlerContext();
-  const peer = createRandomPeer({codec: ctx.codec});
+  const peer = createRandomPeer({ codec: ctx.codec });
   const specs = [createRandomPeerSpec(), createRandomPeerSpec()];
   specs.forEach((p) => ctx.peerStore.add(p));
   const peerSpy = spy(peer, "send");
