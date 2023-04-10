@@ -55,8 +55,8 @@ export class PeerManager extends Component<PeerManagerEvents> {
 
   start(): Promise<void> {
     this.#getPeersTaskHandle = setInterval(
-      () => this.#getPeersTask(),
-      this.#gossipIntervalSecs,
+      () => this.gossipPeers(),
+      this.#gossipIntervalSecs * 1000,
     );
 
     return Promise.resolve();
@@ -68,7 +68,15 @@ export class PeerManager extends Component<PeerManagerEvents> {
     return Promise.resolve();
   }
 
-  #getPeersTask() {
+  /**
+   * Select a random peer from our currently connected peers to send
+   * a `GetPeersMessage` message to. This enables us to gossip and
+   * build up a list of peers.
+   *
+   * This function likely won't need to be called manually and will
+   * be ran at an interval defined by `gossipIntervalSecs` to gather peers.
+   */
+  gossipPeers() {
     const msg = new GetPeersMessage();
     const peer = peersQuery(this.#peers).canHandle(msg).randomize().peers()[0];
 
