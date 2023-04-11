@@ -94,6 +94,10 @@ export class Ergode extends Component<NodeEvents> {
       "peer:new",
       (e) => this.#forwardEvent(e),
     );
+    this.#peerManager.addEventListener(
+      "peer:removed",
+      (e) => this.#forwardEvent(e),
+    );
   }
 
   async start(): Promise<void> {

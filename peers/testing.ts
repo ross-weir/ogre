@@ -30,8 +30,13 @@ export function createRandomPeer(opts?: RandomPeerOpts): Peer {
   });
 }
 
+export interface RandomPeerManagerOpts {
+  gossipIntervalSecs?: number;
+  evictIntervalSecs?: number;
+}
+
 export function createRandomPeerManager(
-  gossipIntervalSecs?: number,
+  { gossipIntervalSecs, evictIntervalSecs }: RandomPeerManagerOpts,
 ): PeerManager {
   const ctx = createRandomHandlerContext();
   const logger = log.getLogger();
@@ -49,6 +54,6 @@ export function createRandomPeerManager(
     connectionManager,
     msgHandler: new DefaultMessageHandler(ctx),
     gossipIntervalSecs: gossipIntervalSecs ?? 120,
-    evictIntervalSecs: 3600,
+    evictIntervalSecs: evictIntervalSecs ?? 3600,
   });
 }
