@@ -11,7 +11,9 @@ import {
 /** Events emitted by `Peer`s. */
 export interface PeerEvents {
   "peer:data:recv": CustomEvent<Uint8Array>;
+  "peer:data:send": CustomEvent<Uint8Array>;
   "peer:message:recv": CustomEvent<NetworkMessage>;
+  "peer:message:send": CustomEvent<NetworkMessage>;
 }
 
 export interface PeerOpts {
@@ -81,7 +83,7 @@ export class Peer extends Component<PeerEvents> {
   /**
    * Unix timestamp of the last message received from the remote peer.
    *
-   * Returns` undefined` if the peer is yet to send a message.
+   * Returns `undefined` if the peer is yet to send a message.
    */
   get lastMsgTimestamp(): number | undefined {
     return this.#lastMsgTimestamp;
@@ -96,7 +98,11 @@ export class Peer extends Component<PeerEvents> {
   send(msg: NetworkMessage): Promise<void> {
     this.#logger.debug(`Sending ${msg.name} message to peer`);
 
+    this.dispatchEvent(new CustomEvent("peer:message:send", { detail: msg }));
+
     const data = this.#codec.encode(msg);
+
+    this.dispatchEvent(new CustomEvent("peer:data:send", { detail: data }));
 
     return this.#writer.write(data);
   }
