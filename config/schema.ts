@@ -63,6 +63,7 @@ export const ergodeConfigSchema = z.object({
     knownAddrs: z.string().refine(isMultiaddrStr).array(),
     maxConnections: z.number(),
     gossipIntervalSec: z.number(),
+    evictIntervalSec: z.number(),
   }),
   logging: loggingConfigSchema,
 });

@@ -1,8 +1,10 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.0.0/mod.ts";
 import { base64Decode, base64Encode } from "../deps.ts";
 import {
+  CloseRequestParams,
   DialRequestParams,
   DialResponseParams,
+  NoOpParams,
   ReceiveDataParams,
   RpcMethod,
   RpcPayload,
@@ -75,6 +77,28 @@ function manageWebsocket(ws: WebSocket) {
     ws.send(JSON.stringify(msg));
   }
 
+  function onCloseRequest(
+    { connId }: CloseRequestParams,
+    msgId: string,
+  ) {
+    const conn = idToConnMap[connId];
+
+    if (!conn) {
+      return;
+    }
+
+    conn.close();
+
+    const params: NoOpParams = {};
+    const msg: RpcPayload = {
+      id: msgId,
+      method: RpcMethod.CloseResponse,
+      params,
+    };
+
+    ws.send(JSON.stringify(msg));
+  }
+
   ws.addEventListener("message", (msg: MessageEvent) => {
     const data = JSON.parse(msg.data) as RpcPayload;
 
@@ -84,6 +108,9 @@ function manageWebsocket(ws: WebSocket) {
         break;
       case RpcMethod.WriteDataRequest:
         onWriteDataRequest(data.params as WriteDataRequestParams, data.id);
+        break;
+      case RpcMethod.CloseRequest:
+        onCloseRequest(data.params as CloseRequestParams, data.id);
         break;
       default:
         break;

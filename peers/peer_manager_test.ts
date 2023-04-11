@@ -1,9 +1,19 @@
-import { assertSpyCalls, FakeTime, spy } from "../test_deps.ts";
-import { createRandomPeerManager } from "./testing.ts";
+import {
+  assert,
+  assertEquals,
+  assertSpyCalls,
+  FakeTime,
+  returnsNext,
+  spy,
+  stub,
+} from "../test_deps.ts";
+import { createRandomPeer, createRandomPeerManager } from "./testing.ts";
+import { _internals } from "./peers_query.ts";
+import { PeerRemovalReason } from "./peer_manager.ts";
 
 Deno.test("[peers/peer_manager] gossipPeers is called at configured interval", async () => {
   const time = new FakeTime();
-  const pm = createRandomPeerManager(120);
+  const pm = createRandomPeerManager({ gossipIntervalSecs: 120 });
   const gossipSpy = spy(pm, "gossipPeers");
 
   await pm.start();
@@ -21,5 +31,67 @@ Deno.test("[peers/peer_manager] gossipPeers is called at configured interval", a
     assertSpyCalls(gossipSpy, 2);
   } finally {
     time.restore();
+  }
+});
+
+Deno.test("[peers/peer_manager] evictPeer is called at configured interval", async () => {
+  const time = new FakeTime();
+  const pm = createRandomPeerManager({ evictIntervalSecs: 3600 });
+  const evictSpy = spy(pm, "evictPeer");
+
+  await pm.start();
+
+  try {
+    assertSpyCalls(evictSpy, 0);
+    time.tick(60 * 1000); // 1 minute
+    assertSpyCalls(evictSpy, 0);
+    time.tick(65 * 1000); // 2 minutes 5 seconds
+    assertSpyCalls(evictSpy, 0);
+    time.tick(3600 * 1000); // 1 hour 2 minutes
+    assertSpyCalls(evictSpy, 1);
+    time.tick(600 * 1000);
+    assertSpyCalls(evictSpy, 1);
+    time.tick(3600 * 1000);
+    assertSpyCalls(evictSpy, 2);
+  } finally {
+    time.restore();
+  }
+});
+
+Deno.test("[peers/peer_manager] evictPeer dispatches a peer:removed event", async () => {
+  const peer = createRandomPeer();
+  const peersStub = stub(_internals, "_peers", returnsNext([[peer]]));
+  const pm = createRandomPeerManager();
+  let eventRaised = false;
+
+  pm.addEventListener("peer:removed", ({ detail }) => {
+    const { reason, peer: eventPeer } = detail;
+
+    assertEquals(reason, PeerRemovalReason.Evicted);
+    assert(peer.isEqual(eventPeer));
+    eventRaised = true;
+  });
+
+  await pm.evictPeer();
+
+  try {
+    assert(eventRaised);
+  } finally {
+    peersStub.restore();
+  }
+});
+
+Deno.test("[peers/peer_manager] evictPeer calls peer.stop()", async () => {
+  const peer = createRandomPeer();
+  const peerStopSpy = spy(peer, "stop");
+  const pm = createRandomPeerManager();
+  const peersStub = stub(_internals, "_peers", returnsNext([[peer]]));
+
+  await pm.evictPeer();
+
+  try {
+    assertSpyCalls(peerStopSpy, 1);
+  } finally {
+    peersStub.restore();
   }
 });

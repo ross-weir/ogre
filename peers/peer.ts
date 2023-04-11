@@ -61,6 +61,13 @@ export class Peer extends Component<PeerEvents> {
     this.#readContinuation();
   }
 
+  stop(): Promise<void> {
+    // TODO: abort current read op
+    this.#conn.close();
+
+    return Promise.resolve();
+  }
+
   /**
    * `Handshake` received from the remote peer.
    *

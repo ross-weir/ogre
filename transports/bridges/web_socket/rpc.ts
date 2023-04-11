@@ -1,6 +1,8 @@
 export const enum RpcMethod {
   DialRequest = "dialRequest",
   DialResponse = "dialResponse",
+  CloseRequest = "closeRequest",
+  CloseResponse = "closeResponse",
   ReceiveData = "receiveData",
   WriteDataRequest = "writeDataRequest",
   WriteDataResponse = "writeDataResponse",
@@ -24,6 +26,10 @@ export interface DialResponseParams {
   remoteAddr: string;
 }
 
+export interface CloseRequestParams {
+  connId: string;
+}
+
 export interface WriteDataRequestParams {
   connId: string;
   data: string; // base64
@@ -39,19 +45,25 @@ export interface ReceiveDataParams {
   data: string; // base64
 }
 
+// deno-lint-ignore no-empty-interface
+export interface NoOpParams {}
+
 interface RequestToParamsMap {
   [RpcMethod.DialRequest]: DialRequestParams;
+  [RpcMethod.CloseRequest]: CloseRequestParams;
   [RpcMethod.WriteDataRequest]: WriteDataRequestParams;
 }
 
 interface ResponseToParamsMap {
   [RpcMethod.DialResponse]: DialResponseParams;
   [RpcMethod.WriteDataResponse]: WriteDataResponseParams;
+  [RpcMethod.CloseResponse]: NoOpParams;
 }
 
 export interface MethodToResponseMap {
   [RpcMethod.DialRequest]: RpcMethod.DialResponse;
   [RpcMethod.WriteDataRequest]: RpcMethod.WriteDataResponse;
+  [RpcMethod.CloseRequest]: RpcMethod.CloseResponse;
 }
 
 export function sendAndForget<K extends keyof RequestToParamsMap>(

@@ -10,8 +10,15 @@ import {
 import { Peer } from "./peer.ts";
 import { peersQuery } from "./peers_query.ts";
 
+/** The reason why a peer was removed by the PeerManager. */
+export enum PeerRemovalReason {
+  Disconnect,
+  Evicted,
+}
+
 export interface PeerManagerEvents {
   "peer:new": CustomEvent<Peer>;
+  "peer:removed": CustomEvent<{ peer: Peer; reason: PeerRemovalReason }>;
 }
 
 export interface PeerManagerOpts {
@@ -22,6 +29,7 @@ export interface PeerManagerOpts {
   msgHandler: NetworkMessageHandler;
   codec: NetworkMessageCodec;
   gossipIntervalSecs: number;
+  evictIntervalSecs: number;
 }
 
 export class PeerManager extends Component<PeerManagerEvents> {
@@ -33,10 +41,19 @@ export class PeerManager extends Component<PeerManagerEvents> {
   readonly #peers: Peer[] = [];
   #getPeersTaskHandle?: number;
   #gossipIntervalSecs: number;
+  #evictPeersTaskHandle?: number;
+  #evictIntervalSecs: number;
 
   constructor(
-    { logger, connectionManager, spec, msgHandler, codec, gossipIntervalSecs }:
-      PeerManagerOpts,
+    {
+      logger,
+      connectionManager,
+      spec,
+      msgHandler,
+      codec,
+      gossipIntervalSecs,
+      evictIntervalSecs,
+    }: PeerManagerOpts,
   ) {
     super();
 
@@ -46,6 +63,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#msgHandler = msgHandler;
     this.#codec = codec;
     this.#gossipIntervalSecs = gossipIntervalSecs;
+    this.#evictIntervalSecs = evictIntervalSecs;
 
     this.#connectionManager.addEventListener(
       "connection:new",
@@ -58,12 +76,17 @@ export class PeerManager extends Component<PeerManagerEvents> {
       () => this.gossipPeers(),
       this.#gossipIntervalSecs * 1000,
     );
+    this.#evictPeersTaskHandle = setInterval(
+      () => this.evictPeer(),
+      this.#evictIntervalSecs * 1000,
+    );
 
     return Promise.resolve();
   }
 
   stop(): Promise<void> {
     clearInterval(this.#getPeersTaskHandle);
+    clearInterval(this.#evictPeersTaskHandle);
 
     return Promise.resolve();
   }
@@ -87,6 +110,26 @@ export class PeerManager extends Component<PeerManagerEvents> {
     }
 
     peer.send(msg);
+  }
+
+  async evictPeer() {
+    const peer = peersQuery(this.#peers).randomize().peers()[0];
+
+    if (!peer) {
+      this.#logger.debug("evictPeer found no peer to remove");
+
+      return;
+    }
+
+    this.#logger.debug(`Evicting random peer: ${peer.remoteAddr}`);
+
+    this.dispatchEvent(
+      new CustomEvent("peer:removed", {
+        detail: { peer, reason: PeerRemovalReason.Evicted },
+      }),
+    );
+
+    await peer.stop();
   }
 
   #onConnection(conn: Connection) {

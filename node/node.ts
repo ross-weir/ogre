@@ -84,6 +84,7 @@ export class Ergode extends Component<NodeEvents> {
       msgHandler,
       codec,
       gossipIntervalSecs: this.config.peers.gossipIntervalSec,
+      evictIntervalSecs: this.config.peers.evictIntervalSec,
     });
     this.#components.push(this.#peerManager);
 
@@ -91,6 +92,10 @@ export class Ergode extends Component<NodeEvents> {
 
     this.#peerManager.addEventListener(
       "peer:new",
+      (e) => this.#forwardEvent(e),
+    );
+    this.#peerManager.addEventListener(
+      "peer:removed",
       (e) => this.#forwardEvent(e),
     );
   }
