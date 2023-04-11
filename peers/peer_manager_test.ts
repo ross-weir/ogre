@@ -8,7 +8,7 @@ import {
   stub,
 } from "../test_deps.ts";
 import { createRandomPeer, createRandomPeerManager } from "./testing.ts";
-import { _internals, peersQuery } from "./peers_query.ts";
+import { _internals } from "./peers_query.ts";
 import { PeerRemovalReason } from "./peer_manager.ts";
 
 Deno.test("[peers/peer_manager] gossipPeers is called at configured interval", async () => {
