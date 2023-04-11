@@ -15,5 +15,6 @@ export function createRandomConnection(): Connection {
     direction: "inbound",
     readable,
     writable,
+    close: () => undefined,
   };
 }

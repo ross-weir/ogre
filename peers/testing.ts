@@ -49,5 +49,6 @@ export function createRandomPeerManager(
     connectionManager,
     msgHandler: new DefaultMessageHandler(ctx),
     gossipIntervalSecs: gossipIntervalSecs ?? 120,
+    evictIntervalSecs: 3600,
   });
 }

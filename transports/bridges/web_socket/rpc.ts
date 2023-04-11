@@ -2,6 +2,7 @@ export const enum RpcMethod {
   DialRequest = "dialRequest",
   DialResponse = "dialResponse",
   CloseRequest = "closeRequest",
+  CloseResponse = "closeResponse",
   ReceiveData = "receiveData",
   WriteDataRequest = "writeDataRequest",
   WriteDataResponse = "writeDataResponse",
@@ -53,11 +54,13 @@ interface RequestToParamsMap {
 interface ResponseToParamsMap {
   [RpcMethod.DialResponse]: DialResponseParams;
   [RpcMethod.WriteDataResponse]: WriteDataResponseParams;
+  [RpcMethod.CloseResponse]: never;
 }
 
 export interface MethodToResponseMap {
   [RpcMethod.DialRequest]: RpcMethod.DialResponse;
   [RpcMethod.WriteDataRequest]: RpcMethod.WriteDataResponse;
+  [RpcMethod.CloseRequest]: RpcMethod.CloseResponse;
 }
 
 export function sendAndForget<K extends keyof RequestToParamsMap>(
