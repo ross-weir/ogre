@@ -2,6 +2,23 @@ import { semver } from "../deps.ts";
 import { NetworkMessage } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
 
+export function _peers(peers: Peer[]) {
+  return peers;
+}
+
+function _randomize(peers: Peer[]) {
+  for (let i = peers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [peers[i], peers[j]] = [
+      peers[j],
+      peers[i],
+    ];
+  }
+}
+
+/** This pattern is used so we can mock the return value in tests. */
+export const _internals = { _peers, _randomize };
+
 export function peersQuery(peers: Peer[]) {
   let filteredPeers = [...peers];
 
@@ -24,19 +41,13 @@ export function peersQuery(peers: Peer[]) {
     },
     /** Randomize the peers list. */
     randomize() {
-      for (let i = filteredPeers.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [filteredPeers[i], filteredPeers[j]] = [
-          filteredPeers[j],
-          filteredPeers[i],
-        ];
-      }
+      _internals._randomize(filteredPeers);
 
       return this;
     },
     /** Finalize the query and return the peers. */
     peers(): Peer[] {
-      return filteredPeers;
+      return _internals._peers(filteredPeers);
     },
   };
 }
