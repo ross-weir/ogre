@@ -45,6 +45,9 @@ export interface ReceiveDataParams {
   data: string; // base64
 }
 
+// deno-lint-ignore no-empty-interface
+export interface NoOpParams {}
+
 interface RequestToParamsMap {
   [RpcMethod.DialRequest]: DialRequestParams;
   [RpcMethod.CloseRequest]: CloseRequestParams;
@@ -54,7 +57,7 @@ interface RequestToParamsMap {
 interface ResponseToParamsMap {
   [RpcMethod.DialResponse]: DialResponseParams;
   [RpcMethod.WriteDataResponse]: WriteDataResponseParams;
-  [RpcMethod.CloseResponse]: never;
+  [RpcMethod.CloseResponse]: NoOpParams;
 }
 
 export interface MethodToResponseMap {
