@@ -12,7 +12,6 @@ import { PeerManager, PeerManagerEvents, PeerStore } from "../peers/mod.ts";
 import {
   DefaultMessageHandler,
   DefaultNetworkMessageCodec,
-  PeerSpec,
 } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
@@ -75,21 +74,38 @@ export class Ergode extends Component<NodeEvents> {
       config: this.config,
       codec,
     });
-    const spec = PeerSpec.fromConfig(this.config);
 
     this.#peerManager = new PeerManager({
       logger: this.#logger,
-      connectionManager,
-      spec,
-      msgHandler,
+      config: this.config,
       codec,
-      gossipIntervalSecs: this.config.peers.gossipIntervalSec,
-      evictIntervalSecs: this.config.peers.evictIntervalSec,
     });
     this.#components.push(this.#peerManager);
 
     // metric gatherer? subscribe to events from previous components
 
+    connectionManager.addEventListener(
+      "connection:new",
+      ({ detail }) => this.#peerManager.acceptConnection(detail),
+    );
+    // handle new peers
+    this.#peerManager.addEventListener(
+      "peer:new",
+      ({ detail: peer }) => {
+        // remove peer connection from connection manager
+        peer.addEventListener(
+          "peer:stopped",
+          () => connectionManager.onConnectionClose(peer.connId),
+        );
+        // handle peer messages received
+        peer.addEventListener(
+          "peer:message:recv",
+          ({ detail: msg }) => msgHandler.handle(msg, peer),
+        );
+      },
+    );
+
+    // forward events and emit from node
     this.#peerManager.addEventListener(
       "peer:new",
       (e) => this.#forwardEvent(e),

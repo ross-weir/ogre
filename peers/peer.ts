@@ -14,6 +14,7 @@ export interface PeerEvents {
   "peer:data:send": CustomEvent<Uint8Array>;
   "peer:message:recv": CustomEvent<NetworkMessage>;
   "peer:message:send": CustomEvent<NetworkMessage>;
+  "peer:stopped": CustomEvent;
 }
 
 export interface PeerOpts {
@@ -67,6 +68,8 @@ export class Peer extends Component<PeerEvents> {
     // TODO: abort current read op
     this.#conn.close();
 
+    this.dispatchEvent(new CustomEvent("peer:stopped"));
+
     return Promise.resolve();
   }
 
@@ -92,6 +95,11 @@ export class Peer extends Component<PeerEvents> {
   /** Address of the remote peer in `Multiaddr` formatting. */
   get remoteAddr(): string {
     return this.#conn.remoteAddr.toString();
+  }
+
+  /** The ID of the `Connection` associated with this peer. */
+  get connId(): string {
+    return this.#conn.connId;
   }
 
   /** Send data to the remote peer. */
