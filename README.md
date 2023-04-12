@@ -1,6 +1,6 @@
 # ogre
 
-[![ci](https://github.com/ross-weir/ergode/actions/workflows/ci.yml/badge.svg)](https://github.com/ross-weir/ergode/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/ross-weir/ogre/branch/main/graph/badge.svg?token=9LGTORWR68)](https://codecov.io/gh/ross-weir/ogre)
+[![ci](https://github.com/ross-weir/ergode/actions/workflows/ci.yml/badge.svg)](https://github.com/ross-weir/ergode/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/ross-weir/ergode/branch/main/graph/badge.svg?token=9LGTORWR68)](https://codecov.io/gh/ross-weir/ergode)
 
 > Note: This README & project is very much a WIP, some steps may be wrong or missing. Steps required to run/build/develop the node will be added over time.
 
