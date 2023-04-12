@@ -10,7 +10,7 @@
     "test": "vite build && vitest run"
   },
   "dependencies": {
-    "@ergode/node": "../../dist/npm",
+    "@ogre-node/node": "../../dist/npm",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

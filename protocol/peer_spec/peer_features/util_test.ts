@@ -1,4 +1,4 @@
-import { ErgodeConfig } from "../../../config/schema.ts";
+import { OgreConfig } from "../../../config/schema.ts";
 import { assert, assertEquals } from "../../../test_deps.ts";
 import { ModePeerFeature } from "./mode_peer_feature.ts";
 import { SessionIdPeerFeature } from "./session_id_peer_feature.ts";
@@ -17,7 +17,7 @@ Deno.test("[protocol/peer_spec/peer_features/util] createFeaturesFromConfig", ()
     node: { stateType: "utxo", verifyTransactions: true, blocksToKeep: -1 },
     network: { magicBytes: [2, 0, 2, 3] },
   };
-  const features = createFeaturesFromConfig(config as ErgodeConfig);
+  const features = createFeaturesFromConfig(config as OgreConfig);
   const modePeerFeature = features.find((f) => f instanceof ModePeerFeature);
 
   assert(modePeerFeature);

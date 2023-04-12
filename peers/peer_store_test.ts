@@ -6,7 +6,7 @@ import { PeerStore } from "./peer_store.ts";
 
 Deno.test("[peers/peer_store] PeerStore.add is no-op if spec already exists", () => {
   const spec = new PeerSpec({
-    agentName: "ergode",
+    agentName: "ogre",
     refNodeVersion: Version.fromString("1.0.0"),
     nodeName: "test",
     declaredAddress: multiaddr("/ip4/127.0.0.1/tcp/1337"),
@@ -19,7 +19,7 @@ Deno.test("[peers/peer_store] PeerStore.add is no-op if spec already exists", ()
   assertEquals(store.peerSpecs[0], spec);
 
   const spec2 = new PeerSpec({
-    agentName: "ergode-updated!!!",
+    agentName: "ogre-updated!!!",
     refNodeVersion: Version.fromString("1.0.0"),
     nodeName: "test",
     declaredAddress: multiaddr("/ip4/127.0.0.1/tcp/1337"),
@@ -28,12 +28,12 @@ Deno.test("[peers/peer_store] PeerStore.add is no-op if spec already exists", ()
   store.add(spec2);
 
   assertEquals(store.peerSpecs.length, 1);
-  assertEquals(store.peerSpecs[0].agentName, "ergode");
+  assertEquals(store.peerSpecs[0].agentName, "ogre");
 });
 
 Deno.test("[peers/peer_store] PeerStore.addrs returns unique set of addresses", () => {
   const spec = new PeerSpec({
-    agentName: "ergode",
+    agentName: "ogre",
     refNodeVersion: Version.fromString("1.0.0"),
     nodeName: "test",
     declaredAddress: multiaddr("/ip4/127.0.0.1/tcp/1337"),

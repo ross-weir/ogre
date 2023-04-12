@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { createWebNode, Ergode } from "@ergode/node";
+import { createWebNode, Ogre } from "@ogre-node/node";
 
 export interface NodeState {
   connectedPeers: number;
 }
 
-let _node: Ergode | undefined = undefined;
+let _node: Ogre | undefined = undefined;
 
 function App() {
   const [nodeState, setNodeState] = useState<NodeState>({ connectedPeers: 0 });

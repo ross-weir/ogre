@@ -14,9 +14,9 @@ const defaultBaseConfig: PartialOgreConfig = {
     protocolVersion: 3,
   },
   p2p: {
-    nodeName: "ergode",
+    nodeName: "ogre",
     refNodeVersion: "5.0.6",
-    agentName: "ergode",
+    agentName: "ogre",
   },
   peers: {
     knownAddrs: [],

@@ -16,7 +16,7 @@ import {
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 
-/** Options used to configure Ergode. */
+/** Options used to configure Ogre. */
 export interface NodeOpts {
   /** Which Ergo network to connect to. */
   networkType: NetworkType;
@@ -33,8 +33,8 @@ export interface NodeOpts {
 // deno-lint-ignore no-empty-interface
 export interface NodeEvents extends PeerManagerEvents {}
 
-/** The main Ergode class, encapsulates all node components. */
-export class Ergode extends Component<NodeEvents> {
+/** The main Ogre node class, encapsulates all node components. */
+export class Ogre extends Component<NodeEvents> {
   #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
@@ -118,7 +118,7 @@ export class Ergode extends Component<NodeEvents> {
 
   async start(): Promise<void> {
     if (this.#started) {
-      this.#logger.debug("Ergode has already started");
+      this.#logger.debug("Ogre has already started");
 
       return;
     }
@@ -132,7 +132,7 @@ export class Ergode extends Component<NodeEvents> {
 
   async stop(): Promise<void> {
     if (!this.#started) {
-      this.#logger.debug("Ergode is not running");
+      this.#logger.debug("Ogre is not running");
 
       return;
     }
@@ -143,7 +143,7 @@ export class Ergode extends Component<NodeEvents> {
     this.#started = false;
   }
 
-  /** The version of Ergode library. */
+  /** The version of Ogre library. */
   get version(): string {
     return version;
   }

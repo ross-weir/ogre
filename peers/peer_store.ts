@@ -15,7 +15,7 @@ export class PeerStore extends Component {
   /**
    * Create a new PeerStore instance.
    *
-   * @param configAddrs known addresses defined in the ergode configuration or supplied by user
+   * @param configAddrs known addresses defined in the ogre configuration or supplied by user
    */
   constructor({ logger, configAddrs }: PeerStoreOpts) {
     super();
