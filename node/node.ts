@@ -79,9 +79,7 @@ export class Ergode extends Component<NodeEvents> {
 
     this.#peerManager = new PeerManager({
       logger: this.#logger,
-      connectionManager,
       spec,
-      msgHandler,
       codec,
       gossipIntervalSecs: this.config.peers.gossipIntervalSec,
       evictIntervalSecs: this.config.peers.evictIntervalSec,
@@ -90,6 +88,22 @@ export class Ergode extends Component<NodeEvents> {
 
     // metric gatherer? subscribe to events from previous components
 
+    connectionManager.addEventListener(
+      "connection:new",
+      ({ detail }) => this.#peerManager.acceptConnection(detail),
+    );
+    // handle new peers
+    this.#peerManager.addEventListener(
+      "peer:new",
+      ({ detail: peer }) =>
+        // handle peer messages received
+        peer.addEventListener(
+          "peer:message:recv",
+          ({ detail: msg }) => msgHandler.handle(msg, peer),
+        ),
+    );
+
+    // forward events and emit from node
     this.#peerManager.addEventListener(
       "peer:new",
       (e) => this.#forwardEvent(e),
