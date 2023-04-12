@@ -95,12 +95,18 @@ export class Ergode extends Component<NodeEvents> {
     // handle new peers
     this.#peerManager.addEventListener(
       "peer:new",
-      ({ detail: peer }) =>
+      ({ detail: peer }) => {
+        // remove peer connection from connection manager
+        peer.addEventListener(
+          "peer:stopped",
+          () => connectionManager.onConnectionClose(peer.connId),
+        );
         // handle peer messages received
         peer.addEventListener(
           "peer:message:recv",
           ({ detail: msg }) => msgHandler.handle(msg, peer),
-        ),
+        );
+      },
     );
 
     // forward events and emit from node

@@ -75,20 +75,6 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     return conn;
   }
 
-  /**
-   * Close an established connection.
-   * @param conn `Connection` to close.
-   * @returns void
-   */
-  closeConnection(conn: Connection): Promise<void> {
-    // conn.close()
-    this.#connections = this.#connections.filter((c) =>
-      c.connId !== conn.connId
-    );
-
-    return Promise.resolve();
-  }
-
   start(): Promise<void> {
     this.#logger.debug("connection manager starting");
 
@@ -102,10 +88,16 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
 
   stop(): Promise<void> {
     clearInterval(this.#autoDialHandle);
+    this.#connections = [];
 
-    // for all connections - close
+    // connections should be closed by the owning Peer instance
+    // what else do we do here?
 
     return Promise.resolve();
+  }
+
+  onConnectionClose(connId: string) {
+    this.#connections = this.#connections.filter((c) => c.connId !== connId);
   }
 
   private async autoDialPeer(): Promise<void> {
