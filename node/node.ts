@@ -1,8 +1,8 @@
 import {
-  ErgodeConfig,
   mergeUserConfigAndValidate,
   NetworkType,
-  PartialErgodeConfig,
+  OgreConfig,
+  PartialOgreConfig,
 } from "../config/mod.ts";
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
@@ -25,7 +25,7 @@ export interface NodeOpts {
    * Merged with a set of defaults defined for
    * the supplied network type.
    */
-  config: PartialErgodeConfig;
+  config: PartialOgreConfig;
   /** Underlying network transport for the node. */
   transport: Transport;
 }
@@ -38,7 +38,7 @@ export class Ergode extends Component<NodeEvents> {
   #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
-  readonly config: ErgodeConfig;
+  readonly config: OgreConfig;
   readonly opts: NodeOpts;
   readonly #peerManager: PeerManager;
 

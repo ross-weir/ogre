@@ -1,4 +1,4 @@
-import { ErgodeConfig } from "../config/mod.ts";
+import { OgreConfig } from "../config/mod.ts";
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { Connection } from "../net/mod.ts";
@@ -23,7 +23,7 @@ export interface PeerManagerEvents {
 
 export interface PeerManagerOpts {
   logger: log.Logger;
-  config: ErgodeConfig;
+  config: OgreConfig;
   /**
    * Our peer spec sent with handshakes to remote peers.
    * Created from the config if not provided.
@@ -34,7 +34,7 @@ export interface PeerManagerOpts {
 
 export class PeerManager extends Component<PeerManagerEvents> {
   readonly #logger: log.Logger;
-  readonly #config: ErgodeConfig;
+  readonly #config: OgreConfig;
   readonly #spec: PeerSpec;
   readonly #codec: NetworkMessageCodec;
   readonly #peers: Peer[] = [];
