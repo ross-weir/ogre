@@ -8,6 +8,7 @@ import { PeerSpec } from "../protocol/mod.ts";
 import { createRandomHandlerContext } from "../protocol/messages/testing.ts";
 import { PeerManager } from "./peer_manager.ts";
 import { createRandomConfig } from "../config/testing.ts";
+import { Connection } from "../net/mod.ts";
 
 export function createRandomPeerStore(): PeerStore {
   return new PeerStore({ logger: log.getLogger(), configAddrs: [] });
@@ -16,13 +17,14 @@ export function createRandomPeerStore(): PeerStore {
 export interface RandomPeerOpts {
   codec?: NetworkMessageCodec;
   spec?: PeerSpec;
+  conn?: Connection;
 }
 
 export function createRandomPeer(opts?: RandomPeerOpts): Peer {
   const ctx = createRandomHandlerContext();
 
   return new Peer({
-    conn: createRandomConnection(),
+    conn: opts?.conn ?? createRandomConnection(),
     logger: log.getLogger(),
     localSpec: opts?.spec ?? createRandomPeerSpec(),
     codec: opts?.codec ?? ctx.codec,
