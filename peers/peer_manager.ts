@@ -1,3 +1,4 @@
+import { ErgodeConfig } from "../config/mod.ts";
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
 import { Connection } from "../net/mod.ts";
@@ -22,49 +23,50 @@ export interface PeerManagerEvents {
 
 export interface PeerManagerOpts {
   logger: log.Logger;
-  // our peer spec sent with handshakes to remote peers
-  spec: PeerSpec;
+  config: ErgodeConfig;
+  /**
+   * Our peer spec sent with handshakes to remote peers.
+   * Created from the config if not provided.
+   */
+  spec?: PeerSpec;
   codec: NetworkMessageCodec;
-  gossipIntervalSecs: number;
-  evictIntervalSecs: number;
 }
 
 export class PeerManager extends Component<PeerManagerEvents> {
   readonly #logger: log.Logger;
+  readonly #config: ErgodeConfig;
   readonly #spec: PeerSpec;
   readonly #codec: NetworkMessageCodec;
   readonly #peers: Peer[] = [];
   #getPeersTaskHandle?: number;
-  #gossipIntervalSecs: number;
   #evictPeersTaskHandle?: number;
-  #evictIntervalSecs: number;
 
   constructor(
     {
       logger,
+      config,
       spec,
       codec,
-      gossipIntervalSecs,
-      evictIntervalSecs,
     }: PeerManagerOpts,
   ) {
     super();
 
     this.#logger = logger;
-    this.#spec = spec;
+    this.#config = config;
+    this.#spec = spec ?? PeerSpec.fromConfig(this.#config);
     this.#codec = codec;
-    this.#gossipIntervalSecs = gossipIntervalSecs;
-    this.#evictIntervalSecs = evictIntervalSecs;
   }
 
   start(): Promise<void> {
+    const { gossipIntervalSec, evictIntervalSec } = this.#config.peers;
+
     this.#getPeersTaskHandle = setInterval(
       () => this.gossipPeers(),
-      this.#gossipIntervalSecs * 1000,
+      gossipIntervalSec * 1000,
     );
     this.#evictPeersTaskHandle = setInterval(
       () => this.evictPeer(),
-      this.#evictIntervalSecs * 1000,
+      evictIntervalSec * 1000,
     );
 
     return Promise.resolve();

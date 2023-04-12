@@ -12,7 +12,6 @@ import { PeerManager, PeerManagerEvents, PeerStore } from "../peers/mod.ts";
 import {
   DefaultMessageHandler,
   DefaultNetworkMessageCodec,
-  PeerSpec,
 } from "../protocol/mod.ts";
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
@@ -75,14 +74,11 @@ export class Ergode extends Component<NodeEvents> {
       config: this.config,
       codec,
     });
-    const spec = PeerSpec.fromConfig(this.config);
 
     this.#peerManager = new PeerManager({
       logger: this.#logger,
-      spec,
+      config: this.config,
       codec,
-      gossipIntervalSecs: this.config.peers.gossipIntervalSec,
-      evictIntervalSecs: this.config.peers.evictIntervalSec,
     });
     this.#components.push(this.#peerManager);
 

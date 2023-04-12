@@ -7,6 +7,7 @@ import { NetworkMessageCodec } from "../protocol/codec.ts";
 import { PeerSpec } from "../protocol/mod.ts";
 import { createRandomHandlerContext } from "../protocol/messages/testing.ts";
 import { PeerManager } from "./peer_manager.ts";
+import { createRandomConfig } from "../config/testing.ts";
 
 export function createRandomPeerStore(): PeerStore {
   return new PeerStore({ logger: log.getLogger(), configAddrs: [] });
@@ -37,12 +38,20 @@ export function createRandomPeerManager(
   opts?: RandomPeerManagerOpts,
 ): PeerManager {
   const ctx = createRandomHandlerContext();
+  const config = createRandomConfig();
+
+  if (opts?.gossipIntervalSecs) {
+    config.peers.gossipIntervalSec = opts?.gossipIntervalSecs;
+  }
+
+  if (opts?.evictIntervalSecs) {
+    config.peers.evictIntervalSec = opts?.evictIntervalSecs;
+  }
 
   return new PeerManager({
     logger: log.getLogger(),
     spec: createRandomPeerSpec(),
     codec: ctx.codec,
-    gossipIntervalSecs: opts?.gossipIntervalSecs ?? 120,
-    evictIntervalSecs: opts?.evictIntervalSecs ?? 3600,
+    config,
   });
 }
