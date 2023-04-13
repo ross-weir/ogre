@@ -1,4 +1,4 @@
-import { ErgodeConfig } from "../../config/mod.ts";
+import { OgreConfig } from "../../config/mod.ts";
 import { Multiaddr, multiaddr } from "../../deps.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
@@ -99,7 +99,7 @@ export class PeerSpec implements NetworkEncodable {
     });
   }
 
-  static fromConfig(cfg: ErgodeConfig): PeerSpec {
+  static fromConfig(cfg: OgreConfig): PeerSpec {
     const { p2p } = cfg;
     const { declaredAddress } = cfg.network;
 

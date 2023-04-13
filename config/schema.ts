@@ -16,17 +16,17 @@ const loggingConfigSchema = z.object({
 export type LoggingConfig = z.infer<typeof loggingConfigSchema>;
 
 /**
- * Full ergode config schema, can be used to validate
+ * Full ogre config schema, can be used to validate
  * user supplied configuration.
  *
  * @example
  * ```ts
- * import {ergodeConfigSchema} from "./schema.ts";
+ * import {ogreConfigSchema} from "./schema.ts";
  *
  * const config = {};
- * ergodeConfigSchema.parse(config);
+ * ogreConfigSchema.parse(config);
  */
-export const ergodeConfigSchema = z.object({
+export const ogreConfigSchema = z.object({
   node: z.object({
     stateType: z.enum(["utxo", "digest"]),
     verifyTransactions: z.boolean(),
@@ -48,7 +48,7 @@ export const ergodeConfigSchema = z.object({
   p2p: z.object({
     nodeName: z.string(),
     // this is used in the reference client to determine certain things and certain feature support
-    // this is not the version of ergode
+    // this is not the version of ogre
     refNodeVersion: z.string().refine(isSemVer, {
       message: "must be semantic versioning format",
     }),
@@ -68,13 +68,13 @@ export const ergodeConfigSchema = z.object({
   logging: loggingConfigSchema,
 });
 
-/** Ergode config schema type. */
-export type ErgodeConfig = z.infer<typeof ergodeConfigSchema>;
+/** Ogre config schema type. */
+export type OgreConfig = z.infer<typeof ogreConfigSchema>;
 
-const partialErgodeConfigSchema = ergodeConfigSchema.deepPartial();
+const partialOgreConfigSchema = ogreConfigSchema.deepPartial();
 
-/** Ergode config schema type with all values optional. */
-export type PartialErgodeConfig = z.infer<typeof partialErgodeConfigSchema>;
+/** Ogre config schema type with all values optional. */
+export type PartialOgreConfig = z.infer<typeof partialOgreConfigSchema>;
 
 /** NetworkType schema. */
 export const networkTypeSchema = z.enum(["mainnet", "testnet", "devnet"]);

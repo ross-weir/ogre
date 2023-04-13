@@ -1,10 +1,10 @@
 import { lodashMerge } from "../deps.ts";
 import { defaultsForNetwork } from "./defaults.ts";
 import {
-  ErgodeConfig,
-  ergodeConfigSchema,
   NetworkType,
-  PartialErgodeConfig,
+  OgreConfig,
+  ogreConfigSchema,
+  PartialOgreConfig,
 } from "./schema.ts";
 
 export * from "./schema.ts";
@@ -28,10 +28,10 @@ export * from "./schema.ts";
  */
 export function mergeUserConfigAndValidate(
   network: NetworkType,
-  userConfig: PartialErgodeConfig,
-): ErgodeConfig {
+  userConfig: PartialOgreConfig,
+): OgreConfig {
   const finalConfig = lodashMerge(defaultsForNetwork(network), userConfig);
-  ergodeConfigSchema.parse(finalConfig);
+  ogreConfigSchema.parse(finalConfig);
 
-  return finalConfig as ErgodeConfig;
+  return finalConfig as OgreConfig;
 }

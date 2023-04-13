@@ -5,9 +5,9 @@ import { LocalAddressPeerFeature } from "./mod.ts";
 import { PeerSpec } from "./peer_spec.ts";
 
 const testSpec = {
-  agentName: "ergode-test",
+  agentName: "ogre-test",
   refNodeVersion: Version.fromString("1.0.0"),
-  nodeName: "ergode-name",
+  nodeName: "ogre-name",
 };
 
 Deno.test("[protocol/peer_spec] PeerSpec.addr returns declared address if its defined", () => {

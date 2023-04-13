@@ -1,6 +1,6 @@
 import { WebSocketBridgeOpts } from "../transports/bridges/mod.ts";
 import { bridgeTransport, tcpTransport } from "../transports/mod.ts";
-import { Ergode, NodeOpts } from "./node.ts";
+import { NodeOpts, Ogre } from "./node.ts";
 
 /**
  * Creates a node with configuration suitable for
@@ -25,7 +25,7 @@ export function createWebNode(
   // setup web compatible db
   // setup web only stuff
 
-  return new Ergode({ ...opts, transport });
+  return new Ogre({ ...opts, transport });
 }
 
 /**
@@ -42,5 +42,5 @@ export function createWebNode(
 export function createNativeNode(opts: Omit<NodeOpts, "transport">) {
   const transport = tcpTransport();
 
-  return new Ergode({ ...opts, transport });
+  return new Ogre({ ...opts, transport });
 }

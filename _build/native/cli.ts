@@ -1,12 +1,12 @@
 import yargs from "https://deno.land/x/yargs@v17.7.0-deno/deno.ts";
 import * as toml from "https://deno.land/std@0.177.0/encoding/toml.ts";
 import { NetworkType } from "../../config/mod.ts";
-import { createNativeNode, Ergode } from "../../node/mod.ts";
+import { createNativeNode, Ogre } from "../../node/mod.ts";
 import { version } from "../../version.ts";
 import { secretQuote } from "./secret_file.ts";
-import { PartialErgodeConfig } from "../../config/schema.ts";
+import { PartialOgreConfig } from "../../config/schema.ts";
 
-let _ergode: Ergode | undefined;
+let _ogre: Ogre | undefined;
 
 interface RunOpts {
   network: NetworkType;
@@ -14,7 +14,7 @@ interface RunOpts {
 }
 
 function scriptName() {
-  let name = "ergode";
+  let name = "ogre";
 
   if (Deno.build.os === "windows") {
     name = `${name}.exe`;
@@ -42,15 +42,15 @@ async function getConfig(configPath: string) {
 
 async function runHandler({ network, config }: RunOpts) {
   // createNativeNode will throw an error if config file is invalid.
-  const cfg = await getConfig(config) as PartialErgodeConfig;
+  const cfg = await getConfig(config) as PartialOgreConfig;
 
-  _ergode = createNativeNode({ networkType: network, config: cfg });
-  _ergode.start();
+  _ogre = createNativeNode({ networkType: network, config: cfg });
+  _ogre.start();
 }
 
 async function onExit() {
-  if (_ergode) {
-    await _ergode.stop();
+  if (_ogre) {
+    await _ogre.stop();
   }
 }
 
@@ -59,7 +59,7 @@ Deno.addSignalListener("SIGINT", onExit);
 
 yargs(Deno.args).scriptName(scriptName()).command(
   "run",
-  "Start running Ergode",
+  "Start running ogre",
   // deno-lint-ignore no-explicit-any
   function (yargs: any) {
     return yargs.option("network", {
@@ -71,8 +71,8 @@ yargs(Deno.args).scriptName(scriptName()).command(
     }).option("config", {
       alias: "c",
       demandOption: true,
-      default: "ergode.toml",
-      describe: "Path to the Ergode config file",
+      default: "ogre.toml",
+      describe: "Path to the ogre config file",
     });
   },
   runHandler,
@@ -82,5 +82,5 @@ yargs(Deno.args).scriptName(scriptName()).command(
   {},
   () => console.log(secretQuote),
 ).version(
-  `Ergode version: v${version}`,
+  `ogre version: v${version}`,
 ).parse();

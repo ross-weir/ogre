@@ -36,17 +36,17 @@ await build({
     },
   },
   package: {
-    name: "@ergode/node",
+    name: "@ogre-node/node",
     version,
     description:
       "An Ergo node implementation targeting web native environments",
     license: "MIT",
     repository: {
       type: "git",
-      url: "git+https://github.com/ross-weir/ergode.git",
+      url: "git+https://github.com/ross-weir/ogre.git",
     },
     bugs: {
-      url: "https://github.com/ross-weir/ergode/issues",
+      url: "https://github.com/ross-weir/ogre/issues",
     },
   },
   compilerOptions: {

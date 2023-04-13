@@ -1,8 +1,8 @@
 import {
-  ErgodeConfig,
   mergeUserConfigAndValidate,
   NetworkType,
-  PartialErgodeConfig,
+  OgreConfig,
+  PartialOgreConfig,
 } from "../config/mod.ts";
 import { Component } from "../core/component.ts";
 import { log } from "../deps.ts";
@@ -16,7 +16,7 @@ import {
 import { Transport } from "../transports/mod.ts";
 import { version } from "../version.ts";
 
-/** Options used to configure Ergode. */
+/** Options used to configure Ogre. */
 export interface NodeOpts {
   /** Which Ergo network to connect to. */
   networkType: NetworkType;
@@ -25,7 +25,7 @@ export interface NodeOpts {
    * Merged with a set of defaults defined for
    * the supplied network type.
    */
-  config: PartialErgodeConfig;
+  config: PartialOgreConfig;
   /** Underlying network transport for the node. */
   transport: Transport;
 }
@@ -33,12 +33,12 @@ export interface NodeOpts {
 // deno-lint-ignore no-empty-interface
 export interface NodeEvents extends PeerManagerEvents {}
 
-/** The main Ergode class, encapsulates all node components. */
-export class Ergode extends Component<NodeEvents> {
+/** The main Ogre node class, encapsulates all node components. */
+export class Ogre extends Component<NodeEvents> {
   #started = false;
   readonly #logger: log.Logger;
   readonly #components: Component[] = [];
-  readonly config: ErgodeConfig;
+  readonly config: OgreConfig;
   readonly opts: NodeOpts;
   readonly #peerManager: PeerManager;
 
@@ -118,7 +118,7 @@ export class Ergode extends Component<NodeEvents> {
 
   async start(): Promise<void> {
     if (this.#started) {
-      this.#logger.debug("Ergode has already started");
+      this.#logger.debug("Ogre has already started");
 
       return;
     }
@@ -132,7 +132,7 @@ export class Ergode extends Component<NodeEvents> {
 
   async stop(): Promise<void> {
     if (!this.#started) {
-      this.#logger.debug("Ergode is not running");
+      this.#logger.debug("Ogre is not running");
 
       return;
     }
@@ -143,7 +143,7 @@ export class Ergode extends Component<NodeEvents> {
     this.#started = false;
   }
 
-  /** The version of Ergode library. */
+  /** The version of Ogre library. */
   get version(): string {
     return version;
   }

@@ -6,4 +6,4 @@ dist
 debug.log
 cov
 coverage.lcov
-ergode.toml
+ogre.toml

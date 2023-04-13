@@ -1,8 +1,8 @@
 import { lodashMerge, structuredClone } from "../deps.ts";
-import { NetworkType, PartialErgodeConfig } from "./schema.ts";
+import { NetworkType, PartialOgreConfig } from "./schema.ts";
 
 /** Base defaults used for all network configs. */
-const defaultBaseConfig: PartialErgodeConfig = {
+const defaultBaseConfig: PartialOgreConfig = {
   node: {
     stateType: "utxo",
     verifyTransactions: false,
@@ -14,9 +14,9 @@ const defaultBaseConfig: PartialErgodeConfig = {
     protocolVersion: 3,
   },
   p2p: {
-    nodeName: "ergode",
+    nodeName: "ogre",
     refNodeVersion: "5.0.6",
-    agentName: "ergode",
+    agentName: "ogre",
   },
   peers: {
     knownAddrs: [],
@@ -33,7 +33,7 @@ const defaultBaseConfig: PartialErgodeConfig = {
 };
 
 /** Default config for devnet network */
-export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+export const devnetDefaultConfig: PartialOgreConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
     chain: {
@@ -48,7 +48,7 @@ export const devnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 /** Default config for testnet network */
-export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+export const testnetDefaultConfig: PartialOgreConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
     chain: {
@@ -70,7 +70,7 @@ export const testnetDefaultConfig: PartialErgodeConfig = lodashMerge(
 );
 
 /** Default config for mainnet network */
-export const mainnetDefaultConfig: PartialErgodeConfig = lodashMerge(
+export const mainnetDefaultConfig: PartialOgreConfig = lodashMerge(
   structuredClone(defaultBaseConfig),
   {
     chain: {
