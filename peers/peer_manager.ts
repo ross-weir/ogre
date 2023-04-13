@@ -72,11 +72,11 @@ export class PeerManager extends Component<PeerManagerEvents> {
     return Promise.resolve();
   }
 
-  stop(): Promise<void> {
+  async stop(): Promise<void> {
     clearInterval(this.#getPeersTaskHandle);
     clearInterval(this.#evictPeersTaskHandle);
 
-    return Promise.resolve();
+    await Promise.all(this.#peers.map((peer) => peer.stop()));
   }
 
   /**
