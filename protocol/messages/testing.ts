@@ -1,4 +1,5 @@
 import { createRandomConfig } from "../../config/testing.ts";
+import { log } from "../../deps.ts";
 import { createRandomPeerStore } from "../../peers/testing.ts";
 import { DefaultNetworkMessageCodec } from "../codec.ts";
 import { PeerSpec } from "../peer_spec/mod.ts";
@@ -12,7 +13,7 @@ export function createRandomHandlerContext(): MessageHandlerContext {
     new Uint8Array(config.network.magicBytes),
   );
 
-  return { config, peerStore, codec };
+  return { config, peerStore, codec, logger: log.getLogger() };
 }
 
 export function createHandshakeWithVersion(ver: string): HandshakeMessage {

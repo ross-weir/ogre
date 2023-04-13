@@ -18,6 +18,8 @@ export class DefaultMessageHandler implements NetworkMessageHandler {
   }
 
   handle(msg: NetworkMessage, peer: Peer): Promise<void> {
+    this.#ctx.logger.debug(`handling message: ${msg.name} (${msg.code})`);
+
     switch (msg.code) {
       case MessageCode.Peers:
         // deno-lint-ignore no-explicit-any
