@@ -19,3 +19,5 @@ export {
   assertSpyCalls,
   spy,
 } from "https://deno.land/std@0.176.0/testing/mock.ts";
+
+export type { Spy } from "https://deno.land/std@0.176.0/testing/mock.ts";

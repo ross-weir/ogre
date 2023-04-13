@@ -4,12 +4,14 @@ import {
   assertSpyCalls,
   FakeTime,
   returnsNext,
+  Spy,
   spy,
   stub,
 } from "../test_deps.ts";
 import { createRandomPeer, createRandomPeerManager } from "./testing.ts";
 import { _internals } from "./peers_query.ts";
 import { PeerRemovalReason } from "./peer_manager.ts";
+import { createRandomConnection } from "../net/testing.ts";
 
 Deno.test("[peers/peer_manager] gossipPeers is called at configured interval", async () => {
   const time = new FakeTime();
@@ -94,4 +96,29 @@ Deno.test("[peers/peer_manager] evictPeer calls peer.stop()", async () => {
   } finally {
     peersStub.restore();
   }
+});
+
+Deno.test("[peers/peer_manager] PeerManager.stop() calls Peer.stop() for all peers", async () => {
+  let peerStopSpy1: Spy | undefined;
+  let peerStopSpy2: Spy | undefined;
+
+  const pm = createRandomPeerManager();
+  pm.addEventListener("peer:new", ({ detail: peer }) => {
+    if (!peerStopSpy1) {
+      peerStopSpy1 = spy(peer, "stop");
+      return;
+    }
+
+    if (!peerStopSpy2) {
+      peerStopSpy2 = spy(peer, "stop");
+      return;
+    }
+  });
+  pm.acceptConnection(createRandomConnection());
+  pm.acceptConnection(createRandomConnection());
+
+  await pm.stop();
+
+  assertSpyCalls(peerStopSpy1!, 1);
+  assertSpyCalls(peerStopSpy2!, 1);
 });
