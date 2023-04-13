@@ -65,7 +65,7 @@ yarn add /path/to/ogre/dist/npm
 It should now be usable in your application, for example:
 
 ```ts
-import { createWebNode } from "@ogre/node";
+import { createWebNode } from "@ogre-node/node";
 
 const node = createWebNode(
   {
@@ -82,7 +82,7 @@ const node = createWebNode(
 node.start();
 ```
 
-A real basic example can be found here: [here](https://github.com/ross-weir/ogre.Tizen/tree/main/ogreTizenUI).
+A real basic example can be found here: [here](https://github.com/ross-weir/Ergode.Tizen/tree/main/ErgodeTizenUI).
 
 Running in the web browser/web extensions requires an external bridge component, we will go over bridges in the next section.
 
@@ -103,7 +103,7 @@ Some examples:
 - When working on ErgoHack VI I created a bridge based on websockets to communicate with a service app running on Tizen OS.
   - Websockets could be a generic bridge solution.
   - Security will need to be considered for this in practice.
-  - Example: https://github.com/ross-weir/ogre.Bridge
+  - Example: https://github.com/ross-weir/Ergode.Bridge
 
 ### Why target web runtimes?
 
