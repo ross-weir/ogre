@@ -70,7 +70,9 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     this.#connections.push(conn);
     this.dispatchEvent(new CustomEvent("connection:new", { detail: conn }));
 
-    this.#logger.info(`connected to ${addr.toString()}`);
+    this.#logger.info(
+      `connected to ${addr.toString()}, connections ${this.#connections.length}/${this.#maxConnections}`,
+    );
 
     return conn;
   }

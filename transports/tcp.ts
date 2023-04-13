@@ -34,7 +34,7 @@ export function tcpTransport(): Transport {
         direction: "outbound",
         readable: conn.readable,
         writable: conn.writable,
-        close: conn.close,
+        close: () => conn.close(),
       };
     },
     createListener(): Listener {

@@ -40,7 +40,7 @@ export class BadLengthError extends MaliciousBehaviourError {
  */
 export class InvalidChecksumError extends MaliciousBehaviourError {}
 
-export class UnsupportedMessageCodeError extends Error {
+export class UnsupportedMessageCodeError extends OgreError {
   readonly messageCode: number;
 
   constructor(
@@ -50,6 +50,8 @@ export class UnsupportedMessageCodeError extends Error {
     super(...params);
 
     this.messageCode = messageCode;
+    this.name = "UnsupportedMessageCodeError";
+    this.message = `got message code ${this.messageCode}`;
   }
 }
 

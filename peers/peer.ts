@@ -122,13 +122,24 @@ export class Peer extends Component<PeerEvents> {
 
   async #read(): Promise<Uint8Array> {
     // TODO: handle "done" scenario
-    const { value } = await this.#reader.read();
+    try {
+      const { value } = await this.#reader.read();
 
-    return value!;
+      return value!;
+    } catch {
+      // for Deno based streams it can throw a Deno.errors.Interrupted
+      // should instead raise a common error type between deno and bridges
+      return new Uint8Array();
+    }
   }
 
   async #readContinuation(): Promise<void> {
     const data = await this.#read();
+
+    if (!data.length) {
+      return;
+    }
+
     this.#lastMsgTimestamp = Date.now();
 
     this.dispatchEvent(
@@ -136,11 +147,17 @@ export class Peer extends Component<PeerEvents> {
     );
 
     // TODO: catch errors and raise, handle misbehaving peer errors in peer manager
-    const msg = this.#codec.decode(data);
+    try {
+      const msg = this.#codec.decode(data);
 
-    this.dispatchEvent(
-      new CustomEvent("peer:message:recv", { detail: msg }),
-    );
+      this.dispatchEvent(
+        new CustomEvent("peer:message:recv", { detail: msg }),
+      );
+    } catch (e) {
+      // currently we get decode errors for common messages
+      // that we haven't implemented decoding for yet.
+      this.#logger.info(e.toString());
+    }
 
     return this.#readContinuation();
   }

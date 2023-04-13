@@ -73,6 +73,7 @@ export class Ogre extends Component<NodeEvents> {
       peerStore,
       config: this.config,
       codec,
+      logger: this.#logger,
     });
 
     this.#peerManager = new PeerManager({
