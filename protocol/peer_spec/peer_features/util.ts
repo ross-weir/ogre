@@ -14,10 +14,12 @@ export function stateTypeStrToCode(stateType: "utxo" | "digest") {
 export function createFeaturesFromConfig(cfg: OgreConfig): PeerFeature[] {
   const { node } = cfg;
 
+  const poPowSuffix = node.poPowBootstrap ? node.minimalSuffix : undefined;
   const mode = new ModePeerFeature({
     stateType: stateTypeStrToCode(node.stateType),
     isVerifyingTransactions: node.verifyTransactions,
     blocksToKeep: node.blocksToKeep,
+    poPowSuffix,
   });
 
   const sessionId = SessionIdPeerFeature.fromMagicBytes(
