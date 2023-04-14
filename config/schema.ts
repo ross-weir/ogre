@@ -32,6 +32,7 @@ export const ogreConfigSchema = z.object({
     verifyTransactions: z.boolean(),
     blocksToKeep: z.number(),
     poPowBootstrap: z.boolean(),
+    // Minimal suffix size for PoPoW proof (may be pre-defined constant or settings parameter)
     minimalSuffix: z.number(),
   }),
   chain: z.object({
