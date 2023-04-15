@@ -92,6 +92,14 @@ export class BlockHeader implements NetworkObject {
     const height = reader.getUint32();
     const votes = reader.getBytes(3);
 
+    if (version > BlockVersion.Initial) {
+      const newFieldSize = reader.getUint8();
+
+      if (newFieldSize > 0) {
+        reader.getBytes(newFieldSize);
+      }
+    }
+
     return new BlockHeader({
       version,
       parentId: "" as ObjectId, // TODO
