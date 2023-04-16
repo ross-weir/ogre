@@ -72,7 +72,7 @@ export class BlockHeader implements NetworkObject {
     writer.putBytes(this.stateRoot);
     writer.putUint64(this.timestamp);
     writer.putBytes(this.extensionRoot);
-    // move to separate class
+    // move to separate class "RequiredDifficulty" in ref client
     const buf = new ArrayBuffer(4);
     const dv = new DataView(buf);
     dv.setUint32(0, this.nBits, false);
@@ -94,7 +94,7 @@ export class BlockHeader implements NetworkObject {
     const stateRoot = adDigest.fromBytes(reader.getBytes(33));
     const timestamp = reader.getUint64();
     const extensionRoot = digest32.fromBytes(reader.getBytes(32));
-    // move to separate class
+    // move to separate class "RequiredDifficulty" in ref client
     const dv = new DataView(reader.getBytes(4).buffer);
     const nBits = dv.getUint32(0, false);
     // move to separate class
