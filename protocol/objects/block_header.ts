@@ -33,6 +33,13 @@ interface BlockHeaderOpts {
   votes: Uint8Array;
 }
 
+/**
+ * Block header network object sent and received over the Ergo network.
+ *
+ * NOTE: The reference client uses 2 separate types, a header with pow solution
+ * and a header without pow solution, not sure why this is needed at the moment
+ * so just going with the one type for now.
+ */
 export class BlockHeader implements NetworkObject {
   readonly version: BlockVersion;
   readonly parentId: ObjectId;
