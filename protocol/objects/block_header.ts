@@ -1,9 +1,4 @@
-import {
-  AdDigest,
-  Digest32,
-  newAdDigest,
-  newDigest32,
-} from "../../crypto/mod.ts";
+import { AdDigest, adDigest, Digest32, digest32 } from "../../crypto/mod.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
   NetworkObject,
@@ -70,15 +65,20 @@ export class BlockHeader implements NetworkObject {
   }
 
   encode(writer: CursorWriter): void {
-    writer.putInt8(this.version);
+    writer.putUint8(this.version);
     writer.putBytes(objectIdToBytes(this.parentId));
     writer.putBytes(this.adProofRoot);
     writer.putBytes(this.txRoot);
     writer.putBytes(this.stateRoot);
     writer.putUint64(this.timestamp);
     writer.putBytes(this.extensionRoot);
-    // nbits difficulty RequiredDifficulty.serialize
-    writer.putUint32(this.height);
+    // move to separate class
+    const buf = new ArrayBuffer(4);
+    const dv = new DataView(buf);
+    dv.setUint32(0, this.nBits, false);
+    writer.putBytes(new Uint8Array(buf));
+    // move to separate class
+    writer.putUint64(BigInt(this.height));
     writer.putBytes(this.votes);
 
     if (this.version > BlockVersion.Initial) {
@@ -89,11 +89,11 @@ export class BlockHeader implements NetworkObject {
   static decode(reader: CursorReader): BlockHeader {
     const version = reader.getUint8();
     const parentId = objectIdFromBytes(reader.getBytes(OBJECT_ID_LENGTH));
-    const adProofRoot = newDigest32(reader.getBytes(32));
-    const txRoot = newDigest32(reader.getBytes(32));
-    const stateRoot = newAdDigest(reader.getBytes(33));
+    const adProofRoot = digest32.fromBytes(reader.getBytes(32));
+    const txRoot = digest32.fromBytes(reader.getBytes(32));
+    const stateRoot = adDigest.fromBytes(reader.getBytes(33));
     const timestamp = reader.getUint64();
-    const extensionRoot = newDigest32(reader.getBytes(32));
+    const extensionRoot = digest32.fromBytes(reader.getBytes(32));
     // move to separate class
     const dv = new DataView(reader.getBytes(4).buffer);
     const nBits = dv.getUint32(0, false);

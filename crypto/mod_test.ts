@@ -1,26 +1,26 @@
 import { assert, assertThrows } from "../test_deps.ts";
-import { newAdDigest, newDigest32 } from "./mod.ts";
+import { adDigest, digest32 } from "./mod.ts";
 
-Deno.test("[crypto/mod] newDigest32() throws in input buffer incorrect length", () => {
+Deno.test("[crypto/mod] digest32.fromBytes() throws in input buffer incorrect length", () => {
   const buf = new Uint8Array(31);
 
-  assertThrows(() => newDigest32(buf));
+  assertThrows(() => digest32.fromBytes(buf));
 });
 
-Deno.test("[crypto/mod] newDigest32() succeeds for correct length", () => {
+Deno.test("[crypto/mod] digest32.fromBytes() succeeds for correct length", () => {
   const buf = new Uint8Array(32);
 
-  assert(newDigest32(buf));
+  assert(digest32.fromBytes(buf));
 });
 
-Deno.test("[crypto/mod] newAdDigest() throws in input buffer incorrect length", () => {
+Deno.test("[crypto/mod] adDigest.fromBytes() throws in input buffer incorrect length", () => {
   const buf = new Uint8Array(31);
 
-  assertThrows(() => newAdDigest(buf));
+  assertThrows(() => adDigest.fromBytes(buf));
 });
 
-Deno.test("[crypto/mod] newAdDigest() succeeds for correct length", () => {
+Deno.test("[crypto/mod] adDigest.fromBytes() succeeds for correct length", () => {
   const buf = new Uint8Array(33);
 
-  assert(newAdDigest(buf));
+  assert(adDigest.fromBytes(buf));
 });
