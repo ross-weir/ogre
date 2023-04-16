@@ -7,6 +7,12 @@ export const OBJECT_ID_LENGTH = 32;
 export type ObjectId = string & { readonly __brand: unique symbol };
 
 export function objectIdFromBytes(buf: Uint8Array): ObjectId {
+  if (buf.length !== OBJECT_ID_LENGTH) {
+    throw new RangeError(
+      `objectidfrombytes: bad buffer length ${buf.length} != ${OBJECT_ID_LENGTH}`,
+    );
+  }
+
   return bytesToHex(buf) as ObjectId;
 }
 
