@@ -38,3 +38,14 @@ export function ipToBytes(ip: string) {
   const parts = ip.split(".").map((part) => parseInt(part, 10));
   return new Uint8Array(parts);
 }
+
+/** Chain network object ids used as part of the protocol */
+export enum NetworkObjectId {
+  /** Unconfirmed tx sent outside of blocks */
+  Transaction = 2,
+  BlockHeader = 101,
+  /** All txs within a block */
+  BlockTransaction = 102,
+  Proof = 104,
+  Extension = 108,
+}
