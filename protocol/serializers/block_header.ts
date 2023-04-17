@@ -7,6 +7,7 @@ import {
 } from "../../chain/mod.ts";
 import { adDigest, digest32 } from "../../crypto/mod.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
+import { getSolutionSerializer } from "./mining.ts";
 import { Serializer } from "./serializer.ts";
 
 export class BlockHeaderSerializer extends Serializer<BlockHeader> {
@@ -30,6 +31,9 @@ export class BlockHeaderSerializer extends Serializer<BlockHeader> {
     if (obj.version > BlockVersion.Initial) {
       writer.putUint8(0);
     }
+
+    const solutionSerializer = getSolutionSerializer(obj.version);
+    solutionSerializer.serialize(writer, obj.solution);
   }
 
   deserialize(reader: CursorReader): BlockHeader {
@@ -55,6 +59,9 @@ export class BlockHeaderSerializer extends Serializer<BlockHeader> {
       }
     }
 
+    const solutionSerializer = getSolutionSerializer(version);
+    const solution = solutionSerializer.deserialize(reader);
+
     return new BlockHeader({
       version,
       parentId,
@@ -65,6 +72,7 @@ export class BlockHeaderSerializer extends Serializer<BlockHeader> {
       extensionRoot,
       nBits,
       height,
+      solution,
       votes,
     });
   }

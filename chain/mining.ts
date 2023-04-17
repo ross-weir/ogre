@@ -1,5 +1,10 @@
+export enum PowAlgorithm {
+  Autolykos,
+}
+
 export abstract class BlockSolution {
-  abstract get algorithmName(): string;
+  /** Algorithm used to produce the solution */
+  abstract get algorithm(): PowAlgorithm;
 }
 
 export interface AutolykosOpts {
@@ -9,7 +14,7 @@ export interface AutolykosOpts {
   d: bigint;
 }
 
-export class AutolykosV2Solution extends BlockSolution {
+export class AutolykosSolution extends BlockSolution {
   readonly pk: Uint8Array;
   readonly w: Uint8Array;
   readonly n: Uint8Array;
@@ -24,7 +29,7 @@ export class AutolykosV2Solution extends BlockSolution {
     this.d = opts.d;
   }
 
-  get algorithmName(): string {
-    return "AutolykosV2";
+  get algorithm(): PowAlgorithm {
+    return PowAlgorithm.Autolykos;
   }
 }
