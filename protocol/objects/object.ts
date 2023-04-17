@@ -1,24 +1,5 @@
-import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";
+import { CursorWriter } from "../../io/cursor_buffer.ts";
 import { NetworkEncodable } from "../encoding.ts";
-
-/** Length of object ids in bytes */
-export const OBJECT_ID_LENGTH = 32;
-
-export type ObjectId = string & { readonly __brand: unique symbol };
-
-export function objectIdFromBytes(buf: Uint8Array): ObjectId {
-  if (buf.length !== OBJECT_ID_LENGTH) {
-    throw new RangeError(
-      `objectidfrombytes: bad buffer length ${buf.length} != ${OBJECT_ID_LENGTH}`,
-    );
-  }
-
-  return bytesToHex(buf) as ObjectId;
-}
-
-export function objectIdToBytes(objId: ObjectId): Uint8Array {
-  return hexToBytes(objId);
-}
 
 export enum ObjectTypeId {
   /** Unconfirmed tx sent outside of blocks */
@@ -30,6 +11,14 @@ export enum ObjectTypeId {
   Extension = 108,
 }
 
-export interface NetworkObject extends NetworkEncodable {
-  get objectTypeId(): ObjectTypeId;
+export abstract class NetworkObject<T> implements NetworkEncodable {
+  readonly inner: T;
+
+  constructor(inner: T) {
+    this.inner = inner;
+  }
+
+  abstract get objectTypeId(): ObjectTypeId;
+
+  abstract encode(writer: CursorWriter): void;
 }

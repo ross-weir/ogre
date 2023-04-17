@@ -1,101 +1,44 @@
-import { AdDigest, adDigest, Digest32, digest32 } from "../../crypto/mod.ts";
-import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import {
-  NetworkObject,
-  OBJECT_ID_LENGTH,
-  ObjectId,
-  objectIdFromBytes,
-  objectIdToBytes,
-  ObjectTypeId,
-} from "./object.ts";
+  BlockHeader,
+  BlockVersion,
+  IDENTIFIER_LENGTH,
+  identifierFromBytes,
+  identifierToBytes,
+} from "../../chain/mod.ts";
+import { adDigest, digest32 } from "../../crypto/mod.ts";
+import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
+import { NetworkObject, ObjectTypeId } from "./object.ts";
 
-export enum BlockVersion {
-  /** Block version during mainnet launch */
-  Initial = 1,
-  /** Block version after the Hardening hard-fork Autolykos v2 PoW, witnesses in transactions Merkle tree */
-  Hardening = 2,
-  /** Block version after the 5.0 soft-fork 5.0 interpreter with JITC, monotonic height rule (EIP-39) */
-  Interpreter50 = 3,
-}
-
-interface BlockHeaderOpts {
-  version: BlockVersion;
-  parentId: ObjectId;
-  adProofRoot: Digest32;
-  stateRoot: AdDigest;
-  txRoot: Digest32;
-  timestamp: bigint;
-  nBits: number;
-  height: number;
-  extensionRoot: Digest32;
-  // powSolution make optional or separate class like ref client?
-  /** Votes are 3 bytes in size */
-  votes: Uint8Array;
-}
-
-/**
- * Block header network object sent and received over the Ergo network.
- *
- * NOTE: The reference client uses 2 separate types, a header with pow solution
- * and a header without pow solution, not sure why this is needed at the moment
- * so just going with the one type for now.
- */
-export class BlockHeader implements NetworkObject {
-  readonly version: BlockVersion;
-  readonly parentId: ObjectId;
-  readonly adProofRoot: Digest32;
-  readonly stateRoot: AdDigest;
-  readonly txRoot: Digest32;
-  readonly timestamp: bigint;
-  readonly nBits: number;
-  readonly height: number;
-  readonly extensionRoot: Digest32;
-  // powSolution make optional or separate class like ref client?
-  /** Votes are 3 bytes in size */
-  readonly votes: Uint8Array;
-
-  constructor(opts: BlockHeaderOpts) {
-    this.version = opts.version;
-    this.parentId = opts.parentId;
-    this.adProofRoot = opts.adProofRoot;
-    this.stateRoot = opts.stateRoot;
-    this.txRoot = opts.txRoot;
-    this.timestamp = opts.timestamp;
-    this.nBits = opts.nBits;
-    this.height = opts.height;
-    this.extensionRoot = opts.extensionRoot;
-    this.votes = opts.votes;
-  }
-
+export class BlockHeaderNetworkObject extends NetworkObject<BlockHeader> {
   get objectTypeId(): ObjectTypeId {
     return ObjectTypeId.BlockHeader;
   }
 
   encode(writer: CursorWriter): void {
-    writer.putUint8(this.version);
-    writer.putBytes(objectIdToBytes(this.parentId));
-    writer.putBytes(this.adProofRoot);
-    writer.putBytes(this.txRoot);
-    writer.putBytes(this.stateRoot);
-    writer.putUint64(this.timestamp);
-    writer.putBytes(this.extensionRoot);
+    writer.putUint8(this.inner.version);
+    writer.putBytes(identifierToBytes(this.inner.parentId));
+    writer.putBytes(this.inner.adProofRoot);
+    writer.putBytes(this.inner.txRoot);
+    writer.putBytes(this.inner.stateRoot);
+    writer.putUint64(this.inner.timestamp);
+    writer.putBytes(this.inner.extensionRoot);
     // move to separate class "RequiredDifficulty" in ref client
     const buf = new ArrayBuffer(4);
     const dv = new DataView(buf);
-    dv.setUint32(0, this.nBits, false);
+    dv.setUint32(0, this.inner.nBits, false);
     writer.putBytes(new Uint8Array(buf));
     // move to separate class
-    writer.putUint64(BigInt(this.height));
-    writer.putBytes(this.votes);
+    writer.putUint64(BigInt(this.inner.height));
+    writer.putBytes(this.inner.votes);
 
-    if (this.version > BlockVersion.Initial) {
+    if (this.inner.version > BlockVersion.Initial) {
       writer.putUint8(0);
     }
   }
 
-  static decode(reader: CursorReader): BlockHeader {
+  static decode(reader: CursorReader): BlockHeaderNetworkObject {
     const version = reader.getUint8();
-    const parentId = objectIdFromBytes(reader.getBytes(OBJECT_ID_LENGTH));
+    const parentId = identifierFromBytes(reader.getBytes(IDENTIFIER_LENGTH));
     const adProofRoot = digest32.fromBytes(reader.getBytes(32));
     const txRoot = digest32.fromBytes(reader.getBytes(32));
     const stateRoot = adDigest.fromBytes(reader.getBytes(33));
@@ -116,7 +59,7 @@ export class BlockHeader implements NetworkObject {
       }
     }
 
-    return new BlockHeader({
+    const bh = new BlockHeader({
       version,
       parentId,
       adProofRoot,
@@ -128,5 +71,7 @@ export class BlockHeader implements NetworkObject {
       height,
       votes,
     });
+
+    return new BlockHeaderNetworkObject(bh);
   }
 }
