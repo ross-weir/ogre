@@ -1,6 +1,7 @@
 import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";
+import { GROUP_ELEMENT_IDENTITY } from "../../crypto/mod.ts";
 import { ScorexReader, ScorexWriter } from "../../io/scorex_buffer.ts";
-import { assertEquals } from "../../test_deps.ts";
+import { assert, assertEquals } from "../../test_deps.ts";
 import { GroupElementSerializer } from "./crypto.ts";
 
 Deno.test("[protocol/serializers/crypto] GroupElementSerializer roundtrip", () => {
@@ -24,4 +25,18 @@ Deno.test("[protocol/serializers/crypto] GroupElementSerializer roundtrip", () =
   const writer = new ScorexWriter();
   serializer.serialize(writer, point);
   assertEquals(bytesToHex(writer.buffer), geHex);
+});
+
+Deno.test("[protocol/serializers/crypto] GroupElementSerializer roundtrip identity point", () => {
+  const geBytes = new Uint8Array(33);
+  const reader = new ScorexReader(geBytes);
+  const serializer = new GroupElementSerializer();
+
+  const point = serializer.deserialize(reader);
+
+  assert(point.equals(GROUP_ELEMENT_IDENTITY));
+
+  const writer = new ScorexWriter();
+  serializer.serialize(writer, point);
+  assertEquals(writer.buffer, geBytes);
 });
