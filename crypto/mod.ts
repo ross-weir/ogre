@@ -1,21 +1,5 @@
+import { brandedUint8ArrayFactory } from "../_utils/mod.ts";
 import { secp256k1 } from "../deps.ts";
-
-function brandedUint8ArrayFactory<T extends Uint8Array>(
-  name: string,
-  size: number,
-) {
-  return {
-    fromBytes(buf: Uint8Array): T {
-      if (buf.length !== size) {
-        throw new RangeError(
-          `${name}.fromBytes: input buffer must be ${size} bytes in length, got: ${buf.length}`,
-        );
-      }
-
-      return buf as T;
-    },
-  };
-}
 
 /** Digest that is 32 bytes in size */
 export type Digest32 = Uint8Array & { readonly __brand: unique symbol };

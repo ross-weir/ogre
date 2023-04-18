@@ -1,9 +1,5 @@
-import {
-  IDENTIFIER_LENGTH,
-  identifierFromBytes,
-  identifierToBytes,
-} from "../chain/identifier.ts";
 import type { BlockHeader, Identifier } from "../chain/mod.ts";
+import { identifier } from "../chain/mod.ts";
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
 import { NetworkEncodable } from "./encoding.ts";
 import { BlockHeaderSerializer } from "./serializers/block_header.ts";
@@ -37,7 +33,7 @@ export class SyncInfoV1 extends SyncInfo<Identifier> {
 
   encode(writer: CursorWriter): void {
     writer.putUint16(this.items.length);
-    this.items.forEach((id) => writer.putBytes(identifierToBytes(id)));
+    this.items.forEach((id) => writer.putBytes(identifier.toBytes(id)));
   }
 
   static decode(reader: CursorReader, length: number): SyncInfoV1 {
@@ -50,8 +46,8 @@ export class SyncInfoV1 extends SyncInfo<Identifier> {
     const items = [];
 
     for (let i = 0; i < length; i += 1) {
-      const bytes = reader.getBytes(IDENTIFIER_LENGTH);
-      items.push(identifierFromBytes(bytes));
+      const bytes = reader.getBytes(identifier.requiredLength);
+      items.push(identifier.fromBytes(bytes));
     }
 
     return new SyncInfoV1(items);
