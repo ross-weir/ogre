@@ -1,3 +1,4 @@
+import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";
 import { BlockVersion } from "../../chain/block_header.ts";
 import {
   AutolykosSolution,
@@ -21,10 +22,36 @@ export class AutolykosV1SolutionSerializer
         "AutolykosV1SolutionSerializer can only handle autolykos based solutions",
       );
     }
+
+    const geSerializer = new GroupElementSerializer();
+
+    geSerializer.serialize(writer, obj.pk);
+    geSerializer.serialize(writer, obj.w);
+    writer.putBytes(obj.n);
+
+    const dHex = obj.d.toString(16);
+    const dBytes = hexToBytes(dHex);
+
+    writer.putUint8(dBytes.byteLength);
+    writer.putBytes(dBytes);
   }
 
   deserialize(reader: CursorReader): AutolykosSolution {
-    throw new Error("Method not implemented.");
+    const geSerializer = new GroupElementSerializer();
+    const pk = geSerializer.deserialize(reader);
+    const w = geSerializer.deserialize(reader);
+    const n = reader.getBytes(8);
+    const dLength = reader.getUint8();
+    const dBytes = reader.getBytes(dLength);
+    const dHex = bytesToHex(dBytes);
+    const d = BigInt(`0x${dHex}`);
+
+    return new AutolykosSolution({
+      pk,
+      w,
+      d,
+      n,
+    });
   }
 }
 
@@ -38,6 +65,7 @@ export class AutolykosV2SolutionSerializer
     }
 
     const geSerializer = new GroupElementSerializer();
+
     geSerializer.serialize(writer, obj.pk);
     writer.putBytes(obj.n);
   }
