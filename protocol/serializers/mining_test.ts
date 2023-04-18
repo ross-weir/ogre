@@ -1,10 +1,15 @@
 import { bytesToHex, hexToBytes } from "../../_utils/hex.ts";
+import { BlockVersion } from "../../chain/block_header.ts";
 import { GROUP_ELEMENT_GENERATOR } from "../../crypto/mod.ts";
 import { ScorexReader, ScorexWriter } from "../../io/scorex_buffer.ts";
 import { assert, assertEquals } from "../../test_deps.ts";
-import { AutolykosV2SolutionSerializer } from "./mining.ts";
+import {
+  AutolykosV1SolutionSerializer,
+  AutolykosV2SolutionSerializer,
+  getSolutionSerializer,
+} from "./mining.ts";
 
-Deno.test("[protocol/serializers/crypto] AutolykosV2SolutionSerializer roundtrip", () => {
+Deno.test("[protocol/serializers/mining] AutolykosV2SolutionSerializer roundtrip", () => {
   const solutionHex =
     "03f077fbc52183e6ed8455629fc5f1c99b7a9cd93a66293d79bbe0a640aade2d4100000000590b138a";
   const solutionBytes = hexToBytes(solutionHex);
@@ -27,4 +32,24 @@ Deno.test("[protocol/serializers/crypto] AutolykosV2SolutionSerializer roundtrip
   const writer = new ScorexWriter();
   serializer.serialize(writer, solution);
   assertEquals(bytesToHex(writer.buffer), solutionHex);
+});
+
+Deno.test("[protocol/serializers/mining] getSolutionSerializer", async (t) => {
+  await t.step("v1 block", () => {
+    const serializer = getSolutionSerializer(BlockVersion.Initial);
+
+    assert(serializer instanceof AutolykosV1SolutionSerializer);
+  });
+
+  await t.step("v2 block", () => {
+    const serializer = getSolutionSerializer(BlockVersion.Hardening);
+
+    assert(serializer instanceof AutolykosV2SolutionSerializer);
+  });
+
+  await t.step("v3 block", () => {
+    const serializer = getSolutionSerializer(BlockVersion.Interpreter50);
+
+    assert(serializer instanceof AutolykosV2SolutionSerializer);
+  });
 });
