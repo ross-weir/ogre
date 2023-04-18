@@ -17,7 +17,9 @@ export class AutolykosV1SolutionSerializer
   extends Serializer<AutolykosSolution> {
   serialize(writer: CursorWriter, obj: BlockSolution): void {
     if (!isAutolykosSolution(obj)) {
-      throw new Error("");
+      throw new TypeError(
+        "AutolykosV1SolutionSerializer can only handle autolykos based solutions",
+      );
     }
   }
 
@@ -30,7 +32,9 @@ export class AutolykosV2SolutionSerializer
   extends Serializer<AutolykosSolution> {
   serialize(writer: CursorWriter, obj: BlockSolution): void {
     if (!isAutolykosSolution(obj)) {
-      throw new Error("");
+      throw new TypeError(
+        "AutolykosV2SolutionSerializer can only handle autolykos based solutions",
+      );
     }
 
     const geSerializer = new GroupElementSerializer();
