@@ -1,5 +1,6 @@
 import { AdDigest, Digest32 } from "../crypto/mod.ts";
 import { Identifier } from "./identifier.ts";
+import { BlockSolution } from "./mining.ts";
 
 export enum BlockVersion {
   /** Block version during mainnet launch */
@@ -20,7 +21,7 @@ interface BlockHeaderFields {
   nBits: number;
   height: number;
   extensionRoot: Digest32;
-  // powSolution make optional or separate class like ref client?
+  solution: BlockSolution;
   /** Votes are 3 bytes in size */
   votes: Uint8Array;
 }
@@ -40,7 +41,7 @@ export class BlockHeader {
   readonly nBits: number;
   readonly height: number;
   readonly extensionRoot: Digest32;
-  // powSolution make optional or separate class like ref client?
+  readonly solution: BlockSolution;
   /** Votes are 3 bytes in size */
   readonly votes: Uint8Array;
 
@@ -54,6 +55,7 @@ export class BlockHeader {
     this.nBits = opts.nBits;
     this.height = opts.height;
     this.extensionRoot = opts.extensionRoot;
+    this.solution = opts.solution;
     this.votes = opts.votes;
   }
 }

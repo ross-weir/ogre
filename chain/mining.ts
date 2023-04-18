@@ -1,17 +1,24 @@
+import { ICurvePoint } from "../crypto/mod.ts";
+
+export enum PowAlgorithm {
+  Autolykos,
+}
+
 export abstract class BlockSolution {
-  abstract get algorithmName(): string;
+  /** Algorithm used to produce the solution */
+  abstract get algorithm(): PowAlgorithm;
 }
 
 export interface AutolykosOpts {
-  pk: Uint8Array;
-  w: Uint8Array;
+  pk: ICurvePoint;
+  w: ICurvePoint;
   n: Uint8Array;
   d: bigint;
 }
 
-export class AutolykosV2Solution extends BlockSolution {
-  readonly pk: Uint8Array;
-  readonly w: Uint8Array;
+export class AutolykosSolution extends BlockSolution {
+  readonly pk: ICurvePoint;
+  readonly w: ICurvePoint;
   readonly n: Uint8Array;
   readonly d: bigint;
 
@@ -24,7 +31,7 @@ export class AutolykosV2Solution extends BlockSolution {
     this.d = opts.d;
   }
 
-  get algorithmName(): string {
-    return "AutolykosV2";
+  get algorithm(): PowAlgorithm {
+    return PowAlgorithm.Autolykos;
   }
 }

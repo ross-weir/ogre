@@ -7,36 +7,36 @@ import {
 } from "../../chain/mod.ts";
 import { adDigest, digest32 } from "../../crypto/mod.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
-import { NetworkObject, ObjectTypeId } from "./object.ts";
+import { getSolutionSerializer } from "./mining.ts";
+import { Serializer } from "./serializer.ts";
 
-export class BlockHeaderNetworkObject extends NetworkObject<BlockHeader> {
-  get objectTypeId(): ObjectTypeId {
-    return ObjectTypeId.BlockHeader;
-  }
-
-  encode(writer: CursorWriter): void {
-    writer.putUint8(this.inner.version);
-    writer.putBytes(identifierToBytes(this.inner.parentId));
-    writer.putBytes(this.inner.adProofRoot);
-    writer.putBytes(this.inner.txRoot);
-    writer.putBytes(this.inner.stateRoot);
-    writer.putUint64(this.inner.timestamp);
-    writer.putBytes(this.inner.extensionRoot);
+export class BlockHeaderSerializer extends Serializer<BlockHeader> {
+  serialize(writer: CursorWriter, obj: BlockHeader): void {
+    writer.putUint8(obj.version);
+    writer.putBytes(identifierToBytes(obj.parentId));
+    writer.putBytes(obj.adProofRoot);
+    writer.putBytes(obj.txRoot);
+    writer.putBytes(obj.stateRoot);
+    writer.putUint64(obj.timestamp);
+    writer.putBytes(obj.extensionRoot);
     // move to separate class "RequiredDifficulty" in ref client
     const buf = new ArrayBuffer(4);
     const dv = new DataView(buf);
-    dv.setUint32(0, this.inner.nBits, false);
+    dv.setUint32(0, obj.nBits, false);
     writer.putBytes(new Uint8Array(buf));
     // move to separate class
-    writer.putUint64(BigInt(this.inner.height));
-    writer.putBytes(this.inner.votes);
+    writer.putUint64(BigInt(obj.height));
+    writer.putBytes(obj.votes);
 
-    if (this.inner.version > BlockVersion.Initial) {
+    if (obj.version > BlockVersion.Initial) {
       writer.putUint8(0);
     }
+
+    const solutionSerializer = getSolutionSerializer(obj.version);
+    solutionSerializer.serialize(writer, obj.solution);
   }
 
-  static decode(reader: CursorReader): BlockHeaderNetworkObject {
+  deserialize(reader: CursorReader): BlockHeader {
     const version = reader.getUint8();
     const parentId = identifierFromBytes(reader.getBytes(IDENTIFIER_LENGTH));
     const adProofRoot = digest32.fromBytes(reader.getBytes(32));
@@ -59,7 +59,10 @@ export class BlockHeaderNetworkObject extends NetworkObject<BlockHeader> {
       }
     }
 
-    const bh = new BlockHeader({
+    const solutionSerializer = getSolutionSerializer(version);
+    const solution = solutionSerializer.deserialize(reader);
+
+    return new BlockHeader({
       version,
       parentId,
       adProofRoot,
@@ -69,9 +72,8 @@ export class BlockHeaderNetworkObject extends NetworkObject<BlockHeader> {
       extensionRoot,
       nBits,
       height,
+      solution,
       votes,
     });
-
-    return new BlockHeaderNetworkObject(bh);
   }
 }
