@@ -1,7 +1,20 @@
-import { CursorWriter } from "../../../io/cursor_buffer.ts";
+import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
 import { InitialNetworkMessage, MessageCode } from "../../message.ts";
+import { SyncInfoType, SyncInfoV1, SyncInfoV2 } from "../../sync_info.ts";
+
+function isV2Message(buf: Uint8Array): boolean {
+  return buf[0] === 0 && buf.byteLength > 1;
+}
 
 export class SyncInfoMessage extends InitialNetworkMessage {
+  readonly syncInfo: SyncInfoType;
+
+  constructor(syncInfo: SyncInfoType) {
+    super();
+
+    this.syncInfo = syncInfo;
+  }
+
   get code(): MessageCode {
     return MessageCode.SyncInfo;
   }
@@ -11,10 +24,14 @@ export class SyncInfoMessage extends InitialNetworkMessage {
   }
 
   encode(writer: CursorWriter): void {
-    throw new Error("Method not implemented.");
+    this.syncInfo.encode(writer);
   }
 
   static decode(reader: CursorReader): SyncInfoMessage {
-    throw new Error("no impl yet");
+    const syncInfo = isV2Message(reader.buffer)
+      ? SyncInfoV2.decode(reader)
+      : SyncInfoV1.decode(reader);
+
+    return new SyncInfoMessage(syncInfo);
   }
 }

@@ -36,12 +36,9 @@ export class SyncInfoV1 extends SyncInfo<Identifier> {
     this.items.forEach((id) => writer.putBytes(identifier.toBytes(id)));
   }
 
-  /**
-   * The length parameter is read by the message decoder first
-   * in order to determine if the `SyncInfo` included in the `SyncInfoMessage`
-   * is V1 or V2.
-   */
-  static decode(reader: CursorReader, length: number): SyncInfoV1 {
+  static decode(reader: CursorReader): SyncInfoV1 {
+    const length = reader.getUint16();
+
     if (length > this.MAX_ITEMS) {
       throw new RangeError(
         `SyncInfoV1.decode: length exceeds limit ${length} > ${this.MAX_ITEMS}`,
@@ -69,6 +66,7 @@ export class SyncInfoV2 extends SyncInfo<BlockHeader> {
   }
 
   encode(writer: CursorWriter): void {
+    writer.putUint16(0);
     writer.putInt8(SyncInfoV2.V2_MARKER);
     writer.putUint8(this.items.length);
 
@@ -84,6 +82,14 @@ export class SyncInfoV2 extends SyncInfo<BlockHeader> {
   }
 
   static decode(reader: CursorReader): SyncInfoV2 {
+    const zeroLength = reader.getUint16();
+
+    if (zeroLength !== 0) {
+      throw new Error(
+        `SyncInfoV2.decode: expected v1 length to be 0, got ${zeroLength}`,
+      );
+    }
+
     const marker = reader.getInt8();
 
     if (marker !== this.V2_MARKER) {
@@ -120,3 +126,5 @@ export class SyncInfoV2 extends SyncInfo<BlockHeader> {
     return new SyncInfoV2(items);
   }
 }
+
+export type SyncInfoType = SyncInfoV1 | SyncInfoV2;
