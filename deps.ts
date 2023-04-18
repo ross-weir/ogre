@@ -23,4 +23,4 @@ export { default as structuredClone } from "https://cdn.skypack.dev/@ungap/struc
 export { default as blakejs } from "https://cdn.skypack.dev/blakejs@1.2.1";
 
 // crypto dependencies
-export * as secp256k1 from "https://deno.land/x/secp256k1@2.0.0/mod.ts";
+export * as secp256k1 from "https://esm.sh/@noble/secp256k1@2.0.0"; // there was a issue using skypack

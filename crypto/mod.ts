@@ -34,7 +34,10 @@ export const CurvePoint = secp256k1.ProjectivePoint;
 export interface ICurvePoint extends InstanceType<typeof CurvePoint> {}
 
 export const GROUP_ELEMENT_SIZE = 256 / 8; // 32 bytes
-/** Group elements are encoded as {0x2 if y point > 0 else 0x3} + {x point encoded bytes} */
+/**
+ * Standard compression of points:
+ * Group elements are encoded as {0x2 if y point > 0 else 0x3} + {x point encoded bytes}
+ */
 export const GROUP_ELEMENT_ENCODED_SIZE = GROUP_ELEMENT_SIZE + 1;
 export const GROUP_ELEMENT_IDENTITY = CurvePoint.ZERO;
 export const GROUP_ELEMENT_GENERATOR = CurvePoint.BASE;
