@@ -4,7 +4,9 @@ import {
   BlockSolution,
   PowAlgorithm,
 } from "../../chain/mining.ts";
+import { GROUP_ELEMENT_GENERATOR } from "../../crypto/mod.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
+import { GroupElementSerializer } from "./crypto.ts";
 import { Serializer } from "./serializer.ts";
 
 function isAutolykosSolution(obj: BlockSolution): obj is AutolykosSolution {
@@ -31,17 +33,19 @@ export class AutolykosV2SolutionSerializer
       throw new Error("");
     }
 
-    writer.putBytes(obj.pk); // might need special EC encoding
+    const geSerializer = new GroupElementSerializer();
+    geSerializer.serialize(writer, obj.pk);
     writer.putBytes(obj.n);
   }
 
   deserialize(reader: CursorReader): AutolykosSolution {
-    const pk = reader.getBytes(33); // might need special encoding
+    const geSerializer = new GroupElementSerializer();
+    const pk = geSerializer.deserialize(reader);
     const n = reader.getBytes(8);
 
     return new AutolykosSolution({
       pk,
-      w: new Uint8Array(), // group generator
+      w: GROUP_ELEMENT_GENERATOR,
       d: 0n,
       n,
     });

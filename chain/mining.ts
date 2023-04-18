@@ -1,3 +1,5 @@
+import { ICurvePoint } from "../crypto/mod.ts";
+
 export enum PowAlgorithm {
   Autolykos,
 }
@@ -8,15 +10,15 @@ export abstract class BlockSolution {
 }
 
 export interface AutolykosOpts {
-  pk: Uint8Array;
-  w: Uint8Array;
+  pk: ICurvePoint;
+  w: ICurvePoint;
   n: Uint8Array;
   d: bigint;
 }
 
 export class AutolykosSolution extends BlockSolution {
-  readonly pk: Uint8Array;
-  readonly w: Uint8Array;
+  readonly pk: ICurvePoint;
+  readonly w: ICurvePoint;
   readonly n: Uint8Array;
   readonly d: bigint;
 
