@@ -2,7 +2,25 @@ import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
 import { BlockHeader } from "../chain/block_header.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { assert, assertEquals, assertThrows } from "../test_deps.ts";
-import { SyncInfoV2 } from "./sync_info.ts";
+import { SyncInfoV1, SyncInfoV2, SyncInfoVersion } from "./sync_info.ts";
+
+Deno.test("[protocol/sync_info] SyncInfoV1.version returns v1", () => {
+  const syncInfo = new SyncInfoV1([]);
+
+  assertEquals(syncInfo.version, SyncInfoVersion.V1);
+});
+
+Deno.test("[protocol/sync_info] SyncInfoV1.decode throws if too many items", () => {
+  const writer = new ScorexWriter();
+  writer.putUint16(SyncInfoV1.MAX_ITEMS + 5);
+  const reader = new ScorexReader(writer.buffer);
+
+  assertThrows(
+    () => SyncInfoV1.decode(reader),
+    RangeError,
+    "length exceeds limit",
+  );
+});
 
 Deno.test("[protocol/sync_info] SyncInfoV2 encoding roundtrip", async (t) => {
   const objHex =
