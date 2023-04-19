@@ -1,6 +1,7 @@
 import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
+import { BlockHeader } from "../chain/block_header.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
-import { assertEquals, assertThrows } from "../test_deps.ts";
+import { assert, assertEquals, assertThrows } from "../test_deps.ts";
 import { SyncInfoV2 } from "./sync_info.ts";
 
 Deno.test("[protocol/sync_info] SyncInfoV2 encoding roundtrip", async (t) => {
@@ -100,4 +101,18 @@ Deno.test("[protocol/sync_info] SyncInfoV2.decode throws if header is too large"
     RangeError,
     "header size exceeds limit",
   );
+});
+
+Deno.test("[protocol/sync_info] SyncInfo.isEmpty", async (t) => {
+  await t.step("empty items", () => {
+    const syncInfo = new SyncInfoV2([]);
+
+    assert(syncInfo.isEmpty);
+  });
+
+  await t.step("non-empty items", () => {
+    const syncInfo = new SyncInfoV2([{} as BlockHeader]);
+
+    assert(!syncInfo.isEmpty);
+  });
 });
