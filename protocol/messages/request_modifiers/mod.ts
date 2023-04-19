@@ -2,7 +2,7 @@ import { CursorReader, CursorWriter } from "../../../io/cursor_buffer.ts";
 import { InvPayload } from "../../inv.ts";
 import { InitialNetworkMessage, MessageCode } from "../../message.ts";
 
-export class InvMessage extends InitialNetworkMessage {
+export class RequestModifiersMessage extends InitialNetworkMessage {
   readonly inv: InvPayload;
 
   constructor(inv: InvPayload) {
@@ -12,18 +12,18 @@ export class InvMessage extends InitialNetworkMessage {
   }
 
   get code(): MessageCode {
-    return MessageCode.Inv;
+    return MessageCode.RequestModifiers;
   }
 
   get name(): string {
-    return "Inv";
+    return "RequestModifiers";
   }
 
   encode(writer: CursorWriter): void {
     this.inv.encode(writer);
   }
 
-  static decode(reader: CursorReader): InvMessage {
-    return new InvMessage(InvPayload.decode(reader));
+  static decode(reader: CursorReader): RequestModifiersMessage {
+    return new RequestModifiersMessage(InvPayload.decode(reader));
   }
 }
