@@ -85,7 +85,7 @@ export class SyncInfoV2 extends SyncInfo<BlockHeader> {
     const zeroLength = reader.getUint16();
 
     if (zeroLength !== 0) {
-      throw new Error(
+      throw new RangeError(
         `SyncInfoV2.decode: expected v1 length to be 0, got ${zeroLength}`,
       );
     }

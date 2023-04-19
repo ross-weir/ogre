@@ -1,6 +1,6 @@
 import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
-import { assertEquals } from "../test_deps.ts";
+import { assertEquals, assertThrows } from "../test_deps.ts";
 import { SyncInfoV2 } from "./sync_info.ts";
 
 Deno.test("[protocol/sync_info] SyncInfoV2 encoding roundtrip", async (t) => {
@@ -53,4 +53,51 @@ Deno.test("[protocol/sync_info] SyncInfoV2 encoding roundtrip", async (t) => {
 
     assertEquals(bytesToHex(writer.buffer), objHex);
   });
+});
+
+Deno.test("[protocol/sync_info] SyncInfoV2.decode throws if v1 length is non-zero", () => {
+  const objBytes = new Uint8Array([4]);
+  const reader = new ScorexReader(objBytes);
+
+  assertThrows(
+    () => SyncInfoV2.decode(reader),
+    RangeError,
+    "expected v1 length to be 0",
+  );
+});
+
+Deno.test("[protocol/sync_info] SyncInfoV2.decode throws if v2 marker is incorrect", () => {
+  const objBytes = new Uint8Array([0, 4]);
+  const reader = new ScorexReader(objBytes);
+
+  assertThrows(
+    () => SyncInfoV2.decode(reader),
+    Error,
+    "unsupported marker",
+  );
+});
+
+Deno.test("[protocol/sync_info] SyncInfoV2.decode throws if too many headers in payload", () => {
+  const objBytes = new Uint8Array([0, -1, SyncInfoV2.MAX_ITEMS + 5]);
+  const reader = new ScorexReader(objBytes);
+
+  assertThrows(
+    () => SyncInfoV2.decode(reader),
+    RangeError,
+    "item length exceeds limit",
+  );
+});
+
+Deno.test("[protocol/sync_info] SyncInfoV2.decode throws if header is too large", () => {
+  const objBytes = new Uint8Array([0, -1, 1]);
+  const writer = new ScorexWriter();
+  writer.putBytes(objBytes);
+  writer.putUint16(SyncInfoV2.MAX_ITEM_SIZE_BYTES + 5); // add the header size
+  const reader = new ScorexReader(writer.buffer);
+
+  assertThrows(
+    () => SyncInfoV2.decode(reader),
+    RangeError,
+    "header size exceeds limit",
+  );
 });
