@@ -1,10 +1,4 @@
-import {
-  BlockHeader,
-  BlockVersion,
-  IDENTIFIER_LENGTH,
-  identifierFromBytes,
-  identifierToBytes,
-} from "../../chain/mod.ts";
+import { BlockHeader, BlockVersion, identifier } from "../../chain/mod.ts";
 import { adDigest, digest32 } from "../../crypto/mod.ts";
 import { CursorReader, CursorWriter } from "../../io/cursor_buffer.ts";
 import { getSolutionSerializer } from "./mining.ts";
@@ -13,7 +7,7 @@ import { Serializer } from "./serializer.ts";
 export class BlockHeaderSerializer extends Serializer<BlockHeader> {
   serialize(writer: CursorWriter, obj: BlockHeader): void {
     writer.putUint8(obj.version);
-    writer.putBytes(identifierToBytes(obj.parentId));
+    writer.putBytes(identifier.toBytes(obj.parentId));
     writer.putBytes(obj.adProofRoot);
     writer.putBytes(obj.txRoot);
     writer.putBytes(obj.stateRoot);
@@ -38,7 +32,9 @@ export class BlockHeaderSerializer extends Serializer<BlockHeader> {
 
   deserialize(reader: CursorReader): BlockHeader {
     const version = reader.getUint8();
-    const parentId = identifierFromBytes(reader.getBytes(IDENTIFIER_LENGTH));
+    const parentId = identifier.fromBytes(
+      reader.getBytes(identifier.requiredLength),
+    );
     const adProofRoot = digest32.fromBytes(reader.getBytes(32));
     const txRoot = digest32.fromBytes(reader.getBytes(32));
     const stateRoot = adDigest.fromBytes(reader.getBytes(33));
