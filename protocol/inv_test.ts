@@ -1,7 +1,7 @@
 import { bytesToHex, hexToBytes } from "../_utils/hex.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { assertEquals, assertThrows } from "../test_deps.ts";
-import { InvPayload, ObjectTypeId } from "./inv.ts";
+import { InvPayload, ModifierType } from "./inv.ts";
 
 Deno.test("[protocol/inv] InvPayload encoding roundtrip", async (t) => {
   const hex =
@@ -11,7 +11,7 @@ Deno.test("[protocol/inv] InvPayload encoding roundtrip", async (t) => {
   const inv = InvPayload.decode(reader);
 
   await t.step("check decoded", () => {
-    assertEquals(inv.type, ObjectTypeId.BlockHeader);
+    assertEquals(inv.type, ModifierType.BlockHeader);
     assertEquals(inv.ids.length, 400);
 
     assertEquals(
@@ -56,7 +56,7 @@ Deno.test("[protocol/inv] Inv throws for invalid object type id", () => {
 
 Deno.test("[protocol/inv] InvPayload.decode throws if item length less than 1", () => {
   const writer = new ScorexWriter();
-  writer.putUint8(ObjectTypeId.BlockHeader);
+  writer.putUint8(ModifierType.BlockHeader);
   writer.putUint32(0);
   const reader = new ScorexReader(writer.buffer);
 
@@ -69,7 +69,7 @@ Deno.test("[protocol/inv] InvPayload.decode throws if item length less than 1", 
 
 Deno.test("[protocol/inv] InvPayload.decode throws if item length exceeds limit", () => {
   const writer = new ScorexWriter();
-  writer.putUint8(ObjectTypeId.BlockHeader);
+  writer.putUint8(ModifierType.BlockHeader);
   writer.putUint32(InvPayload.MAX_ITEMS + 5);
   const reader = new ScorexReader(writer.buffer);
 
