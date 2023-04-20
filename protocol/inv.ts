@@ -2,8 +2,8 @@ import { Identifier, identifier } from "../chain/identifier.ts";
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
 import { NetworkEncodable } from "./encoding.ts";
 
-/** Chain network object ids used as part of the protocol */
-export enum ObjectTypeId {
+/** Chain network modifier ids used as part of the protocol */
+export enum ModifierType {
   /** Unconfirmed tx sent outside of blocks */
   Transaction = 2,
   BlockHeader = 101,
@@ -13,16 +13,16 @@ export enum ObjectTypeId {
   Extension = 108,
 }
 
-export function isObjectTypeId(typeId: number): typeId is ObjectTypeId {
-  return Object.values(ObjectTypeId).includes(typeId);
+export function isModifierType(typeId: number): typeId is ModifierType {
+  return Object.values(ModifierType).includes(typeId);
 }
 
 export class InvPayload implements NetworkEncodable {
   static readonly MAX_ITEMS = 400;
-  readonly type: ObjectTypeId;
+  readonly type: ModifierType;
   readonly ids: Identifier[];
 
-  constructor(type: ObjectTypeId, ids: Identifier[]) {
+  constructor(type: ModifierType, ids: Identifier[]) {
     this.type = type;
     this.ids = ids;
   }
@@ -39,7 +39,7 @@ export class InvPayload implements NetworkEncodable {
   static decode(reader: CursorReader): InvPayload {
     const type = reader.getUint8();
 
-    if (!isObjectTypeId(type)) {
+    if (!isModifierType(type)) {
       throw new Error(`InvPayload.decode invalid object type id ${type}`);
     }
 
