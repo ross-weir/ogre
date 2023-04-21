@@ -57,6 +57,11 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#codec = codec;
   }
 
+  /** Currently connected and active peers */
+  get peers(): Peer[] {
+    return this.#peers;
+  }
+
   start(): Promise<void> {
     const { gossipIntervalSec, evictIntervalSec } = this.#config.peers;
 

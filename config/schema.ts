@@ -65,6 +65,8 @@ export const ogreConfigSchema = z.object({
     maxConnections: z.number(),
     gossipIntervalSec: z.number(),
     evictIntervalSec: z.number(),
+    /** How often to send `SyncInfo` messages when node has not fully synced before */
+    syncIntervalSec: z.number(),
   }),
   logging: loggingConfigSchema,
 });

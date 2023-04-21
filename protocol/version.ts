@@ -45,9 +45,3 @@ export class Version implements NetworkEncodable {
     return new Version(major, minor, patch);
   }
 }
-
-/** Reference node client versions */
-export const initialNodeVersion = new Version(0, 0, 1);
-/** Reference client nodes of the following versions deliver broken block sections */
-export const v4017 = new Version(4, 0, 17);
-export const v4018 = new Version(4, 0, 18);
