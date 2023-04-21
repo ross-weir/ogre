@@ -1,4 +1,5 @@
 import { Component } from "../core/component.ts";
+import { IdentifiableMixin } from "../core/mod.ts";
 import { log } from "../deps.ts";
 import { Connection } from "../net/mod.ts";
 import { NetworkMessage } from "../protocol/message.ts";
@@ -25,7 +26,7 @@ export interface PeerOpts {
 }
 
 /** Wraps a connection to a peer and handles message sending/receiving. */
-export class Peer extends Component<PeerEvents> {
+class BasePeer extends Component<PeerEvents> {
   readonly #logger: log.Logger;
   readonly #conn: Connection;
   readonly #reader: ReadableStreamDefaultReader<Uint8Array>;
@@ -173,3 +174,5 @@ export class Peer extends Component<PeerEvents> {
     return this.#writer.write(writer.buffer);
   }
 }
+
+export class Peer extends IdentifiableMixin(BasePeer) {}

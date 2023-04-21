@@ -25,7 +25,7 @@ export abstract class SyncInfo<T> implements NetworkEncodable {
 }
 
 export class SyncInfoV1 extends SyncInfo<Identifier> {
-  static MAX_ITEMS = 1000;
+  static readonly MAX_ITEMS = 1000;
 
   get version(): SyncInfoVersion {
     return SyncInfoVersion.V1;
@@ -57,9 +57,9 @@ export class SyncInfoV1 extends SyncInfo<Identifier> {
 }
 
 export class SyncInfoV2 extends SyncInfo<BlockHeader> {
-  static V2_MARKER = -1;
-  static MAX_ITEMS = 50;
-  static MAX_ITEM_SIZE_BYTES = 1000;
+  static readonly V2_MARKER = -1;
+  static readonly MAX_ITEMS = 50;
+  static readonly MAX_ITEM_SIZE_BYTES = 1000;
 
   get version(): SyncInfoVersion {
     return SyncInfoVersion.V2;
