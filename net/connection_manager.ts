@@ -104,7 +104,21 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
   }
 
   onConnectionClose(connId: string) {
+    const conn = this.#connections.find((c) => c.connId === connId);
+
+    if (!conn) {
+      this.#logger.debug(
+        `onConnectionClose: connection id not found '${connId}'`,
+      );
+
+      return;
+    }
+
     this.#connections = this.#connections.filter((c) => c.connId !== connId);
+
+    this.#logger.info(
+      `closed connection to ${conn.remoteAddr.toString()}, connections ${this.#connections.length}/${this.#maxConnections}`,
+    );
   }
 
   private async autoDialPeer(): Promise<void> {
