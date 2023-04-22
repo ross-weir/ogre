@@ -30,8 +30,6 @@ export type Connection = BaseConnection & EventEmitter<ConnectionEvents>;
 
 /** Wrap the connection so it emits events */
 export function createConnection(base: BaseConnection): Connection {
-  // const conn = new EventEmitter<ConnectionEvents>() as Connection;
-
   const conn = Object.assign(new EventEmitter<ConnectionEvents>(), base);
 
   conn.close = () => {
