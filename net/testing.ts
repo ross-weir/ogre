@@ -1,6 +1,10 @@
 import { Connection, createConnection } from "./connection.ts";
 import { faker } from "../test_deps.ts";
 import { toMultiaddr } from "../multiaddr/mod.ts";
+import { ConnectionManager } from "./connection_manager.ts";
+import { log } from "../deps.ts";
+import { createRandomPeerStore } from "../peers/testing.ts";
+import { createRandomTransport } from "../transports/testing.ts";
 
 export function createRandomConnection(): Connection {
   const localAddr = `127.0.0.1:${faker.internet.port()}`;
@@ -16,5 +20,14 @@ export function createRandomConnection(): Connection {
     readable,
     writable,
     close: () => undefined,
+  });
+}
+
+export function createRandomConnectionManager(): ConnectionManager {
+  return new ConnectionManager({
+    logger: log.getLogger(),
+    maxConnections: 5,
+    peerStore: createRandomPeerStore(),
+    transport: createRandomTransport(),
   });
 }

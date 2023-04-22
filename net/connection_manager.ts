@@ -121,6 +121,11 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     );
   }
 
+  /** The amount of active connections */
+  get connectionCount(): number {
+    return this.#connections.length;
+  }
+
   private async autoDialPeer(): Promise<void> {
     if (this.#connections.length >= this.#maxConnections) {
       this.#logger.debug("already at max connections");
