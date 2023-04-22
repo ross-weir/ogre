@@ -84,6 +84,13 @@ export class PeerManager extends Component<PeerManagerEvents> {
     await Promise.all(this.#peers.map((peer) => peer.stop()));
   }
 
+  removePeer(peer: Peer) {
+    // remove from this.#peers
+    // emit peer:removed event
+    // components that care about peers being removed should listen for this event
+    // and not peer:stopped
+  }
+
   /**
    * Select a random peer from our currently connected peers to send
    * a `GetPeersMessage` message to. This enables us to gossip and
