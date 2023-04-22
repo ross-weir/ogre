@@ -108,7 +108,7 @@ export class Ogre extends Component<NodeEvents> {
           "peer:message:recv",
           ({ detail: msg }) => msgHandler.handle(msg, peer),
         );
-        this.#forwardEvent(e);
+        this.#bubbleEvent(e);
       },
     );
 
@@ -117,7 +117,7 @@ export class Ogre extends Component<NodeEvents> {
       const { peer } = e.detail;
 
       syncManager.discardPeer(peer);
-      this.#forwardEvent(e);
+      this.#bubbleEvent(e);
     });
   }
 
@@ -153,7 +153,7 @@ export class Ogre extends Component<NodeEvents> {
     return version;
   }
 
-  #forwardEvent<T>(e: CustomEvent<T>) {
+  #bubbleEvent<T>(e: CustomEvent<T>) {
     this.dispatchEvent(new CustomEvent(e.type, { detail: e.detail }));
   }
 }
