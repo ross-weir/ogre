@@ -1,10 +1,9 @@
 import { OgreConfig } from "../config/mod.ts";
 import { Component } from "../core/mod.ts";
-import { log } from "../deps.ts";
+import { datetime, log } from "../deps.ts";
 import { SyncInfoMessage } from "../protocol/messages/sync_info/mod.ts";
 import { REF_CLIENT_MILESTONE, SyncInfoV2 } from "../protocol/mod.ts";
 import { Peer } from "./peer.ts";
-import { peersQuery } from "./peers_query.ts";
 
 export interface SyncManagerOpts {
   logger: log.Logger;
@@ -20,17 +19,22 @@ export enum PeerChainState {
   Older,
 }
 
-export interface PeerSyncStatus {
+export interface PeerSyncState {
   peer: Peer;
   chainState: PeerChainState;
   height?: number;
+  lastSyncSentAt?: Date;
 }
 
 export class SyncManager extends Component {
+  /** Seconds that must have elapsed before we consider peer for another `SyncInfo` message */
+  static readonly MIN_SYNC_INTERVAL_SEC = 20;
+  /** Seconds since last `SyncInfo` message was sent to consider a peer "outdated" */
+  static readonly OUTDATED_SYNC_THRESHOLD_SEC = 60;
   readonly #logger: log.Logger;
   readonly #config: OgreConfig;
   #sendSyncInfoTaskHandle?: number;
-  #peerStatuses: PeerSyncStatus[] = [];
+  #states: PeerSyncState[] = [];
 
   constructor({ config, logger }: SyncManagerOpts) {
     super();
@@ -54,8 +58,8 @@ export class SyncManager extends Component {
     return Promise.resolve();
   }
 
-  getPeerStatus(peer: Peer): PeerSyncStatus | undefined {
-    return this.#peerStatuses.find((ps) => ps.peer.isEqual(peer));
+  getPeerStatus(peer: Peer): PeerSyncState | undefined {
+    return this.#states.find((ps) => ps.peer.isEqual(peer));
   }
 
   monitorPeer(peer: Peer) {
@@ -64,35 +68,94 @@ export class SyncManager extends Component {
       return;
     }
 
-    this.#peerStatuses.push({ peer, chainState: PeerChainState.Unknown });
+    this.#states.push({ peer, chainState: PeerChainState.Unknown });
   }
 
   discardPeer(peer: Peer) {
-    this.#peerStatuses = this.#peerStatuses.filter((ps) =>
-      !ps.peer.isEqual(peer)
-    );
+    this.#states = this.#states.filter((ps) => !ps.peer.isEqual(peer));
+  }
+
+  getStatesForSyncInfoMsg(): PeerSyncState[] {
+    const outdated = this.#outdatedStates();
+
+    if (outdated.length) {
+      return outdated;
+    }
+
+    const states: PeerSyncState[] = [
+      ...this.#statesByChainState(PeerChainState.Unknown),
+      ...this.#statesByChainState(PeerChainState.Fork),
+    ];
+
+    const elders = this.#statesByChainState(PeerChainState.Older);
+
+    if (elders.length) {
+      const randomIndex = Math.floor(Math.random() * elders.length);
+
+      states.push(elders[randomIndex]);
+    }
+
+    const validStates = states.filter((s) => {
+      if (!s.lastSyncSentAt) {
+        return true;
+      }
+
+      const { seconds } = datetime.difference(s.lastSyncSentAt, new Date(), {
+        units: ["seconds"],
+      });
+
+      return seconds! >= SyncManager.MIN_SYNC_INTERVAL_SEC;
+    });
+
+    return validStates;
   }
 
   sendSyncInfo() {
     // currently only v2 sync is supported
-    const peers = peersQuery(this.#monitoredPeers).cmpVersion(
-      ">=",
-      REF_CLIENT_MILESTONE.syncV2,
-    ).peers();
+    const states = this.getStatesForSyncInfoMsg();
 
-    if (!peers.length) {
+    if (!states.length) {
       return;
     }
 
-    this.#logger.info(`sendSyncInfo sending sync msg to ${peers.length} peers`);
+    this.#logger.info(
+      `sendSyncInfo sending sync msg to ${states.length} peers`,
+    );
 
     // TODO: determine what to send in sync info msg
     const msg = new SyncInfoMessage(new SyncInfoV2([]));
-    // update each peers last sync send time
-    peers.forEach((p) => p.send(msg));
+
+    states.forEach((s) => {
+      if (
+        !s.peer.handshake?.peerSpec.refNodeVersion.gte(
+          REF_CLIENT_MILESTONE.syncV2,
+        )
+      ) {
+        this.#logger.info(`sendSyncInfo skipping node with SyncInfoV1`);
+
+        return;
+      }
+
+      s.lastSyncSentAt = new Date();
+      s.peer.send(msg);
+    });
   }
 
-  get #monitoredPeers() {
-    return this.#peerStatuses.map((ps) => ps.peer);
+  #outdatedStates(): PeerSyncState[] {
+    return this.#states.filter((s) => {
+      if (!s.lastSyncSentAt) {
+        return false;
+      }
+
+      const { seconds } = datetime.difference(s.lastSyncSentAt, new Date(), {
+        units: ["seconds"],
+      });
+
+      return seconds! >= SyncManager.OUTDATED_SYNC_THRESHOLD_SEC;
+    });
+  }
+
+  #statesByChainState(chainState: PeerChainState): PeerSyncState[] {
+    return this.#states.filter((s) => s.chainState === chainState);
   }
 }
