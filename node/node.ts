@@ -93,11 +93,6 @@ export class Ogre extends Component<NodeEvents> {
     this.#peerManager.addEventListener(
       "peer:new",
       ({ detail: peer }) => {
-        // remove peer connection from connection manager
-        peer.addEventListener(
-          "peer:stopped",
-          () => connectionManager.onConnectionClose(peer.connId),
-        );
         // handle peer messages received
         peer.addEventListener(
           "peer:message:recv",

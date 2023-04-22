@@ -67,6 +67,11 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     // add to "pending connections" list, so it can be cancelled?
     const conn = await this.#transport.dial(addr, opts);
 
+    conn.addEventListener(
+      "connection:close",
+      (e) => this.onConnectionClose((e.target as Connection).connId),
+    );
+
     this.#connections.push(conn);
     this.dispatchEvent(new CustomEvent("connection:new", { detail: conn }));
 
@@ -99,7 +104,26 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
   }
 
   onConnectionClose(connId: string) {
+    const conn = this.#connections.find((c) => c.connId === connId);
+
+    if (!conn) {
+      this.#logger.debug(
+        `onConnectionClose: connection id not found '${connId}'`,
+      );
+
+      return;
+    }
+
     this.#connections = this.#connections.filter((c) => c.connId !== connId);
+
+    this.#logger.info(
+      `removed connection to ${conn.remoteAddr.toString()}, connections ${this.#connections.length}/${this.#maxConnections}`,
+    );
+  }
+
+  /** The amount of active connections */
+  get connectionCount(): number {
+    return this.#connections.length;
   }
 
   private async autoDialPeer(): Promise<void> {

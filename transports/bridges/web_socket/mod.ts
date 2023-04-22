@@ -1,4 +1,4 @@
-import { Connection } from "../../../net/mod.ts";
+import { Connection, createConnection } from "../../../net/mod.ts";
 import { Multiaddr, multiaddrToUri } from "../../../deps.ts";
 import { toMultiaddr } from "../../../multiaddr/mod.ts";
 import { Listener } from "../../listener.ts";
@@ -51,7 +51,7 @@ export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
         },
       );
 
-      return {
+      return createConnection({
         connId,
         localAddr: toMultiaddr(localAddr),
         remoteAddr: toMultiaddr(remoteAddr),
@@ -59,7 +59,7 @@ export function websocketBridgeTransport(opts: WebSocketBridgeOpts): Transport {
         readable,
         writable,
         close,
-      };
+      });
     },
     createListener(): Listener {
       throw new Error("Method not implemented.");
