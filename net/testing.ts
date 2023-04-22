@@ -1,4 +1,4 @@
-import { Connection } from "./connection.ts";
+import { Connection, createConnection } from "./connection.ts";
 import { faker } from "../test_deps.ts";
 import { toMultiaddr } from "../multiaddr/mod.ts";
 
@@ -8,7 +8,7 @@ export function createRandomConnection(): Connection {
   const readable = new ReadableStream({});
   const writable = new WritableStream({});
 
-  return {
+  return createConnection({
     connId: faker.datatype.uuid(),
     localAddr: toMultiaddr(localAddr),
     remoteAddr: toMultiaddr(remoteAddr),
@@ -16,5 +16,5 @@ export function createRandomConnection(): Connection {
     readable,
     writable,
     close: () => undefined,
-  };
+  });
 }

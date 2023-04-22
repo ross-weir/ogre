@@ -67,6 +67,11 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     // add to "pending connections" list, so it can be cancelled?
     const conn = await this.#transport.dial(addr, opts);
 
+    conn.addEventListener(
+      "connection:close",
+      (e) => this.onConnectionClose((e.target as Connection).connId),
+    );
+
     this.#connections.push(conn);
     this.dispatchEvent(new CustomEvent("connection:new", { detail: conn }));
 

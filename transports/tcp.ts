@@ -1,6 +1,6 @@
 import { Multiaddr } from "../deps.ts";
 import { toMultiaddr } from "../multiaddr/mod.ts";
-import { Connection } from "../net/connection.ts";
+import { Connection, createConnection } from "../net/connection.ts";
 import { Listener } from "./listener.ts";
 import { DialOpts, Transport } from "./transport.ts";
 
@@ -27,7 +27,7 @@ export function tcpTransport(): Transport {
       const { port, host: hostname } = addr.toOptions();
       const conn = await Deno.connect({ port, hostname });
 
-      return {
+      return createConnection({
         connId,
         localAddr: denoAddrToMulti(conn.localAddr as Deno.NetAddr),
         remoteAddr: denoAddrToMulti(conn.remoteAddr as Deno.NetAddr),
@@ -35,7 +35,7 @@ export function tcpTransport(): Transport {
         readable: conn.readable,
         writable: conn.writable,
         close: () => conn.close(),
-      };
+      });
     },
     createListener(): Listener {
       throw new Error("not implemented yet");
