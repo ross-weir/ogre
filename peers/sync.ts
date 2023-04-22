@@ -1,15 +1,14 @@
 import { OgreConfig } from "../config/mod.ts";
-import { Component, Guid } from "../core/mod.ts";
+import { Component } from "../core/mod.ts";
 import { log } from "../deps.ts";
 import { SyncInfoMessage } from "../protocol/messages/sync_info/mod.ts";
 import { REF_CLIENT_MILESTONE, SyncInfoV2 } from "../protocol/mod.ts";
-import { PeerManager } from "./peer_manager.ts";
+import { Peer } from "./peer.ts";
 import { peersQuery } from "./peers_query.ts";
 
 export interface SyncManagerOpts {
   logger: log.Logger;
   config: OgreConfig;
-  peerManager: PeerManager;
 }
 
 /** State of the peers chain in relation to our own */
@@ -22,24 +21,22 @@ export enum PeerChainState {
 }
 
 export interface PeerSyncStatus {
-  state: PeerChainState;
-  height: number;
+  peer: Peer;
+  chainState: PeerChainState;
+  height?: number;
 }
 
 export class SyncManager extends Component {
   readonly #logger: log.Logger;
   readonly #config: OgreConfig;
-  readonly #peerManager: PeerManager;
   #sendSyncInfoTaskHandle?: number;
-  /** Peer guid to sync state mapping */
-  readonly #peerSyncMap: Record<Guid, PeerSyncStatus> = {};
+  #peerStatuses: PeerSyncStatus[] = [];
 
-  constructor({ config, logger, peerManager }: SyncManagerOpts) {
+  constructor({ config, logger }: SyncManagerOpts) {
     super();
 
     this.#config = config;
     this.#logger = logger;
-    this.#peerManager = peerManager;
   }
 
   start(): Promise<void> {
@@ -57,9 +54,28 @@ export class SyncManager extends Component {
     return Promise.resolve();
   }
 
+  getPeerStatus(peer: Peer): PeerSyncStatus | undefined {
+    return this.#peerStatuses.find((ps) => ps.peer.isEqual(peer));
+  }
+
+  monitorPeer(peer: Peer) {
+    // peer is already monitored
+    if (this.getPeerStatus(peer)) {
+      return;
+    }
+
+    this.#peerStatuses.push({ peer, chainState: PeerChainState.Unknown });
+  }
+
+  discardPeer(peer: Peer) {
+    this.#peerStatuses = this.#peerStatuses.filter((ps) =>
+      !ps.peer.isEqual(peer)
+    );
+  }
+
   sendSyncInfo() {
     // currently only v2 sync is supported
-    const peers = peersQuery(this.#peerManager.peers).cmpVersion(
+    const peers = peersQuery(this.#monitoredPeers).cmpVersion(
       ">=",
       REF_CLIENT_MILESTONE.syncV2,
     ).peers();
@@ -74,5 +90,9 @@ export class SyncManager extends Component {
     const msg = new SyncInfoMessage(new SyncInfoV2([]));
     // update each peers last sync send time
     peers.forEach((p) => p.send(msg));
+  }
+
+  get #monitoredPeers() {
+    return this.#peerStatuses.map((ps) => ps.peer);
   }
 }
