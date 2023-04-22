@@ -117,7 +117,7 @@ export class ConnectionManager extends Component<ConnectionManagerEvents> {
     this.#connections = this.#connections.filter((c) => c.connId !== connId);
 
     this.#logger.info(
-      `closed connection to ${conn.remoteAddr.toString()}, connections ${this.#connections.length}/${this.#maxConnections}`,
+      `removed connection to ${conn.remoteAddr.toString()}, connections ${this.#connections.length}/${this.#maxConnections}`,
     );
   }
 
