@@ -57,12 +57,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#codec = codec;
   }
 
-  /** Currently connected and active peers */
-  get peers(): Peer[] {
-    return this.#peers;
-  }
-
-  start(): Promise<void> {
+  override start(): Promise<void> {
     const { gossipIntervalSec, evictIntervalSec } = this.#config.peers;
 
     this.#getPeersTaskHandle = setInterval(
@@ -77,7 +72,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     return Promise.resolve();
   }
 
-  async stop(): Promise<void> {
+  override async stop(): Promise<void> {
     clearInterval(this.#getPeersTaskHandle);
     clearInterval(this.#evictPeersTaskHandle);
 
