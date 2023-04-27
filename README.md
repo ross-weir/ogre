@@ -4,6 +4,11 @@
 
 > Note: This README & project is very much a WIP, some steps may be wrong or missing. Steps required to run/build/develop the node will be added over time.
 
+Ogres goal is to provide a node that is unstoppable and accessible for average users. 
+
+- Unstoppable because it aims to be runnable on a multitude of platforms, from mobile phones to smart devices.
+- Accessible because the average user will be able to easily run the node on their mobile phones and smart devices.
+
 `ogre` is a Ergo node implemented in TypeScript targeting web &
 native runtimes.
 
