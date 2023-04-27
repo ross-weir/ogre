@@ -59,11 +59,11 @@ export function createRandomPeerManager(
   });
 }
 
-export function createRandomSyncManager(sendSyncInterval?: number) {
+export function createRandomSyncManager(syncIntervalSec?: number) {
   const config = createRandomConfig();
 
-  if (sendSyncInterval) {
-    config.peers.syncIntervalSec = sendSyncInterval;
+  if (syncIntervalSec) {
+    config.peers.syncIntervalSec = syncIntervalSec;
   }
 
   return new SyncManager({ config, logger: log.getLogger() });
