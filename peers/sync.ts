@@ -81,6 +81,10 @@ export class SyncManager extends Component {
     return Promise.resolve();
   }
 
+  get states(): readonly PeerSyncState[] {
+    return this.#states;
+  }
+
   getPeerSyncState(peer: Peer): PeerSyncState | undefined {
     return this.#states.find((ps) => ps.peer.isEqual(peer));
   }

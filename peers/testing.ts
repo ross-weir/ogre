@@ -9,6 +9,7 @@ import { createRandomHandlerContext } from "../protocol/messages/testing.ts";
 import { PeerManager } from "./peer_manager.ts";
 import { createRandomConfig } from "../config/testing.ts";
 import { Connection } from "../net/mod.ts";
+import { SyncManager } from "./sync.ts";
 
 export function createRandomPeerStore(): PeerStore {
   return new PeerStore({ logger: log.getLogger(), configAddrs: [] });
@@ -56,4 +57,14 @@ export function createRandomPeerManager(
     codec: ctx.codec,
     config,
   });
+}
+
+export function createRandomSyncManager(sendSyncInterval?: number) {
+  const config = createRandomConfig();
+
+  if (sendSyncInterval) {
+    config.peers.syncIntervalSec = sendSyncInterval;
+  }
+
+  return new SyncManager({ config, logger: log.getLogger() });
 }
