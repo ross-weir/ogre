@@ -117,22 +117,24 @@ export class SyncManager extends Component {
     // TODO: determine what to send in sync info msg
     const msg = new SyncInfoMessage(new SyncInfoV2([]));
 
-    states.forEach((s) => {
-      if (
-        !s.peer.handshake?.peerSpec.refNodeVersion.gte(
-          REF_CLIENT_MILESTONE.syncV2,
-        )
-      ) {
-        this.#logger.info(
-          "sendSyncInfo skipping node with SyncInfoV1 or no handshake",
-        );
+    states.forEach((s) => this.#sendSyncInfoByState(s, msg));
+  }
 
-        return;
-      }
+  #sendSyncInfoByState(state: PeerSyncState, msg: SyncInfoMessage) {
+    if (
+      !state.peer.handshake?.peerSpec.refNodeVersion.gte(
+        REF_CLIENT_MILESTONE.syncV2,
+      )
+    ) {
+      this.#logger.info(
+        "sendSyncInfo skipping node with SyncInfoV1 or no handshake",
+      );
 
-      s.lastSyncSentAt = new Date();
-      s.peer.send(msg);
-    });
+      return;
+    }
+
+    state.lastSyncSentAt = new Date();
+    state.peer.send(msg);
   }
 
   #getStatesForSyncInfoMsg(): PeerSyncState[] {
