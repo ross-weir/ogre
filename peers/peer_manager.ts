@@ -37,7 +37,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
   readonly #config: OgreConfig;
   readonly #spec: PeerSpec;
   readonly #codec: NetworkMessageCodec;
-  readonly #peers: Peer[] = [];
+  #peers: Peer[] = [];
   #getPeersTaskHandle?: number;
   #evictPeersTaskHandle?: number;
 
@@ -57,7 +57,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     this.#codec = codec;
   }
 
-  start(): Promise<void> {
+  override start(): Promise<void> {
     const { gossipIntervalSec, evictIntervalSec } = this.#config.peers;
 
     this.#getPeersTaskHandle = setInterval(
@@ -72,11 +72,23 @@ export class PeerManager extends Component<PeerManagerEvents> {
     return Promise.resolve();
   }
 
-  async stop(): Promise<void> {
+  override async stop(): Promise<void> {
     clearInterval(this.#getPeersTaskHandle);
     clearInterval(this.#evictPeersTaskHandle);
 
     await Promise.all(this.#peers.map((peer) => peer.stop()));
+  }
+
+  async removePeer(peer: Peer, reason: PeerRemovalReason) {
+    this.#peers = this.#peers.filter((p) => !p.isEqual(peer));
+
+    this.dispatchEvent(
+      new CustomEvent("peer:removed", {
+        detail: { peer, reason },
+      }),
+    );
+
+    await peer.stop();
   }
 
   /**
@@ -110,14 +122,7 @@ export class PeerManager extends Component<PeerManagerEvents> {
     }
 
     this.#logger.debug(`Evicting random peer: ${peer.remoteAddr}`);
-
-    this.dispatchEvent(
-      new CustomEvent("peer:removed", {
-        detail: { peer, reason: PeerRemovalReason.Evicted },
-      }),
-    );
-
-    await peer.stop();
+    await this.removePeer(peer, PeerRemovalReason.Evicted);
   }
 
   acceptConnection(conn: Connection) {
@@ -129,6 +134,8 @@ export class PeerManager extends Component<PeerManagerEvents> {
       logger: this.#logger,
       codec: this.#codec,
     });
+
+    // TODO add event listener for disconnect, then call this.removePeer
 
     this.#peers.push(peer);
     this.dispatchEvent(new CustomEvent("peer:new", { detail: peer }));

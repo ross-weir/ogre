@@ -1,5 +1,6 @@
 import { semver } from "../deps.ts";
 import { NetworkMessage } from "../protocol/mod.ts";
+import { Version } from "../protocol/version.ts";
 import { Peer } from "./peer.ts";
 
 export function _peers(peers: Peer[]) {
@@ -25,16 +26,19 @@ export function peersQuery(peers: Peer[]) {
   return {
     /** Filter peers that cannot handle the provided `NetworkMessage`. */
     canHandle(msg: NetworkMessage) {
-      const requiredVer = msg.protocolVersion.toString();
-
+      return this.cmpVersion(">=", msg.protocolVersion);
+    },
+    /** Filter peers by their declared version based on the operator */
+    cmpVersion(op: semver.Operator, ver: Version | string) {
       filteredPeers = filteredPeers.filter((p) => {
         if (!p.handshake) {
           return false;
         }
 
         const peerVer = p.handshake.peerSpec.refNodeVersion.toString();
+        const verStr = ver instanceof Version ? ver.toString() : ver;
 
-        return semver.gte(peerVer, requiredVer);
+        return semver.cmp(peerVer, op, verStr);
       });
 
       return this;

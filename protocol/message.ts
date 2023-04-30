@@ -1,9 +1,10 @@
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
 import { NetworkEncodable } from "./encoding.ts";
 import { BadLengthError, InvalidChecksumError } from "./errors.ts";
-import { initialNodeVersion, Version } from "./version.ts";
+import { Version } from "./version.ts";
 import { blakejs } from "../deps.ts";
 import { isBytesEq } from "../_utils/mod.ts";
+import { REF_CLIENT_MILESTONE } from "./ref_client.ts";
 
 /** Identifiers for messages that make up the protocol */
 export enum MessageCode {
@@ -37,7 +38,7 @@ export abstract class NetworkMessage
 /** Network messages that have existed since the initial launch of the network */
 export abstract class InitialNetworkMessage extends NetworkMessage {
   get protocolVersion(): Version {
-    return initialNodeVersion;
+    return REF_CLIENT_MILESTONE.initial;
   }
 }
 

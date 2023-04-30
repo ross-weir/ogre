@@ -1,6 +1,11 @@
 import { CursorReader, CursorWriter } from "../io/cursor_buffer.ts";
 import { isSemVer } from "../_utils/isSemVer.ts";
+import { semver } from "../deps.ts";
 import { NetworkEncodable } from "./encoding.ts";
+
+function ensureString(ver: Version | string): string {
+  return ver instanceof Version ? ver.toString() : ver;
+}
 
 /** Represents a version of an entity on the network. */
 export class Version implements NetworkEncodable {
@@ -18,6 +23,10 @@ export class Version implements NetworkEncodable {
     writer.putInt8(this.major);
     writer.putInt8(this.minor);
     writer.putInt8(this.patch);
+  }
+
+  gte(other: Version | string): boolean {
+    return semver.gte(this.toString(), ensureString(other));
   }
 
   static decode(reader: CursorReader): Version {
@@ -45,9 +54,3 @@ export class Version implements NetworkEncodable {
     return new Version(major, minor, patch);
   }
 }
-
-/** Reference node client versions */
-export const initialNodeVersion = new Version(0, 0, 1);
-/** Reference client nodes of the following versions deliver broken block sections */
-export const v4017 = new Version(4, 0, 17);
-export const v4018 = new Version(4, 0, 18);

@@ -9,6 +9,7 @@ import { log } from "../deps.ts";
 import { setupLogging } from "../log/mod.ts";
 import { ConnectionManager } from "../net/mod.ts";
 import { PeerManager, PeerManagerEvents, PeerStore } from "../peers/mod.ts";
+import { SyncManager } from "../peers/sync.ts";
 import {
   DefaultMessageHandler,
   DefaultNetworkMessageCodec,
@@ -76,6 +77,12 @@ export class Ogre extends Component<NodeEvents> {
       logger: this.#logger,
     });
 
+    const syncManager = new SyncManager({
+      logger: this.#logger,
+      config: this.config,
+    });
+    this.#components.push(syncManager);
+
     this.#peerManager = new PeerManager({
       logger: this.#logger,
       config: this.config,
@@ -83,33 +90,35 @@ export class Ogre extends Component<NodeEvents> {
     });
     this.#components.push(this.#peerManager);
 
-    // metric gatherer? subscribe to events from previous components
-
+    // handle new connections
     connectionManager.addEventListener(
       "connection:new",
       ({ detail }) => this.#peerManager.acceptConnection(detail),
     );
+
     // handle new peers
     this.#peerManager.addEventListener(
       "peer:new",
-      ({ detail: peer }) => {
+      (e) => {
+        const { detail: peer } = e;
+
+        syncManager.monitorPeer(peer);
         // handle peer messages received
         peer.addEventListener(
           "peer:message:recv",
           ({ detail: msg }) => msgHandler.handle(msg, peer),
         );
+        this.#bubbleEvent(e);
       },
     );
 
-    // forward events and emit from node
-    this.#peerManager.addEventListener(
-      "peer:new",
-      (e) => this.#forwardEvent(e),
-    );
-    this.#peerManager.addEventListener(
-      "peer:removed",
-      (e) => this.#forwardEvent(e),
-    );
+    // Handle peer removed events
+    this.#peerManager.addEventListener("peer:removed", (e) => {
+      const { peer } = e.detail;
+
+      syncManager.discardPeer(peer);
+      this.#bubbleEvent(e);
+    });
   }
 
   async start(): Promise<void> {
@@ -144,7 +153,7 @@ export class Ogre extends Component<NodeEvents> {
     return version;
   }
 
-  #forwardEvent<T>(e: CustomEvent<T>) {
+  #bubbleEvent<T>(e: CustomEvent<T>) {
     this.dispatchEvent(new CustomEvent(e.type, { detail: e.detail }));
   }
 }

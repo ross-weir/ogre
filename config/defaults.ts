@@ -24,6 +24,7 @@ const defaultBaseConfig: PartialOgreConfig = {
     maxConnections: 30,
     gossipIntervalSec: 120,
     evictIntervalSec: 3600, // once an hour
+    syncIntervalSec: 5,
   },
   logging: {
     console: {

@@ -1,4 +1,4 @@
-import { assertEquals } from "../test_deps.ts";
+import { assert, assertEquals } from "../test_deps.ts";
 import { ScorexReader, ScorexWriter } from "../io/scorex_buffer.ts";
 import { Version } from "./version.ts";
 
@@ -26,4 +26,10 @@ Deno.test("[protocol/version] ToString conversion", () => {
   const ver = new Version(4, 3, 9);
 
   assertEquals(ver.toString(), "4.3.9");
+});
+
+Deno.test("[protocol/version] gte", () => {
+  const ver = new Version(4, 3, 9);
+
+  assert(ver.gte("4.3.8"));
 });
