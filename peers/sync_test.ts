@@ -81,3 +81,11 @@ Deno.test("[peers/sync] SyncManager.sendSyncInfo is called at supplied interval"
     time.restore();
   }
 });
+
+Deno.test("[peers/sync] SyncManager.sendSyncInfo prefers outdated sync states", () => {
+  const sm = createRandomSyncManager();
+  // create random sync states
+  // some with "outdated" states
+  // call sm.sendSyncInfo
+  // ensure only outdated state.peer send was called
+});

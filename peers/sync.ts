@@ -47,7 +47,15 @@ function getStatesByChainSyncState(
   return states.filter((s) => s.chainState === chainState);
 }
 
-export const _internals = { getStatesByOutdated, getStatesByChainSyncState };
+function states(states: PeerSyncState[]): PeerSyncState[] {
+  return states;
+}
+
+export const _internals = {
+  states,
+  getStatesByOutdated,
+  getStatesByChainSyncState,
+};
 
 export class SyncManager extends Component {
   /** Seconds that must have elapsed before we consider peer for another `SyncInfo` message */
@@ -117,10 +125,10 @@ export class SyncManager extends Component {
     // TODO: determine what to send in sync info msg
     const msg = new SyncInfoMessage(new SyncInfoV2([]));
 
-    states.forEach((s) => this.#sendSyncInfoByState(s, msg));
+    states.forEach((s) => this.#sendSyncInfoToState(s, msg));
   }
 
-  #sendSyncInfoByState(state: PeerSyncState, msg: SyncInfoMessage) {
+  #sendSyncInfoToState(state: PeerSyncState, msg: SyncInfoMessage) {
     if (
       !state.peer.handshake?.peerSpec.refNodeVersion.gte(
         REF_CLIENT_MILESTONE.syncV2,
@@ -173,10 +181,13 @@ export class SyncManager extends Component {
   }
 
   #outdatedStates(): PeerSyncState[] {
-    return _internals.getStatesByOutdated(this.#states);
+    return _internals.getStatesByOutdated(_internals.states(this.#states));
   }
 
   #statesByChainState(chainState: PeerChainState): PeerSyncState[] {
-    return _internals.getStatesByChainSyncState(this.#states, chainState);
+    return _internals.getStatesByChainSyncState(
+      _internals.states(this.#states),
+      chainState,
+    );
   }
 }
